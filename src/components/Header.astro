@@ -1,0 +1,68 @@
+<nav class="fixed top-0 left-1/2 transform -translate-x-1/2 w-full lg:w-[1200px] px-6 py-4 border-b border-[#313131] z-100 bg-[#131313] shadow-lg">
+    <div class="flex items-center justify-between mx-auto max-w-[1200px]">
+        <!-- Logo Section -->
+        <div class="flex items-center space-x-3">
+            <a href="/" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                <img src="/logo-blue.svg" alt="Iquitos Tech Logo" class="h-8 w-8" />
+                <h1 class="text-2xl font-bold text-white">Iquitos Tech</h1>
+            </a>
+        </div>
+
+        <!-- Navigation Categories -->
+        <div class="hidden md:flex">
+            <ul class="flex items-center space-x-8">
+                <li><a href="/" class="text-white font-bold category-hover">Tecnología</a></li>
+                <li><a href="/tecnologia" class="text-white font-bold category-hover">Videojuegos</a></li>
+                <li><a href="/videojuegos" class="text-white font-bold category-hover">Programación</a></li>
+                <li><a href="/programacion" class="text-white font-bold category-hover">Reviews</a></li>
+                <li><a href="/reviews" class="text-white font-bold category-hover">Guías</a></li>
+                <li><a href="/sobre-nosotros" class="text-white font-bold category-hover">Sobre Nosotros</a></li>
+            </ul>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden">
+            <button 
+                id="mobile-menu-button" 
+                class="text-white hover:text-[#2847d7] focus:outline-none"
+                aria-label="Toggle mobile menu"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 max-w-[1200px] mx-auto">
+        <ul class="flex flex-col space-y-3">
+            <li><a href="/" class="text-white hover:text-[#2847d7] transition-colors font-medium">Tecnología</a></li>
+            <li><a href="/tecnologia" class="text-white hover:text-[#2847d7] transition-colors font-medium">Videojuegos</a></li>
+            <li><a href="/videojuegos" class="text-white hover:text-[#2847d7] transition-colors font-medium">Programación</a></li>
+            <li><a href="/programacion" class="text-white hover:text-[#2847d7] transition-colors font-medium">Reviews</a></li>
+            <li><a href="/reviews" class="text-white hover:text-[#2847d7] transition-colors font-medium">Guías</a></li>
+            <li><a href="/sobre-nosotros" class="text-white hover:text-[#2847d7] transition-colors font-medium">Sobre Nosotros</a></li>
+        </ul>
+    </div>
+</nav>
+
+<script>
+    // Mobile menu toggle functionality
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuButton?.addEventListener('click', () => {
+        mobileMenu?.classList.toggle('hidden');
+    });
+</script>
+
+<style>
+
+    .category-hover:hover {
+        border-bottom: 2px solid #2847d7;
+        transition: 0.3s ease-in;
+        transform: translateY(2px);
+        padding-bottom: 2px;
+    }
+</style>

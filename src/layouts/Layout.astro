@@ -1,22 +1,121 @@
+---
+import Header from "../components/Header.astro";
+import "../styles/global.css";
+import '@fontsource-variable/onest';
+import Footer from "../components/Footer.astro";
+
+interface Props {
+    description: string;
+    title: string;
+}
+
+const { description, title } = Astro.props as Props;
+---
+
 <!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta title={title} />
+        <meta name="description" content={description} />
+        <meta name="author" content="Iquitos Tech" />
+        <meta name="keywords" content="tecnología, videojuegos, noticias, reseñas, tendencias" />
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="robots" content="index, follow" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+    </head>
+    <body>
+        <Header />
+        <main class="pt-16 sm:pt-20 lg:pt-24">
+            <slot />
+        </main>
+        <Footer />
+    </body>
 </html>
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
+<style is:global>
+    * {
+        box-sizing: border-box;
+    }
+    
+    :root {
+        font-family: 'Onest Variable', sans-serif;
+        color-scheme: dark;
+    }
+    
+    html {
+        background-color: #131313;
+    }
+    
+    body {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        min-height: 100vh;
+    }
+    
+    @media (min-width: 640px) {
+        body {
+            padding: 0 1.5rem;
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        body {
+            padding: 0 2rem;
+        }
+    }
+    
+    @media (min-width: 1280px) {
+        body {
+            padding: 0;
+        }
+    }
+    
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+        backdrop-filter: blur(10px);
+        border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+        border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+    
+    p {
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.6;
+        margin-bottom: 1em;
+        font-weight: 100;
+        font-size: 0.875rem;
+        letter-spacing: 0.5px;
+    }
+    
+    @media (min-width: 640px) {
+        p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        p {
+            line-height: 1.4;
+        }
+    }
+    
+    p strong {
+        color: white;
+        font-weight: 700;
+    }
 </style>

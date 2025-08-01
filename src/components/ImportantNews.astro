@@ -1,0 +1,41 @@
+---
+import NewsItem from '@/components/NewsItem.astro';
+---
+
+<section 
+class={`
+w-full 
+grid grid-cols-12 sm:grid-cols-12 lg:grid-cols-10 
+auto-rows-[20rem] sm:auto-rows-[25rem] lg:auto-rows-[35rem] 
+gap-3 sm:gap-4 
+mx-auto p-4 sm:p-8 md:p-12 lg:p-2
+`}>
+   <NewsItem 
+    class="col-span-12 sm:col-span-12 lg:col-span-7" 
+    title="Martech mistakes are costing brands their customers" 
+    description="As a tech journalist, Zul focuses on topics including cloud computing, cybersecurity, and disruptive technology in the enterprise industry.">
+        <div 
+        slot="image" 
+        class="
+        absolute left-0 top-0 bottom-0 w-full
+        h-full group-hover:scale-110 transition-transform duration-1000
+        ease-in-out opacity-90 bg-center bg-cover bg-no-repeat -z-10
+        "
+        style="background-image: url('/image1.jpg');">
+        </div>
+    </NewsItem>
+
+   <NewsItem 
+    class="col-span-12 sm:col-span-12 lg:col-span-3" 
+    title="Bloomberg announces new features for AI Assistant">
+        <div 
+        slot="image" 
+        class="
+        absolute left-0 top-0 bottom-0 w-full
+        h-full group-hover:scale-110 transition-transform duration-1000
+        ease-in-out opacity-90 bg-center bg-cover bg-no-repeat -z-10
+        "
+        style="background-image: url('/image2.webp');">
+        </div>
+    </NewsItem>
+</section>

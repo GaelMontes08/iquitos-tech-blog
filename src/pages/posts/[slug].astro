@@ -1,0 +1,21 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getPostInfo } from '../../lib/wp';
+
+const slug = Astro.params.slug;
+if (!slug) return Astro.redirect('/404');
+
+const { title, content, date, seo } = await getPostInfo(slug);
+
+export const prerender = false;
+---
+
+<Layout 
+  title={title}
+  description={seo.description}
+>
+  <article>
+    <h1 class="text-4xl font-bold mb-4">{title}</h1>
+    <div class="prose" set:html={content} />
+  </article>
+</Layout>

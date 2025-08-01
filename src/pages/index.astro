@@ -1,11 +1,22 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from '@/layouts/Layout.astro';
+import ImportantNews from '@/components/ImportantNews.astro';
+import News1 from '@/components/News1.astro';
+import Trends from '@/sections/Trends.astro';
+import PreFooter from '@/components/PreFooter.astro';
+import { getPageInfo } from '@/lib/wp';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const { title, content, date } = await getPageInfo('home');
 ---
 
-<Layout>
-	<Welcome />
+<Layout 
+title={title} 
+description={content}
+>
+    <ImportantNews />   
+    <main>
+        <News1 />
+        <Trends />
+        <PreFooter />
+    </main>
 </Layout>
