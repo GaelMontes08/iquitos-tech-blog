@@ -8,7 +8,7 @@ declare global {
   }
 }
 
-const domain = import.meta.env.WP_DOMAIN || 'iquitostech.com';
+const domain = import.meta.env.WP_DOMAIN;
 const apiUrl = `https://${domain}/wp-json/wp/v2`;
 
 export const getPageInfo = async (slug: string) => {
