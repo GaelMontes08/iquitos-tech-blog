@@ -2,12 +2,7 @@
 import { getLatestsPosts } from '@/lib/wp';
 
 // Fetch posts from WordPress
-let posts = [];
-try {
-  posts = await getLatestsPosts({ perPage: 10 });
-} catch (error) {
-  console.error('Failed to fetch posts:', error);
-}
+const posts = await getLatestsPosts({ perPage: 10 });
 
 // Transform WordPress posts to match the expected structure
 const newsItems = posts.map((post: any, index: number) => ({
@@ -356,13 +351,6 @@ const secondSection = newsItems.slice(5, 10);
         </a>
       ))}
     </div>
-    {newsItems.length > 0 ? (
-      <!-- Your existing layout -->
-    ) : (
-      <div class="text-center py-12">
-        <p class="text-gray-400">No posts available at the moment.</p>
-      </div>
-    )}
   </div>
 </section>
 
