@@ -135,6 +135,37 @@ export const getPostInfo = async (slug: string) => {
   }
 }
 
+export const getFeaturedPosts = async ({ 
+  perPage = 2, 
+  categoryId = 25
+}) => {
+  try {
+    if (!domain) {
+      throw new Error('WP_DOMAIN not configured');
+    }
+
+    const response = await fetchWithTimeout(`${apiUrl}/posts?per_page=${perPage}&category=${categoryId}&_embed`);
+    if (!response.ok) throw new Error(`Error fetching featured posts: ${response.status} ${response.statusText}`);
+
+    const data = await response.json();
+    return data.map((post: any) => ({
+      id: post.id,
+      title: post.title?.rendered || 'Sin título',
+      excerpt: post.excerpt?.rendered || '',
+      content: post.content?.rendered || '',
+      date: post.date,
+      slug: post.slug,
+      featuredImage: post._embedded?.['wp:featuredmedia']?.[0]?.source_url,
+      author: post._embedded?.author?.[0]?.name || 'Redacción',
+      authorAvatar: post._embedded?.author?.[0]?.avatar_urls?.['96'] || '/author.jpg',
+      categories: post._embedded?.['wp:term']?.[0] || []
+    }));
+  } catch (error) {
+    console.error('Error in getFeaturedPosts:', error);
+    return [];
+  }
+};
+
 export const getLatestsPosts = async ({ perPage = 10 }: { perPage?: number } = {}) => {
   try {
     if (!domain) {
@@ -142,9 +173,9 @@ export const getLatestsPosts = async ({ perPage = 10 }: { perPage?: number } = {
       return getFallbackPosts();
     }
     
-    // Add cache busting parameter
+    // Add cache busting parameter and exclude category 25
     const cacheBuster = Date.now();
-    const url = `${apiUrl}/posts?per_page=${perPage}&_embed&t=${cacheBuster}`;
+    const url = `${apiUrl}/posts?per_page=${perPage}&categories_exclude=25&_embed&t=${cacheBuster}`;
     console.log('Fetching posts from:', url);
     
     const response = await fetchWithTimeout(url);
