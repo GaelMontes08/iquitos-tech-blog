@@ -1,166 +1,207 @@
+---
+// filepath: f:\Código\Iquitos-Tech\iquitos-tech\src\components\Footer.astro
+---
+
 <footer class="w-full border-t border-[#313131]">
   <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-12 lg:py-16">
     
-    <!-- Main Footer Content -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-      
-      <!-- Column 1: More From Iquitos Tech -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-semibold text-white mb-6">Más de Iquitos Tech</h3>
-        <ul class="space-y-3">
-          <li>
-            <a 
-              href="/subscribe" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Suscríbete
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/newsletters" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Boletines
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/faq" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Preguntas Frecuentes
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/team" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Equipo Iquitos Tech
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/education" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Iquitos Tech Educación
-            </a>
-          </li>
-        </ul>
+    <!-- Mobile Footer - Centered Important Links Only -->
+    <div class="block md:hidden">
+      <div class="text-center space-y-6">
+        <h3 class="text-lg font-semibold text-white">Más de Iquitos Tech</h3>
+        
+        <!-- Essential Links -->
+        <div class="space-y-4">
+          <a 
+            href="/posts" 
+            class="block text-gray-400 hover:text-[#2847d7] transition-colors duration-300 text-lg font-medium"
+          >
+            Artículos
+          </a>
+          <a 
+            href="/reviews" 
+            class="block text-gray-400 hover:text-[#2847d7] transition-colors duration-300 text-lg font-medium"
+          >
+            Reseñas
+          </a>
+          <a 
+            href="/contact" 
+            class="block text-gray-400 hover:text-[#2847d7] transition-colors duration-300 text-lg font-medium"
+          >
+            Contacto
+          </a>
+          <a 
+            href="/subscribe" 
+            class="block text-gray-400 hover:text-[#2847d7] transition-colors duration-300 text-lg font-medium"
+          >
+            Suscríbete
+          </a>
+        </div>
       </div>
+    </div>
 
-      <!-- Column 2: Reviews and Guides -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-semibold text-white mb-6">Reseñas y Guías</h3>
-        <ul class="space-y-3">
-          <li>
-            <a 
-              href="/reviews" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Reseñas
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/buying-guides" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Guías de Compra
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/laptops" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Laptops
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/smartphones" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Smartphones
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/streaming" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Dispositivos de Streaming
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/headphones" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Audífonos
-            </a>
-          </li>
-        </ul>
+    <!-- Desktop Footer - Full Layout -->
+    <div class="hidden md:block">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+        
+        <!-- Column 1: More From Iquitos Tech -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold text-white mb-6">Más de Iquitos Tech</h3>
+          <ul class="space-y-3">
+            <li>
+              <a 
+                href="/subscribe" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Suscríbete
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/newsletters" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Boletines
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/faq" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Preguntas Frecuentes
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/team" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Equipo Iquitos Tech
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/education" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Iquitos Tech Educación
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Column 2: Reviews and Guides -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold text-white mb-6">Reseñas y Guías</h3>
+          <ul class="space-y-3">
+            <li>
+              <a 
+                href="/reviews" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Reseñas
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/buying-guides" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Guías de Compra
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/laptops" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Laptops
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/smartphones" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Smartphones
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/streaming" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Dispositivos de Streaming
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/headphones" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Audífonos
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Legal & Support -->
+        <div class="space-y-4">
+          <h3 class="text-lg font-semibold text-white mb-6">Legal y Soporte</h3>
+          <ul class="space-y-3">
+            <li>
+              <a 
+                href="/advertise" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Publicita con Nosotros
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/contact" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Contáctanos
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/jobs" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Trabajos
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/privacy" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Política de Privacidad
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/user-agreement" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Acuerdo de Usuario
+              </a>
+            </li>
+            <li>
+              <a 
+                href="/terms" 
+                class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
+              >
+                Términos de Servicio
+              </a>
+            </li>
+          </ul>
+        </div>
+
       </div>
-
-      <!-- Column 3: Legal & Support -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-semibold text-white mb-6">Legal y Soporte</h3>
-        <ul class="space-y-3">
-          <li>
-            <a 
-              href="/advertise" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Publicita con Nosotros
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/contact" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Contáctanos
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/jobs" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Trabajos
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/privacy" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Política de Privacidad
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/user-agreement" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Acuerdo de Usuario
-            </a>
-          </li>
-          <li>
-            <a 
-              href="/terms" 
-              class="text-gray-400 hover:text-white hover:underline transition-colors duration-300 text-sm lg:text-base"
-            >
-              Términos de Servicio
-            </a>
-          </li>
-        </ul>
-      </div>
-
     </div>
 
     <!-- Horizontal Rule -->
@@ -174,8 +215,6 @@
         <p class="text-gray-500 text-sm">
           © {new Date().getFullYear()} Iquitos Tech. Todos los derechos reservados.
         </p>
-      </div>
-
       </div>
 
     </div>
