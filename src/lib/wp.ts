@@ -31,7 +31,7 @@ if (!domain) {
 const apiUrl = `https://${domain}/wp-json/wp/v2`;
 
 // Add timeout and retry logic
-const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 10000) => {
+export const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 10000) => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
   
