@@ -8,7 +8,6 @@ if (!slug) return Astro.redirect('/404');
 
 const { title, content, date, seo } = await getPostInfo(slug);
 
-// Automatically increment view count for this post (server-side)
 console.log(`📊 Incrementing view count for post: ${slug}`);
 const currentViews = await incrementPostViewCount(slug);
 console.log(`📊 Current view count for ${slug}: ${currentViews}`);
@@ -21,11 +20,9 @@ export const prerender = false;
   description={seo.description}
 >
   <article class="max-w-4xl mx-auto px-4 py-8">
-    <!-- Article Header -->
     <header class="mb-8">
       <h1 class="text-4xl lg:text-5xl font-bold text-white mb-4">{title}</h1>
       
-      <!-- Article Meta -->
       <div class="flex items-center justify-between text-gray-400 text-sm mb-6">
         <div class="flex items-center space-x-4">
           <time datetime={date}>
@@ -39,7 +36,6 @@ export const prerender = false;
           <span id="reading-time">5 min de lectura</span>
         </div>
         
-        <!-- View Counter -->
         <div class="flex items-center space-x-2 text-gray-500">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -50,11 +46,9 @@ export const prerender = false;
       </div>
     </header>
 
-    <!-- Article Content -->
     <div class="prose prose-lg prose-invert max-w-none" set:html={content} />
   </article>
 
-  <!-- Reading Time Calculator -->
   <script>
     // Calculate reading time
     function calculateReadingTime() {
@@ -79,7 +73,6 @@ export const prerender = false;
   </script>
 </Layout>
 
-<!-- Your existing styles -->
 <style>
   .prose {
     color: #d1d5db;
