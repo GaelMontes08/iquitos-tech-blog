@@ -1,0 +1,264 @@
+---
+// filepath: f:\Código\Iquitos-Tech\iquitos-tech\src\pages\categoria\[slug].astro
+import Layout from '../../layouts/Layout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { fetchWithTimeout } from '../../lib/wp';
+
+const domain = import.meta.env.WP_DOMAIN;
+
+if (!domain) {
+  throw new Error('WP_DOMAIN environment variable is required');
+}
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect('/404');
+}
+
+// Function to fetch all categories
+const fetchCategories = async () => {
+  try {
+    const response = await fetchWithTimeout(
+      `https://${domain}/wp-json/wp/v2/categories?per_page=100&_fields=id,name,slug,description,count`,
+      {},
+      10000
+    );
+
+    if (!response.ok) {
+      throw new Error(`Categories API error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    throw error;
+  }
+};
+
+// Function to fetch posts by category ID
+const fetchPostsByCategory = async (categoryId: number) => {
+  try {
+    const response = await fetchWithTimeout(
+      `https://${domain}/wp-json/wp/v2/posts?categories=${categoryId}&_embed&_fields=id,title,slug,excerpt,date,_embedded&per_page=20`,
+      {},
+      10000
+    );
+
+    if (!response.ok) {
+      throw new Error(`Posts API error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    throw error;
+  }
+};
+
+let category = null;
+let posts = [];
+let error = null;
+
+try {
+  // Fetch all categories
+  const categories = await fetchCategories();
+  
+  // Find the category that matches the slug
+  category = categories.find((cat: any) => cat.slug === slug);
+  
+  if (!category) {
+    return Astro.redirect('/404');
+  }
+
+  // Fetch posts for this category
+  posts = await fetchPostsByCategory(category.id);
+
+} catch (err) {
+  console.error('Error loading category page:', err);
+  error = typeof err === 'object' && err !== null && 'message' in err ? (err as { message: string }).message : String(err);
+}
+
+// Page metadata
+const pageTitle = category ? `${category.name} | Iquitos Tech` : 'Categoría | Iquitos Tech';
+const pageDescription = category 
+  ? category.description || `Últimos artículos de ${category.name} en Iquitos Tech`
+  : 'Explora nuestros artículos por categoría';
+
+export const prerender = false;
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <main class="min-h-screen">
+    
+    <!-- Category Header -->
+    <section class="w-full py-12 lg:py-16 border-b border-[#313131]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          
+          <!-- Breadcrumb -->
+          <nav class="mb-6" aria-label="Breadcrumb">
+            <ol class="flex items-center justify-center space-x-2 text-sm text-gray-400">
+              <li>
+                <a href="/" class="hover:text-[#2847d7] transition-colors duration-300">
+                  Inicio
+                </a>
+              </li>
+              <li>
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                </svg>
+              </li>
+              <li>
+                <a href="/categorias" class="hover:text-[#2847d7] transition-colors duration-300">
+                  Categorías
+                </a>
+              </li>
+              <li>
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                </svg>
+              </li>
+              <li class="text-white font-medium">
+                {category?.name || 'Categoría'}
+              </li>
+            </ol>
+          </nav>
+
+          <!-- Category Title -->
+          <h1 class="text-4xl lg:text-6xl font-black text-white mb-4">
+            {category?.name || 'Categoría'}
+          </h1>
+          
+          <!-- Category Description -->
+          {category?.description && (
+            <p class="text-xl text-gray-300 max-w-3xl mx-auto mb-6">
+              {category.description}
+            </p>
+          )}
+          
+          <!-- Post Count -->
+          <div class="inline-flex items-center px-4 py-2 bg-gray-900 rounded-full border border-gray-700">
+            <svg class="w-5 h-5 text-[#2847d7] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <span class="text-gray-300 text-sm font-medium">
+              {posts.length} {posts.length === 1 ? 'artículo' : 'artículos'}
+            </span>
+          </div>
+          
+        </div>
+      </div>
+    </section>
+
+    <!-- Posts Section -->
+    <section class="w-full py-12 lg:py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {error ? (
+          <!-- Error State -->
+          <div class="text-center py-16">
+            <div class="w-20 h-20 bg-red-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-4">Error al cargar los artículos</h2>
+            <p class="text-gray-400 mb-8">Ha ocurrido un problema al obtener los artículos de esta categoría.</p>
+            <a 
+              href="/" 
+              class="inline-flex items-center px-6 py-3 bg-[#2847d7] hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors duration-300"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+              </svg>
+              Volver al inicio
+            </a>
+          </div>
+        ) : posts.length === 0 ? (
+          <!-- Empty State -->
+          <div class="text-center py-16">
+            <div class="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-4">Aún no hay artículos</h2>
+            <p class="text-gray-400 mb-8">
+              Esta categoría no tiene artículos publicados todavía. 
+              ¡Vuelve pronto para ver nuevo contenido!
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+              <a 
+                href="/posts" 
+                class="inline-flex items-center px-6 py-3 bg-[#2847d7] hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors duration-300"
+              >
+                Ver todos los artículos
+              </a>
+              <a 
+                href="/categorias" 
+                class="inline-flex items-center px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors duration-300 border border-gray-700"
+              >
+                Explorar categorías
+              </a>
+            </div>
+          </div>
+        ) : (
+          <!-- Posts Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.map((post: any) => (
+              <PostCard
+                id={post.id}
+                title={post.title?.rendered || 'Sin título'}
+                excerpt={post.excerpt?.rendered || ''}
+                slug={post.slug}
+                date={post.date}
+                image={post._embedded?.['wp:featuredmedia']?.[0]?.source_url}
+                category={category?.name || 'Sin categoría'}
+              />
+            ))}
+          </div>
+        )}
+
+        <!-- Load More Button (Optional) -->
+        {posts.length >= 20 && (
+          <div class="text-center mt-12">
+            <button 
+              type="button"
+              class="inline-flex items-center px-8 py-4 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors duration-300 border border-gray-700"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              Cargar más artículos
+            </button>
+          </div>
+        )}
+
+      </div>
+    </section>
+
+  </main>
+</Layout>
+
+<style>
+  /* Custom styles for better text rendering */
+  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+    color: white;
+    font-weight: bold;
+  }
+  
+  .prose p {
+    color: #d1d5db;
+    line-height: 1.7;
+  }
+  
+  .prose a {
+    color: #2847d7;
+    transition: color 0.2s;
+  }
+
+  .prose a:hover {
+    color: #3b82f6;
+  }
+</style>

@@ -1,0 +1,188 @@
+---
+export interface Props {
+  id: number;
+  title: string;
+  excerpt: string;
+  slug: string;
+  date: string;
+  image?: string;
+  category: string;
+  featured?: boolean;
+}
+
+const { 
+  id, 
+  title, 
+  excerpt, 
+  slug, 
+  date, 
+  image, 
+  category, 
+  featured = false 
+} = Astro.props;
+
+// Clean excerpt text (remove HTML tags)
+const cleanExcerpt = excerpt.replace(/<[^>]*>/g, '').trim();
+const truncatedExcerpt = cleanExcerpt.length > 120 ? cleanExcerpt.substring(0, 120) + '...' : cleanExcerpt;
+
+// Format date
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
+// Generate gradient based on category
+const getCategoryGradient = (cat: string) => {
+  const gradients: Record<string, string> = {
+    'Tecnología': 'from-blue-500 to-purple-600',
+    'Reviews': 'from-orange-500 to-red-600',
+    'Videojuegos': 'from-indigo-500 to-blue-600',
+    'Programación': 'from-cyan-500 to-blue-600',
+    'Guías': 'from-pink-500 to-rose-600',
+    'default': 'from-[#2847d7] to-blue-600'
+  };
+  return gradients[cat] || gradients['default'];
+};
+
+const gradientClass = getCategoryGradient(category);
+---
+
+<article class={`
+  group relative overflow-hidden rounded-2xl bg-gray-900 border border-gray-800 
+  hover:border-gray-700 transition-all duration-500 ease-out
+  hover:shadow-2xl hover:shadow-black/50 hover:-translate-y-2
+  ${featured ? 'md:col-span-2 md:row-span-2' : ''}
+`}>
+  
+  <div class="absolute inset-0 opacity-5">
+    <div class="absolute inset-0 bg-gradient-to-br from-[#2847d7] via-transparent to-transparent"></div>
+    <svg class="absolute bottom-0 right-0 w-32 h-32 text-gray-800" fill="currentColor" viewBox="0 0 100 100">
+      <circle cx="75" cy="75" r="25" opacity="0.3"/>
+      <circle cx="25" cy="25" r="15" opacity="0.2"/>
+      <circle cx="80" cy="20" r="10" opacity="0.1"/>
+    </svg>
+  </div>
+
+  {image && (
+    <div class={`
+      relative overflow-hidden
+      ${featured ? 'h-64 md:h-80' : 'h-48'}
+    `}>
+      <img 
+        src={image} 
+        alt={title}
+        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+        loading="lazy"
+      />
+      
+      <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/20 to-transparent opacity-60"></div>
+      
+      <div class="absolute top-4 left-4">
+        <span class={`
+          inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-white
+          bg-gradient-to-r ${gradientClass} shadow-lg backdrop-blur-sm
+        `}>
+          {category}
+        </span>
+      </div>
+
+      <div class="absolute top-4 right-4">
+        <div class="flex items-center space-x-1 px-2 py-1 bg-black/60 backdrop-blur-sm rounded-full">
+          <svg class="w-3 h-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="text-xs text-gray-300 font-medium">5 min</span>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <div class={`
+    relative p-6 flex flex-col h-full
+    ${!image ? 'pt-8' : ''}
+    ${featured ? 'md:p-8' : ''}
+  `}>
+    
+    {!image && (
+      <div class="mb-4">
+        <span class={`
+          inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-white
+          bg-gradient-to-r ${gradientClass}
+        `}>
+          {category}
+        </span>
+      </div>
+    )}
+
+    <time 
+      datetime={date} 
+      class="text-sm text-gray-400 mb-3 flex items-center"
+    >
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+      </svg>
+      {formatDate(date)}
+    </time>
+
+    <h3 class={`
+      font-bold text-white mb-3 line-clamp-2 
+      transition-colors duration-300
+      ${featured ? 'text-2xl md:text-3xl mb-4' : 'text-lg'}
+    `}>
+      {title}
+    </h3>
+
+    {truncatedExcerpt && (
+      <p class={`
+        text-gray-400 flex-grow line-clamp-3 leading-relaxed
+        ${featured ? 'text-base md:text-lg mb-6' : 'text-sm mb-4'}
+      `}>
+        {truncatedExcerpt}
+      </p>
+    )}
+
+    <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-800">
+      
+      <a 
+        href={`/posts/${slug}`}
+        class="inline-flex items-center text-white hover:text-blue-400 font-semibold text-sm transition-colors duration-300 group/link"
+      >
+        Leer más
+        <svg class="w-4 h-4 ml-1 transition-transform duration-300 group-hover/link:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+        </svg>
+      </a>
+    </div>
+
+  </div>
+
+  <div class="absolute inset-0 bg-gradient-to-t from-[#2847d7]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+  
+  <a 
+    href={`/posts/${slug}`}
+    class="absolute inset-0 z-10"
+    aria-label={`Leer artículo: ${title}`}
+  >
+    <span class="sr-only">Leer artículo: {title}</span>
+  </a>
+
+</article>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

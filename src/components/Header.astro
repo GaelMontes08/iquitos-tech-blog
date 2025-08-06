@@ -1,6 +1,69 @@
+---
+// filepath: f:\Código\Iquitos-Tech\iquitos-tech\src\components\Header.astro
+import { fetchWithTimeout } from '../lib/wp';
+
+const domain = import.meta.env.WP_DOMAIN;
+
+// Function to fetch categories for navigation
+type Category = {
+  id?: number;
+  name: string;
+  slug: string;
+  count?: number;
+};
+
+const fetchNavigationCategories = async (): Promise<Category[]> => {
+  try {
+    if (!domain) {
+      console.warn('WP_DOMAIN not configured, using fallback categories');
+      return [
+        { slug: 'tecnologia', name: 'Tecnología' },
+        { slug: 'videojuegos', name: 'Videojuegos' },
+        { slug: 'programacion', name: 'Programación' },
+        { slug: 'reviews', name: 'Reviews' },
+        { slug: 'guias', name: 'Guías' }
+      ];
+    }
+
+    const response = await fetchWithTimeout(
+      `https://${domain}/wp-json/wp/v2/categories?per_page=10&_fields=id,name,slug,count&orderby=count&order=desc`,
+      {},
+      8000
+    );
+
+    if (!response.ok) {
+      throw new Error(`Categories API error: ${response.status}`);
+    }
+
+    const categories: Category[] = await response.json();
+    
+    // Filter out categories with no posts, exclude uncategorized and Featured (ID 25)
+    return categories
+      .filter((cat: Category) => 
+        (cat.count ?? 0) > 0 && 
+        cat.slug !== 'uncategorized' && 
+        cat.id !== 25 // Exclude Featured category
+      )
+      .slice(0, 5); // Show top 5 categories by post count
+
+  } catch (error) {
+    console.error('Error fetching navigation categories:', error);
+    // Return fallback categories
+    return [
+      { slug: 'tecnologia', name: 'Tecnología' },
+      { slug: 'videojuegos', name: 'Videojuegos' },
+      { slug: 'programacion', name: 'Programación' },
+      { slug: 'reviews', name: 'Reviews' },
+      { slug: 'guias', name: 'Guías' }
+    ];
+  }
+};
+
+const categories = await fetchNavigationCategories();
+---
+
 <nav class="fixed top-0 left-1/2 transform -translate-x-1/2 w-full lg:w-[1200px] px-6 py-4 border-b border-[#313131] z-100 bg-[#131313] shadow-lg">
     <div class="flex items-center justify-between mx-auto max-w-[1200px]">
-        <!-- Logo Section -->
         <div class="flex items-center space-x-3">
             <a href="/" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
                 <img src="/logo-blue.svg" alt="Iquitos Tech Logo" class="h-8 w-8" />
@@ -8,19 +71,34 @@
             </a>
         </div>
 
-        <!-- Navigation Categories -->
         <div class="hidden md:flex">
             <ul class="flex items-center space-x-8">
-                <li><a href="/" class="text-white font-bold category-hover">Tecnología</a></li>
-                <li><a href="/tecnologia" class="text-white font-bold category-hover">Videojuegos</a></li>
-                <li><a href="/videojuegos" class="text-white font-bold category-hover">Programación</a></li>
-                <li><a href="/programacion" class="text-white font-bold category-hover">Reviews</a></li>
-                <li><a href="/reviews" class="text-white font-bold category-hover">Guías</a></li>
-                <li><a href="/sobre-nosotros" class="text-white font-bold category-hover">Sobre Nosotros</a></li>
+                <li>
+                    <a href="/" class="text-white font-bold category-hover">
+                        Inicio
+                    </a>
+                </li>
+                
+
+                {categories.map((category) => (
+                    <li>
+                        <a 
+                            href={`/categoria/${category.slug}`} 
+                            class="text-white font-bold category-hover"
+                        >
+                            {category.name}
+                        </a>
+                    </li>
+                ))}
+                
+                <li>
+                    <a href="/posts" class="text-white font-bold category-hover">
+                        Noticias
+                    </a>
+                </li>
             </ul>
         </div>
 
-        <!-- Mobile Menu Button -->
         <div class="md:hidden">
             <button 
                 id="mobile-menu-button" 
@@ -37,12 +115,29 @@
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 max-w-[1200px] mx-auto">
         <ul class="flex flex-col space-y-3">
-            <li><a href="/" class="text-white hover:text-[#2847d7] transition-colors font-medium">Tecnología</a></li>
-            <li><a href="/tecnologia" class="text-white hover:text-[#2847d7] transition-colors font-medium">Videojuegos</a></li>
-            <li><a href="/videojuegos" class="text-white hover:text-[#2847d7] transition-colors font-medium">Programación</a></li>
-            <li><a href="/programacion" class="text-white hover:text-[#2847d7] transition-colors font-medium">Reviews</a></li>
-            <li><a href="/reviews" class="text-white hover:text-[#2847d7] transition-colors font-medium">Guías</a></li>
-            <li><a href="/sobre-nosotros" class="text-white hover:text-[#2847d7] transition-colors font-medium">Sobre Nosotros</a></li>
+            <li>
+                <a href="/" class="text-white hover:text-[#2847d7] transition-colors font-medium">
+                    Inicio
+                </a>
+            </li>
+            
+            {categories.map((category) => (
+                <li>
+                    <a 
+                        href={`/categoria/${category.slug}`} 
+                        class="text-white hover:text-[#2847d7] transition-colors font-medium"
+                    >
+                        {category.name}
+                    </a>
+                </li>
+            ))}
+            
+            <li>
+                <a href="/posts" class="text-white hover:text-[#2847d7] transition-colors font-medium">
+                    Todos los Artículos
+                </a>
+            </li>
+            
         </ul>
     </div>
 </nav>
@@ -54,11 +149,33 @@
 
     mobileMenuButton?.addEventListener('click', () => {
         mobileMenu?.classList.toggle('hidden');
+        
+        // Toggle hamburger icon
+        const icon = mobileMenuButton?.querySelector('svg');
+        if (icon) {
+            const isOpen = !mobileMenu?.classList.contains('hidden');
+            icon.innerHTML = isOpen 
+                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'
+                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+        }
+    });
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', (e) => {
+        const nav = document.querySelector('nav');
+        if (!nav?.contains(e.target as Node)) {
+            mobileMenu?.classList.add('hidden');
+            
+            // Reset hamburger icon
+            const icon = mobileMenuButton?.querySelector('svg');
+            if (icon) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+            }
+        }
     });
 </script>
 
 <style>
-
     .category-hover:hover {
         border-bottom: 2px solid #2847d7;
         transition: 0.3s ease-in;
