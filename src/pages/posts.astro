@@ -1,0 +1,389 @@
+---
+// filepath: f:\Código\Iquitos-Tech\iquitos-tech\src\pages\posts.astro
+import Layout from '@/layouts/Layout.astro';
+import PostCard from '@/components/PostCard.astro';
+import { fetchWithTimeout } from '@/lib/wp';
+
+const domain = import.meta.env.WP_DOMAIN;
+
+if (!domain) {
+  throw new Error('WP_DOMAIN environment variable is required');
+}
+
+// Get query parameters for filtering and pagination
+const url = Astro.url;
+const currentPage = parseInt(url.searchParams.get('page') || '1');
+const selectedCategory = url.searchParams.get('category') || '';
+const searchQuery = url.searchParams.get('search') || '';
+const postsPerPage = 12;
+
+// Function to fetch all categories for filter
+const fetchCategories = async () => {
+  try {
+    const response = await fetchWithTimeout(
+      `https://${domain}/wp-json/wp/v2/categories?per_page=50&_fields=id,name,slug,count&orderby=name`,
+      {},
+      10000
+    );
+
+    if (!response.ok) {
+      throw new Error(`Categories API error: ${response.status}`);
+    }
+
+    const categories: Array<{ id: number; name: string; slug: string; count: number }> = await response.json();
+    return categories.filter((cat) => cat.count > 0 && cat.slug !== 'uncategorized' && cat.id !== 25);
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+};
+
+// Function to fetch posts with filters
+const fetchPosts = async () => {
+  try {
+    let apiUrl = `https://${domain}/wp-json/wp/v2/posts?_embed&_fields=id,title,slug,excerpt,date,categories,_embedded&per_page=${postsPerPage}&page=${currentPage}`;
+    
+    // Add category filter
+    if (selectedCategory) {
+      const categories = await fetchCategories();
+      const category = categories.find(cat => cat.slug === selectedCategory);
+      if (category) {
+        apiUrl += `&categories=${category.id}`;
+      }
+    }
+    
+    // Add search filter
+    if (searchQuery) {
+      apiUrl += `&search=${encodeURIComponent(searchQuery)}`;
+    }
+
+    const response = await fetchWithTimeout(apiUrl, {}, 10000);
+
+    if (!response.ok) {
+      throw new Error(`Posts API error: ${response.status}`);
+    }
+
+    const posts = await response.json();
+    const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '1');
+    const totalPosts = parseInt(response.headers.get('X-WP-Total') || '0');
+
+    // Fetch categories for each post
+    const postsWithCategories = await Promise.all(
+      posts.map(async (post: any) => {
+        if (post.categories && post.categories.length > 0) {
+          try {
+            const categoryResponse = await fetchWithTimeout(
+              `https://${domain}/wp-json/wp/v2/categories/${post.categories[0]}`,
+              {},
+              5000
+            );
+            
+            if (categoryResponse.ok) {
+              const categoryData = await categoryResponse.json();
+              return { ...post, categoryName: categoryData.name };
+            }
+          } catch (error) {
+            console.error('Error fetching category for post:', post.id, error);
+          }
+        }
+        return { ...post, categoryName: 'Sin categoría' };
+      })
+    );
+
+    return { posts: postsWithCategories, totalPages, totalPosts };
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return { posts: [], totalPages: 1, totalPosts: 0 };
+  }
+};
+
+// Fetch data
+const categories = await fetchCategories();
+const { posts, totalPages, totalPosts } = await fetchPosts();
+
+// Page metadata
+const pageTitle = searchQuery 
+  ? `Búsqueda: "${searchQuery}" | Iquitos Tech`
+  : selectedCategory 
+    ? `${categories.find(cat => cat.slug === selectedCategory)?.name || selectedCategory} | Iquitos Tech`
+    : 'Todos los Artículos | Iquitos Tech';
+
+const pageDescription = searchQuery
+  ? `Resultados de búsqueda para "${searchQuery}" en Iquitos Tech`
+  : selectedCategory
+    ? `Artículos de ${categories.find(cat => cat.slug === selectedCategory)?.name || selectedCategory} en Iquitos Tech`
+    : 'Explora todos nuestros artículos sobre tecnología, desarrollo, reviews y más';
+
+export const prerender = false;
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <main class="min-h-screen">
+    
+    <!-- Header Section -->
+    <section class="w-full py-12 lg:py-16">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Page Title -->
+        <div class="text-center mb-8">
+          <h1 class="text-3xl lg:text-4xl font-black text-white mb-4">
+            {searchQuery ? 'Resultados de Búsqueda' : selectedCategory ? categories.find(cat => cat.slug === selectedCategory)?.name || 'Artículos' : 'Todos los Artículos'}
+          </h1>
+          
+          {searchQuery && (
+            <p class="text-lg text-gray-300 mb-3">
+              Mostrando resultados para: <span class="text-[#2847d7] font-semibold">"{searchQuery}"</span>
+            </p>
+          )}
+          
+          <p class="text-gray-400">
+            {totalPosts} {totalPosts === 1 ? 'artículo encontrado' : 'artículos encontrados'}
+          </p>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="rounded-xl p-4 lg:p-6 border border-[#2847d7] mb-8">
+          
+          <!-- Search Bar -->
+            <div class="mb-6">
+            <h3 class="text-base font-semibold text-white mb-3 flex items-center">
+                <svg class="w-4 h-4 mr-2 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                Buscar Artículos
+            </h3>
+            <form action="/posts" method="GET" class="w-full">
+                {selectedCategory && (
+                <input type="hidden" name="category" value={selectedCategory} />
+                )}
+                <div class="flex w-full">
+                <div class="relative flex-1">
+                    <input 
+                    type="text" 
+                    name="search" 
+                    value={searchQuery}
+                    placeholder="Buscar..."
+                    class="w-full h-12 px-4 pl-10 bg-gray-800 border border-gray-700 border-r-0 rounded-l-lg text-white placeholder-gray-400 focus:border-[#2847d7] focus:ring-1 focus:ring-[#2847d7] focus:outline-none transition-all duration-300"
+                    />
+                </div>
+                <button 
+                    type="submit"
+                    class="h-12 px-6 bg-[#2847d7] hover:bg-blue-600 text-white font-medium rounded-r-lg border border-[#2847d7] transition-colors duration-300 flex items-center justify-center"
+                >
+                    <span class="hidden sm:inline">Buscar</span>
+                    <svg class="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </button>
+                </div>
+            </form>
+            </div>
+
+          <!-- Category Filters -->
+          <div>
+            <h3 class="text-base font-semibold text-white mb-3 flex items-center">
+              <svg class="w-4 h-4 mr-2 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"/>
+              </svg>
+              Filtrar por Categoría
+            </h3>
+            
+            <!-- Mobile: Stack categories -->
+            <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4">
+              <!-- All Posts Button -->
+              <a 
+                href="/posts"
+                class={`inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                  !selectedCategory && !searchQuery 
+                    ? 'bg-[#2847d7] text-white' 
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white border border-gray-700'
+                }`}
+              >
+                <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                Todos
+              </a>
+              
+              <!-- Category Buttons -->
+              {categories.slice(0, 8).map((category) => (
+                <a 
+                  href={`/posts?category=${category.slug}`}
+                  class={`items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                    selectedCategory === category.slug 
+                      ? 'bg-[#2847d7] text-white' 
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white border border-gray-700'
+                  }`}
+                >
+                  <span class="truncate">{category.name}</span>
+                  <span class="ml-2 px-1.5 py-0.5 bg-gray-700 text-gray-300 text-xs rounded">
+                    {category.count}
+                  </span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <!-- Active Filters -->
+          {(selectedCategory || searchQuery) && (
+            <div class="mt-4 pt-4 border-t border-gray-800">
+              <div class="flex flex-wrap items-center gap-4">
+                <span class="text-gray-400 text-xs font-medium">Filtros activos:</span>
+                
+                {selectedCategory && (
+                  <div class="flex items-center gap-1 px-3 py-1 bg-[#2847d7] bg-opacity-20 border border-[#2847d7] rounded">
+                    <span class="text-xs text-white font-medium">
+                      {categories.find(cat => cat.slug === selectedCategory)?.name || selectedCategory}
+                    </span>
+                    <a 
+                      href={searchQuery ? `/posts?search=${encodeURIComponent(searchQuery)}` : '/posts'}
+                      class="text-gray-300 hover:text-white transition-colors"
+                    >
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                    </a>
+                  </div>
+                )}
+                
+                {searchQuery && (
+                  <div class="flex items-center gap-1 px-3 py-1 bg-green-500 bg-opacity-20 border border-green-500 rounded">
+                    <span class="text-xs text-white font-medium">"{searchQuery}"</span>
+                    <a 
+                      href={selectedCategory ? `/posts?category=${selectedCategory}` : '/posts'}
+                      class="text-gray-300 hover:text-white transition-colors"
+                    >
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                      </svg>
+                    </a>
+                  </div>
+                )}
+                
+                <a 
+                  href="/posts"
+                  class="text-white hover:text-blue-400 text-xs font-medium transition-colors"
+                >
+                  Limpiar todo
+                </a>
+              </div>
+            </div>
+          )}
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Posts Section -->
+    <section class="w-full pb-12">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {posts.length === 0 ? (
+          <!-- Empty State -->
+          <div class="text-center py-12">
+            <div class="w-16 h-16 bg-gray-800 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-3">No se encontraron artículos</h2>
+            <p class="text-gray-400 mb-6">
+              {searchQuery 
+                ? `No hay resultados para "${searchQuery}". Intenta con otros términos de búsqueda.`
+                : 'No hay artículos disponibles en esta categoría.'
+              }
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+              <a 
+                href="/posts" 
+                class="inline-flex items-center px-4 py-2 bg-[#2847d7] hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-300"
+              >
+                Ver todos los artículos
+              </a>
+              <a 
+                href="/" 
+                class="inline-flex items-center px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors duration-300 border border-gray-700"
+              >
+                Volver al inicio
+              </a>
+            </div>
+          </div>
+        ) : (
+          <!-- Posts Grid - Responsive -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8">
+            {posts.map((post: any) => (
+                <PostCard
+                id={post.id}
+                title={post.title?.rendered || 'Sin título'}
+                excerpt={post.excerpt?.rendered || ''}
+                slug={post.slug}
+                date={post.date}
+                image={post._embedded?.['wp:featuredmedia']?.[0]?.source_url}
+                category={post.categoryName || 'Sin categoría'}
+                featured={false}
+                />
+            ))}
+            </div>
+        )}
+
+        <!-- Pagination -->
+        {totalPages > 1 && (
+          <div class="flex items-center justify-center">
+            <nav class="flex items-center space-x-1 bg-gray-900 rounded-lg p-1 border border-gray-800">
+              
+              <!-- Previous Button -->
+              {currentPage > 1 && (
+                <a 
+                  href={`/posts?page=${currentPage - 1}${selectedCategory ? `&category=${selectedCategory}` : ''}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
+                  class="flex items-center px-3 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded text-sm transition-colors duration-300"
+                >
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                  </svg>
+                  <span class="hidden sm:inline">Anterior</span>
+                </a>
+              )}
+
+              <!-- Page Numbers -->
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const startPage = Math.max(1, currentPage - 2);
+                const pageNum = startPage + i;
+                
+                if (pageNum > totalPages) return null;
+                
+                return (
+                  <a 
+                    href={`/posts?page=${pageNum}${selectedCategory ? `&category=${selectedCategory}` : ''}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
+                    class={`px-3 py-2 rounded text-sm transition-colors duration-300 font-medium ${
+                      pageNum === currentPage 
+                        ? 'bg-[#2847d7] text-white' 
+                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                    }`}
+                  >
+                    {pageNum}
+                  </a>
+                );
+              })}
+
+              <!-- Next Button -->
+              {currentPage < totalPages && (
+                <a 
+                  href={`/posts?page=${currentPage + 1}${selectedCategory ? `&category=${selectedCategory}` : ''}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
+                  class="flex items-center px-3 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded text-sm transition-colors duration-300"
+                >
+                  <span class="hidden sm:inline">Siguiente</span>
+                  <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </a>
+              )}
+            </nav>
+          </div>
+        )}
+
+      </div>
+    </section>
+
+  </main>
+</Layout>
