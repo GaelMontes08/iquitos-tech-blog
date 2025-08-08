@@ -97,6 +97,25 @@ export async function getPostInfo(slug: string): Promise<PostInfo | null> {
     // Parse the content
     const { puntosClave, mainContent, faqPairs } = parseWordPressContent(post.content?.rendered || '');
     
+    // Get featured image - try multiple sources for reliability
+    let featuredImage: string | undefined;
+    
+    // First try embedded media
+    featuredImage = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+    
+    // If no embedded media but there's a featured_media ID, fetch it directly
+    if (!featuredImage && post.featured_media) {
+      try {
+        const mediaResponse = await fetchWithTimeout(`${apiUrl}/media/${post.featured_media}`);
+        if (mediaResponse.ok) {
+          const mediaData = await mediaResponse.json();
+          featuredImage = mediaData.source_url;
+        }
+      } catch (mediaError) {
+        console.warn('Failed to fetch featured media directly:', mediaError);
+      }
+    }
+    
     return {
       id: post.id,
       title: post.title?.rendered || 'Sin título',
@@ -106,7 +125,7 @@ export async function getPostInfo(slug: string): Promise<PostInfo | null> {
       date: post.date,
       seo: post.yoast_head_json || {},
       categories: post.categories || [],
-      featuredImage: post._embedded?.['wp:featuredmedia']?.[0]?.source_url,
+      featuredImage,
       author: post._embedded?.author?.[0]?.name || 'Redacción',
       authorAvatar: post._embedded?.author?.[0]?.avatar_urls?.['96'] || '/author.jpg',
       excerpt: post.excerpt?.rendered || '',

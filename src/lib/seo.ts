@@ -217,7 +217,9 @@ export function generateSEOTags(props: SEOProps) {
   const finalDescription = processedSEO?.description || description || 'Noticias de tecnología, gaming y tendencias digitales';
   const finalCanonical = processedSEO?.canonical || fixAstroUrlStructure(replaceCMSDomain(canonical), urlType);
   const finalOgUrl = processedSEO?.og_url || finalCanonical;
-  const finalImage = processedSEO?.og_image?.[0]?.url || image;
+  // Apply domain replacement to image if it contains CMS domain
+  const cleanImage = image ? replaceCMSDomain(image) : image;
+  const finalImage = cleanImage || processedSEO?.og_image?.[0]?.url;
   const siteName = processedSEO?.og_site_name || 'Iquitos Tech';
 
   return {
