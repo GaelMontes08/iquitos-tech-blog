@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://iquitostech.com/sitemap.xml
+
+# Allow crawling of all content
+Allow: /posts/
+Allow: /categoria/
+Allow: /api/
+
+# Block any admin or sensitive areas (if they exist)
+Disallow: /admin/
+Disallow: /_admin/
+
+# Crawl delay (optional - helps with server load)
+Crawl-delay: 1

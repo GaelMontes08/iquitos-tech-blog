@@ -1,31 +1,21 @@
 ---
 import Header from "../components/Header.astro";
+import SEO from "../components/SEO.astro";
 import "../styles/global.css";
 import '@fontsource-variable/onest';
 import Footer from "../components/Footer.astro";
+import type { SEOProps } from '../lib/seo';
 
-interface Props {
-    description: string;
-    title: string;
-}
+export interface Props extends SEOProps {}
 
-const { description, title } = Astro.props as Props;
+const seoProps = Astro.props as Props;
 ---
 
 <!doctype html>
 <html lang="es">
     <head>
         <meta charset="UTF-8" />
-        <meta title={title} />
-        <meta name="description" content={description} />
-        <meta name="author" content="Iquitos Tech" />
-        <meta name="keywords" content="tecnología, videojuegos, noticias, reseñas, tendencias" />
-        <meta name="theme-color" content="#ffffff" />
-        <meta name="robots" content="index, follow" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-        <meta name="generator" content={Astro.generator} />
-        <title>{title}</title>
+        <SEO {...seoProps} />
     </head>
     <body>
         <Header />

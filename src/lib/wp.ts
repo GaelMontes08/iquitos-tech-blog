@@ -71,7 +71,7 @@ export const getPageInfo = async (slug: string) => {
       throw new Error('WP_DOMAIN not configured');
     }
     
-    const response = await fetchWithTimeout(`${apiUrl}/pages?slug=${slug}`);
+    const response = await fetchWithTimeout(`${apiUrl}/pages?slug=${slug}&_fields=id,title,content,date,yoast_head,yoast_head_json`);
     if (!response.ok) throw new Error(`Error fetching page info: ${response.status} ${response.statusText}`);   
     
     const data = await response.json();
@@ -83,18 +83,20 @@ export const getPageInfo = async (slug: string) => {
     const rawTitle = page.title?.rendered || 'Iquitos Tech - Tecnología y Gaming';
     const rawContent = page.content?.rendered || 'Iquitos Tech es tu fuente confiable de noticias sobre tecnología, videojuegos y cultura digital. Explora lo último del mundo tech.';
     
-    // Apply HTML entity decoding
-    const title = decodeHtmlEntities(rawTitle);
+    // Apply HTML entity decoding and title cleaning
+    const title = cleanTitle(decodeHtmlEntities(rawTitle));
     const content = decodeHtmlEntities(rawContent);
     const date = page.date;
+    const seo = page.yoast_head_json;
 
-    return { title, content, date };
+    return { title, content, date, seo };
   } catch (error) {
     console.error('Error in getPageInfo:', error);
     return { 
       title: 'Iquitos Tech - Tecnología y Gaming', 
       content: 'Iquitos Tech es tu fuente confiable de noticias sobre tecnología, videojuegos y cultura digital. Explora lo último del mundo tech.', 
-      date: new Date().toISOString() 
+      date: new Date().toISOString(),
+      seo: undefined
     };
   }
 }
@@ -117,8 +119,8 @@ export const getPostInfo = async (slug: string) => {
     const rawTitle = post.title?.rendered || 'Post no encontrado';
     const rawContent = post.content?.rendered || '<p>Este post no está disponible en este momento.</p>';
     
-    // Apply HTML entity decoding to title only (content may need HTML tags)
-    const title = decodeHtmlEntities(rawTitle);
+    // Apply HTML entity decoding and title cleaning
+    const title = cleanTitle(decodeHtmlEntities(rawTitle));
     const date = post.date;
     const seo = post.yoast_head_json;
 
@@ -184,7 +186,7 @@ export const getFeaturedPosts = async ({
     const data = await response.json();
     return data.map((post: any) => ({
       id: post.id,
-      title: post.title?.rendered || 'Sin título',
+      title: cleanTitle(decodeHtmlEntities(post.title?.rendered || 'Sin título')),
       excerpt: post.excerpt?.rendered || '',
       content: post.content?.rendered || '',
       date: post.date,
@@ -229,8 +231,8 @@ export const getLatestsPosts = async ({ perPage = 10 }: { perPage?: number } = {
         const rawTitle = post.title?.rendered || 'Sin título';
         const rawExcerpt = post.excerpt?.rendered || '';
         
-        // Apply HTML entity decoding
-        const title = decodeHtmlEntities(rawTitle);
+        // Apply HTML entity decoding and title cleaning
+        const title = cleanTitle(decodeHtmlEntities(rawTitle));
         const excerpt = decodeHtmlEntities(rawExcerpt.replace(/<[^>]*>/g, '')); // Also remove HTML tags from excerpt
         
         const content = post.content?.rendered || '';
@@ -313,6 +315,25 @@ export const testConnection = async () => {
     console.error('Connection test failed:', error);
     return false;
   }
+};
+
+/**
+ * Cleans titles by removing redundant domain references
+ */
+const cleanTitle = (title: string): string => {
+  return title
+    // Remove complete domain references first (most specific to least specific)
+    .replace(/\s*[-|–—]\s*cms-iquitostech\.com/gi, '')
+    .replace(/\s*\|\s*cms-iquitostech\.com/gi, '')
+    .replace(/\s*[-|–—]\s*iquitostech\.com/gi, '')
+    .replace(/\s*\|\s*iquitostech\.com/gi, '')
+    // Remove any remaining "- cms" or "| cms" patterns
+    .replace(/\s*[-|–—]\s*cms\s*$/gi, '')
+    .replace(/\s*\|\s*cms\s*$/gi, '')
+    // Remove any trailing separators that might be left
+    .replace(/\s*[-|–—]\s*$/, '')
+    .replace(/\s*\|\s*$/, '')
+    .trim();
 };
 
   // More comprehensive HTML entity decoder

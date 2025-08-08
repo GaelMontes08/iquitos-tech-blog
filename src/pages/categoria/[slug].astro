@@ -3,6 +3,7 @@
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import { fetchWithTimeout } from '../../lib/wp';
+import type { YoastSEO } from '../../lib/seo';
 
 const domain = import.meta.env.WP_DOMAIN;
 
@@ -20,7 +21,7 @@ if (!slug) {
 const fetchCategories = async () => {
   try {
     const response = await fetchWithTimeout(
-      `https://${domain}/wp-json/wp/v2/categories?per_page=100&_fields=id,name,slug,description,count`,
+      `https://${domain}/wp-json/wp/v2/categories?per_page=100&_fields=id,name,slug,description,count,yoast_head,yoast_head_json`,
       {},
       10000
     );
@@ -79,16 +80,24 @@ try {
   error = typeof err === 'object' && err !== null && 'message' in err ? (err as { message: string }).message : String(err);
 }
 
-// Page metadata
+// Page metadata and SEO
 const pageTitle = category ? `${category.name} | Iquitos Tech` : 'Categoría | Iquitos Tech';
 const pageDescription = category 
   ? category.description || `Últimos artículos de ${category.name} en Iquitos Tech`
   : 'Explora nuestros artículos por categoría';
 
+// Extract Yoast SEO data if available
+const seo: YoastSEO | undefined = category?.yoast_head_json;
+
 export const prerender = false;
 ---
 
-<Layout title={pageTitle} description={pageDescription}>
+<Layout 
+  title={pageTitle} 
+  description={pageDescription}
+  seo={seo}
+  type="website"
+>
   <main class="min-h-screen">
     
     <!-- Category Header -->

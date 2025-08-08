@@ -5,13 +5,16 @@ import News1 from '@/components/News1.astro';
 import Trends from '@/sections/Trends.astro';
 import PreFooter from '@/components/PreFooter.astro';
 import { getPageInfo } from '@/lib/wp';
+import type { YoastSEO } from '@/lib/seo';
 
-const { title, content, date } = await getPageInfo('home');
+const { title, content, date, seo } = await getPageInfo('home');
 ---
 
 <Layout 
-title={title} 
-description={content}
+  title={title} 
+  description={content}
+  seo={seo}
+  type="website"
 >
     <ImportantNews />   
     <main>
