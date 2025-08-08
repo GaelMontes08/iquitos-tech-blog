@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 
-// reCAPTCHA configuration
-const RECAPTCHA_SECRET_KEY = '6LcRK58rAAAAAOPHu0-cBBq3P8T9MCQwOj47X0O1';
+// reCAPTCHA configuration - using environment variables for security
+const RECAPTCHA_SECRET_KEY = import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY;
 const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
 export const POST: APIRoute = async ({ request }) => {
