@@ -131,7 +131,11 @@ function processSchemaURLs(schema: any, urlType: 'post' | 'category' = 'post'): 
   
   const processValue = (value: any): any => {
     if (typeof value === 'string' && (value.includes('cms-iquitostech.com'))) {
-      // Apply both domain replacement and URL structure fix
+      // For image URLs, keep the CMS domain
+      if (value.includes('/wp-content/uploads/') || value.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+        return value;
+      }
+      // For other URLs, apply domain replacement and URL structure fix
       return fixAstroUrlStructure(replaceCMSDomain(value), urlType);
     }
     if (Array.isArray(value)) {
@@ -217,9 +221,8 @@ export function generateSEOTags(props: SEOProps) {
   const finalDescription = processedSEO?.description || description || 'Noticias de tecnología, gaming y tendencias digitales';
   const finalCanonical = processedSEO?.canonical || fixAstroUrlStructure(replaceCMSDomain(canonical), urlType);
   const finalOgUrl = processedSEO?.og_url || finalCanonical;
-  // Apply domain replacement to image if it contains CMS domain
-  const cleanImage = image ? replaceCMSDomain(image) : image;
-  const finalImage = cleanImage || processedSEO?.og_image?.[0]?.url;
+  // Keep images with CMS domain since they're served from there
+  const finalImage = image || processedSEO?.og_image?.[0]?.url;
   const siteName = processedSEO?.og_site_name || 'Iquitos Tech';
 
   return {
