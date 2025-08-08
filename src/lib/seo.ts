@@ -4,7 +4,7 @@
  */
 
 /**
- * Replaces CMS domain with production domain in URLs
+ * Replaces CMS domain with production domain in URLs and ensures correct URL structure
  */
 export function replaceCMSDomain(url: string | undefined): string | undefined {
   if (!url) return url;
@@ -25,6 +25,37 @@ export function replaceCMSDomain(url: string | undefined): string | undefined {
   }
   
   return result;
+}
+
+/**
+ * Fixes URL structure for Astro routing (adds /posts/ and /categoria/ paths)
+ */
+export function fixAstroUrlStructure(url: string | undefined, type: 'post' | 'category' = 'post'): string | undefined {
+  if (!url) return url;
+  
+  // If URL already has the correct structure, return as is
+  if (url.includes('/posts/') || url.includes('/categoria/')) {
+    return url;
+  }
+  
+  // Extract the slug from the URL
+  const urlParts = url.split('/');
+  const slug = urlParts[urlParts.length - 1];
+  
+  // If we can't extract a slug, return the original URL
+  if (!slug || slug.length === 0) {
+    return url;
+  }
+  
+  // Build the correct URL structure
+  const baseUrl = 'https://iquitostech.com';
+  if (type === 'post') {
+    return `${baseUrl}/posts/${slug}`;
+  } else if (type === 'category') {
+    return `${baseUrl}/categoria/${slug}`;
+  }
+  
+  return url;
 }
 
 /**
@@ -51,14 +82,14 @@ function cleanTitle(title: string | undefined): string | undefined {
 /**
  * Processes Yoast SEO data to replace domains and ensure proper indexing
  */
-export function processSEOData(seo: YoastSEO | undefined): YoastSEO | undefined {
+export function processSEOData(seo: YoastSEO | undefined, urlType: 'post' | 'category' = 'post'): YoastSEO | undefined {
   if (!seo) return seo;
 
   return {
     ...seo,
-    // Replace domains in all URL fields
-    canonical: replaceCMSDomain(seo.canonical),
-    og_url: replaceCMSDomain(seo.og_url),
+    // Replace domains in all URL fields and fix URL structure
+    canonical: fixAstroUrlStructure(replaceCMSDomain(seo.canonical), urlType),
+    og_url: fixAstroUrlStructure(replaceCMSDomain(seo.og_url), urlType),
     
     // Clean titles to remove domain references
     title: cleanTitle(seo.title),
@@ -87,19 +118,20 @@ export function processSEOData(seo: YoastSEO | undefined): YoastSEO | undefined 
     })),
     
     // Update schema URLs if present
-    schema: seo.schema ? processSchemaURLs(seo.schema) : seo.schema
+    schema: seo.schema ? processSchemaURLs(seo.schema, urlType) : seo.schema
   };
 }
 
 /**
  * Processes schema URLs to replace CMS domain
  */
-function processSchemaURLs(schema: any): any {
+function processSchemaURLs(schema: any, urlType: 'post' | 'category' = 'post'): any {
   if (!schema) return schema;
   
   const processValue = (value: any): any => {
     if (typeof value === 'string' && (value.includes('cms-iquitostech.com'))) {
-      return replaceCMSDomain(value);
+      // Apply both domain replacement and URL structure fix
+      return fixAstroUrlStructure(replaceCMSDomain(value), urlType);
     }
     if (Array.isArray(value)) {
       return value.map(processValue);
@@ -167,21 +199,22 @@ export interface SEOProps {
   modifiedTime?: string;
   author?: string;
   type?: 'website' | 'article';
+  urlType?: 'post' | 'category';
 }
 
 /**
  * Generates meta tags from Yoast SEO data
  */
 export function generateSEOTags(props: SEOProps) {
-  const { title, description, canonical, seo, image, publishedTime, modifiedTime, author, type = 'website' } = props;
+  const { title, description, canonical, seo, image, publishedTime, modifiedTime, author, type = 'website', urlType = 'post' } = props;
 
   // Process SEO data to replace domains and ensure indexing
-  const processedSEO = processSEOData(seo);
+  const processedSEO = processSEOData(seo, urlType);
 
   // Fallback values with title cleaning
   const finalTitle = cleanTitle(processedSEO?.title || title) || 'Iquitos Tech';
   const finalDescription = processedSEO?.description || description || 'Noticias de tecnología, gaming y tendencias digitales';
-  const finalCanonical = processedSEO?.canonical || replaceCMSDomain(canonical);
+  const finalCanonical = processedSEO?.canonical || fixAstroUrlStructure(replaceCMSDomain(canonical), urlType);
   const finalImage = processedSEO?.og_image?.[0]?.url || image;
   const siteName = processedSEO?.og_site_name || 'Iquitos Tech';
 
