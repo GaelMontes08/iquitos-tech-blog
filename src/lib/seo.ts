@@ -38,8 +38,9 @@ export function fixAstroUrlStructure(url: string | undefined, type: 'post' | 'ca
     return url;
   }
   
-  // Extract the slug from the URL
-  const urlParts = url.split('/');
+  // Remove trailing slash and extract the slug from the URL
+  const cleanUrl = url.replace(/\/$/, '');
+  const urlParts = cleanUrl.split('/');
   const slug = urlParts[urlParts.length - 1];
   
   // If we can't extract a slug, return the original URL
@@ -88,8 +89,8 @@ export function processSEOData(seo: YoastSEO | undefined, urlType: 'post' | 'cat
   return {
     ...seo,
     // Replace domains in all URL fields and fix URL structure
-    canonical: fixAstroUrlStructure(replaceCMSDomain(seo.canonical), urlType),
-    og_url: fixAstroUrlStructure(replaceCMSDomain(seo.og_url), urlType),
+    canonical: seo.canonical ? fixAstroUrlStructure(replaceCMSDomain(seo.canonical), urlType) : undefined,
+    og_url: seo.og_url ? fixAstroUrlStructure(replaceCMSDomain(seo.og_url), urlType) : undefined,
     
     // Clean titles to remove domain references
     title: cleanTitle(seo.title),
@@ -215,6 +216,7 @@ export function generateSEOTags(props: SEOProps) {
   const finalTitle = cleanTitle(processedSEO?.title || title) || 'Iquitos Tech';
   const finalDescription = processedSEO?.description || description || 'Noticias de tecnología, gaming y tendencias digitales';
   const finalCanonical = processedSEO?.canonical || fixAstroUrlStructure(replaceCMSDomain(canonical), urlType);
+  const finalOgUrl = processedSEO?.og_url || finalCanonical;
   const finalImage = processedSEO?.og_image?.[0]?.url || image;
   const siteName = processedSEO?.og_site_name || 'Iquitos Tech';
 
@@ -228,7 +230,7 @@ export function generateSEOTags(props: SEOProps) {
     // Open Graph
     ogTitle: cleanTitle(processedSEO?.og_title) || finalTitle,
     ogDescription: processedSEO?.og_description || finalDescription,
-    ogUrl: processedSEO?.og_url || finalCanonical,
+    ogUrl: finalOgUrl,
     ogSiteName: siteName,
     ogType: processedSEO?.og_type || type,
     ogLocale: processedSEO?.og_locale || 'es_ES',
