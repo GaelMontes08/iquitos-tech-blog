@@ -1,8 +1,15 @@
 import type { APIRoute } from 'astro';
+import sgMail from '@sendgrid/mail';
 
-// reCAPTCHA configuration - using environment variables for security
+// Configuration from environment variables
 const RECAPTCHA_SECRET_KEY = import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY;
+const SENDGRID_API_KEY = import.meta.env.SENDGRID_API_KEY || process.env.SENDGRID_API_KEY;
 const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
+
+// Configure SendGrid
+if (SENDGRID_API_KEY) {
+  sgMail.setApiKey(SENDGRID_API_KEY);
+}
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -98,7 +105,7 @@ export const POST: APIRoute = async ({ request }) => {
       console.log('reCAPTCHA v3 verification successful. Score:', recaptchaResult.score);
     }
 
-    // Log the contact form submission (you can replace this with email sending, database storage, etc.)
+    // Log the contact form submission
     console.log('📧 New contact form submission:', {
       name,
       email,
@@ -108,29 +115,112 @@ export const POST: APIRoute = async ({ request }) => {
       ip: request.headers.get('x-forwarded-for') || 'unknown'
     });
 
-    // Here you can add your email sending logic
-    // For example, using a service like SendGrid, Nodemailer, etc.
-    
-    // Example with a webhook service (replace with your preferred method):
-    /*
-    try {
-      await fetch('YOUR_WEBHOOK_URL', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          subject,
-          message,
-          timestamp: new Date().toISOString()
-        })
-      });
-    } catch (error) {
-      console.error('Error sending webhook:', error);
+    // Send email using SendGrid
+    if (SENDGRID_API_KEY) {
+      try {
+        const emailContent = {
+          to: 'contacto@iquitostech.com',
+          from: 'noreply@iquitostech.com', // This should be a verified sender in SendGrid
+          replyTo: email, // So you can reply directly to the user
+          subject: `[Iquitos Tech] Nuevo mensaje de contacto: ${subject}`,
+          html: `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <title>Nuevo mensaje de contacto</title>
+              <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: linear-gradient(135deg, #2847d7, #4c6ef5); color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center; }
+                .content { background: #f8f9fa; padding: 20px; border: 1px solid #e9ecef; }
+                .field { margin-bottom: 15px; }
+                .label { font-weight: bold; color: #495057; display: block; margin-bottom: 5px; }
+                .value { background: white; padding: 10px; border-radius: 4px; border: 1px solid #dee2e6; }
+                .message-content { min-height: 100px; }
+                .footer { background: #e9ecef; padding: 15px; border-radius: 0 0 8px 8px; text-align: center; font-size: 12px; color: #6c757d; }
+                .timestamp { color: #6c757d; font-size: 12px; }
+              </style>
+            </head>
+            <body>
+              <div class="header">
+                <h1>🚀 Nuevo mensaje de contacto</h1>
+                <p>Recibido desde el formulario de contacto de Iquitos Tech</p>
+              </div>
+              
+              <div class="content">
+                <div class="field">
+                  <span class="label">👤 Nombre:</span>
+                  <div class="value">${name}</div>
+                </div>
+                
+                <div class="field">
+                  <span class="label">📧 Email:</span>
+                  <div class="value">${email}</div>
+                </div>
+                
+                <div class="field">
+                  <span class="label">📋 Asunto:</span>
+                  <div class="value">${subject}</div>
+                </div>
+                
+                <div class="field">
+                  <span class="label">💬 Mensaje:</span>
+                  <div class="value message-content">${message.replace(/\n/g, '<br>')}</div>
+                </div>
+                
+                <div class="field">
+                  <span class="label">⏰ Fecha y hora:</span>
+                  <div class="value timestamp">${new Date().toLocaleString('es-ES', { 
+                    timeZone: 'America/Lima',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}</div>
+                </div>
+                
+                <div class="field">
+                  <span class="label">🌐 IP:</span>
+                  <div class="value timestamp">${request.headers.get('x-forwarded-for') || 'No disponible'}</div>
+                </div>
+              </div>
+              
+              <div class="footer">
+                <p><strong>Iquitos Tech</strong> - Sistema de contacto automático</p>
+                <p>Para responder, simplemente haz reply a este email.</p>
+              </div>
+            </body>
+            </html>
+          `,
+          text: `
+Nuevo mensaje de contacto desde Iquitos Tech
+
+Nombre: ${name}
+Email: ${email}
+Asunto: ${subject}
+
+Mensaje:
+${message}
+
+Fecha: ${new Date().toLocaleString('es-ES', { timeZone: 'America/Lima' })}
+IP: ${request.headers.get('x-forwarded-for') || 'No disponible'}
+
+---
+Para responder, simplemente responde a este email.
+          `.trim()
+        };
+
+        await sgMail.send(emailContent);
+        console.log('✅ Email sent successfully via SendGrid');
+        
+      } catch (emailError) {
+        console.error('❌ SendGrid email error:', emailError);
+        // Don't fail the entire request if email fails, just log it
+      }
+    } else {
+      console.warn('⚠️ SendGrid API key not configured, email not sent');
     }
-    */
 
     // Return success response
     return new Response(JSON.stringify({
