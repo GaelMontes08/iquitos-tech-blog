@@ -218,8 +218,13 @@ export const prerender = false;
         setLoadingState(true);
 
         try {
+          // Debug: Log current domain and reCAPTCHA key
+          console.log('Current domain:', window.location.hostname);
+          console.log('reCAPTCHA site key:', RECAPTCHA_SITE_KEY);
+          
           // Execute reCAPTCHA v3
           const recaptchaToken = await grecaptcha.execute(RECAPTCHA_SITE_KEY, {action: 'contact_form'});
+          console.log('reCAPTCHA token generated successfully');
           
           // Get form data
           const formData = new FormData(form);
