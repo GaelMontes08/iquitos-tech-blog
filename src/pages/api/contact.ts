@@ -118,7 +118,7 @@ export const POST: APIRoute = async ({ request }) => {
       try {
         const { data, error } = await resend.emails.send({
           from: 'Iquitos Tech <noreply@iquitostech.com>',
-          to: ['contac@iquitostech.com'],
+          to: ['contact@iquitostech.com'],
           replyTo: email,
           subject: `[Iquitos Tech] Nuevo mensaje de contacto: ${subject}`,
           html: `
