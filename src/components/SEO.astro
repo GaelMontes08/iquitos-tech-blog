@@ -11,7 +11,7 @@ const robotsContent = generateRobotsContent(seoTags.robots);
 const schemaScript = generateSchemaScript(seoTags.schema);
 
 // Get reCAPTCHA site key from environment variables
-const RECAPTCHA_SITE_KEY = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY;
+const RECAPTCHA_SITE_KEY = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY || import.meta.env.RECAPTCHA_SITE_KEY;
 ---
 
 <!-- Basic Meta Tags -->
@@ -123,6 +123,6 @@ const RECAPTCHA_SITE_KEY = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY;
 <link rel="icon" type="image/svg+xml" href="/logo.svg" />
 
 <!-- Google reCAPTCHA v3 -->
-{RECAPTCHA_SITE_KEY && (
-  <script src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`} async defer></script>
+{(RECAPTCHA_SITE_KEY || '6LcRK58rAAAAABi-92IyQ8y-2Rnrz_zzXA5bL3ZP') && (
+  <script src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY || '6LcRK58rAAAAABi-92IyQ8y-2Rnrz_zzXA5bL3ZP'}`} async defer></script>
 )}
