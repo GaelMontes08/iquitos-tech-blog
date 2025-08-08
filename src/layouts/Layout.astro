@@ -92,7 +92,11 @@ const { description, title } = Astro.props as Props;
         background: rgba(255, 255, 255, 0.5);
     }
     
-    p {
+    /* Base paragraph styles - only apply outside of prose containers */
+    body > *:not(.prose-container) p,
+    main > *:not(.prose-container) p,
+    section:not(.prose-container) p,
+    div:not(.prose-container) p {
         color: rgba(255, 255, 255, 0.9);
         line-height: 1.6;
         margin-bottom: 1em;
@@ -102,18 +106,25 @@ const { description, title } = Astro.props as Props;
     }
     
     @media (min-width: 640px) {
-        p {
+        body > *:not(.prose-container) p,
+        main > *:not(.prose-container) p,
+        section:not(.prose-container) p,
+        div:not(.prose-container) p {
             font-size: 1rem;
             line-height: 1.5;
         }
     }
     
     @media (min-width: 1024px) {
-        p {
+        body > *:not(.prose-container) p,
+        main > *:not(.prose-container) p,
+        section:not(.prose-container) p,
+        div:not(.prose-container) p {
             line-height: 1.4;
         }
     }
     
+    /* Strong text styling - apply everywhere */
     p strong {
         color: white;
         font-weight: 700;

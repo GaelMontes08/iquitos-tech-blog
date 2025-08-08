@@ -119,16 +119,50 @@ export const getPostInfo = async (slug: string) => {
     
     // Apply HTML entity decoding to title only (content may need HTML tags)
     const title = decodeHtmlEntities(rawTitle);
-    const content = rawContent; // Keep content as-is for HTML formatting
     const date = post.date;
     const seo = post.yoast_head_json;
 
-    return { title, content, date, seo };
+    // Extract different sections using regex
+    const extractSection = (content: string, sectionTitle: string) => {
+      // Match the section heading and capture content until the next h2 or end of string
+      const regex = new RegExp(
+        `<h2[^>]*>\\s*${sectionTitle}\\s*</h2>([\\s\\S]*?)(?=<h2[^>]*>|$)`,
+        'i'
+      );
+      const match = content.match(regex);
+      return match ? match[1].trim() : '';
+    };
+
+    // Remove section from content
+    const removeSection = (content: string, sectionTitle: string) => {
+      const regex = new RegExp(
+        `<h2[^>]*>\\s*${sectionTitle}\\s*</h2>[\\s\\S]*?(?=<h2[^>]*>|$)`,
+        'i'
+      );
+      return content.replace(regex, '').trim();
+    };
+
+    // Extract sections
+    const puntosClave = extractSection(rawContent, 'Puntos clave');
+    const faqs = extractSection(rawContent, 'Preguntas frecuentes');
+    
+    // Remove extracted sections from main content
+    let content = rawContent;
+    if (puntosClave) {
+      content = removeSection(content, 'Puntos clave');
+    }
+    if (faqs) {
+      content = removeSection(content, 'Preguntas frecuentes');
+    }
+
+    return { title, date, seo, puntosClave, content, faqs };
   } catch (error) {
     console.error('Error in getPostInfo:', error);
     return { 
       title: 'Post no encontrado', 
-      content: '<p>Este post no está disponible en este momento.</p>', 
+      content: '<p>Este post no está disponible en este momento.</p>',
+      puntosClave: '',
+      faqs: '',
       date: new Date().toISOString(), 
       seo: {} 
     };

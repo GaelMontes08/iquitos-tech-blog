@@ -1,55 +1,404 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { getPostInfo } from '../../lib/wp';
-import { incrementPostViewCount } from '../../lib/views';
+import PostCard from "../../components/PostCard.astro";
+import { fetchWithTimeout } from '@/lib/wp';
+import { getPostViewCount, getMostViewedPosts } from '../../lib/views';
+import { cleanWordPressHtml } from '../../lib/content-transformer';
 
 const slug = Astro.params.slug;
 if (!slug) return Astro.redirect('/404');
 
-const { title, content, date, seo } = await getPostInfo(slug);
+const domain = import.meta.env.WP_DOMAIN;
+const apiUrl = `https://${domain}/wp-json/wp/v2`;
 
-console.log(`📊 Incrementing view count for post: ${slug}`);
-const currentViews = await incrementPostViewCount(slug);
-console.log(`📊 Current view count for ${slug}: ${currentViews}`);
+// Parse WordPress content into distinct sections
+const parseWordPressContent = (htmlContent: string) => {
+  if (!htmlContent) {
+    return {
+      puntosClave: '',
+      mainContent: '',
+      faqPairs: []
+    };
+  }
+
+  // Extract "Puntos clave" section
+  const puntosClaveRegex = /<h2[^>]*>\s*Puntos\s+clave\s*<\/h2>([\s\S]*?)(?=<h2[^>]*>|$)/i;
+  const puntosClaveMatch = htmlContent.match(puntosClaveRegex);
+  const puntosClave = puntosClaveMatch ? cleanWordPressHtml(puntosClaveMatch[1]) : '';
+
+  // Extract "Preguntas frecuentes" section  
+  const faqRegex = /<h2[^>]*>\s*Preguntas\s+frecuentes\s*<\/h2>([\s\S]*?)(?=<h2[^>]*>|$)/i;
+  const faqMatch = htmlContent.match(faqRegex);
+  const faqSection = faqMatch ? faqMatch[1].trim() : '';
+
+  // Parse FAQ section into question/answer pairs
+  const faqPairs: Array<{question: string, answer: string}> = [];
+  if (faqSection) {
+    // Split by h3 tags (questions)
+    const h3Regex = /<h3[^>]*>(.*?)<\/h3>([\s\S]*?)(?=<h3[^>]*>|$)/gi;
+    let match;
+    while ((match = h3Regex.exec(faqSection)) !== null) {
+      const question = match[1].replace(/<[^>]*>/g, '').trim();
+      const answer = cleanWordPressHtml(match[2]);
+      if (question && answer) {
+        faqPairs.push({ question, answer });
+      }
+    }
+  }
+
+  // Remove extracted sections from main content
+  let mainContent = htmlContent;
+  if (puntosClave) {
+    mainContent = mainContent.replace(puntosClaveRegex, '');
+  }
+  if (faqSection) {
+    mainContent = mainContent.replace(faqRegex, '');
+  }
+
+  // Clean and style the main content
+  mainContent = cleanWordPressHtml(mainContent);
+
+  return {
+    puntosClave: puntosClave.trim(),
+    mainContent: mainContent.trim(),
+    faqPairs
+  };
+};
+
+// Fetch post data with parsing
+const getPostData = async (slug: string) => {
+  try {
+    const response = await fetchWithTimeout(`${apiUrl}/posts?slug=${slug}&_embed`);
+    if (!response.ok) throw new Error(`Error fetching post: ${response.status}`);
+    
+    const data = await response.json();
+    if (!data || !data.length) return null;
+    
+    const post = data[0];
+    
+    // Parse the content
+    const { puntosClave, mainContent, faqPairs } = parseWordPressContent(post.content?.rendered || '');
+    
+    return {
+      id: post.id,
+      title: post.title?.rendered || 'Sin título',
+      content: mainContent,
+      puntosClave,
+      faqPairs,
+      date: post.date,
+      seo: post.yoast_head_json || {},
+      categories: post.categories || [],
+      featuredImage: post._embedded?.['wp:featuredmedia']?.[0]?.source_url,
+      author: post._embedded?.author?.[0]?.name || 'Redacción',
+      authorAvatar: post._embedded?.author?.[0]?.avatar_urls?.['96'] || '/author.jpg',
+      excerpt: post.excerpt?.rendered || ''
+    };
+  } catch (error) {
+    console.error('Error fetching post data:', error);
+    return null;
+  }
+};
+
+// Fetch related posts from same category
+const getRelatedPosts = async (categoryIds: number[], currentPostId: number) => {
+  try {
+    if (!categoryIds.length) return [];
+    
+    const categoryQuery = categoryIds.join(',');
+    const response = await fetchWithTimeout(
+      `${apiUrl}/posts?categories=${categoryQuery}&exclude=${currentPostId}&per_page=4&_embed`
+    );
+    
+    if (!response.ok) return [];
+    
+    const posts = await response.json();
+    return posts.map((post: any) => ({
+      id: post.id,
+      title: post.title?.rendered || 'Sin título',
+      excerpt: post.excerpt?.rendered || '',
+      slug: post.slug,
+      date: post.date,
+      image: post._embedded?.['wp:featuredmedia']?.[0]?.source_url,
+      categories: post._embedded?.['wp:term']?.[0] || []
+    }));
+  } catch (error) {
+    console.error('Error fetching related posts:', error);
+    return [];
+  }
+};
+
+// Get post data
+const postData = await getPostData(slug);
+if (!postData) return Astro.redirect('/404');
+
+// Get related posts
+const relatedPosts = postData.categories.length > 0 ? 
+  await getRelatedPosts(postData.categories, postData.id) : [];
+
+// Get trending posts for sidebar
+const trendingPosts = await getMostViewedPosts();
+
+// Clean excerpt for TL;DR
+const getTldr = (excerpt: string) => {
+  if (!excerpt) return 'Resumen no disponible para este artículo.';
+  
+  const cleanExcerpt = excerpt.replace(/<[^>]*>/g, ' ').trim();
+  
+  if (cleanExcerpt.length > 250) {
+    return cleanExcerpt.substring(0, 250) + '...';
+  }
+  
+  return cleanExcerpt || 'Resumen no disponible para este artículo.';
+};
+
+const tldr = getTldr(postData.excerpt);
 
 export const prerender = false;
 ---
 
 <Layout 
-  title={title}
-  description={seo.description}
+  title={postData.title}
+  description={postData.seo?.description || tldr}
 >
-  <article class="max-w-4xl mx-auto px-4 py-8">
-    <header class="mb-8">
-      <h1 class="text-4xl lg:text-5xl font-bold text-white mb-4">{title}</h1>
+  <div class="min-h-screen">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
-      <div class="flex items-center justify-between text-gray-400 text-sm mb-6">
-        <div class="flex items-center space-x-4">
-          <time datetime={date}>
-            {new Date(date).toLocaleDateString('es-ES', { 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
-          </time>
-          <span>•</span>
-          <span id="reading-time">5 min de lectura</span>
-        </div>
+      <div class="lg:grid lg:grid-cols-12 lg:gap-8">
         
-        <div class="flex items-center space-x-2 text-gray-500">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-          </svg>
-          <span id="view-count">{currentViews} vista{currentViews === 1 ? '' : 's'}</span>
-        </div>
+        <main class="lg:col-span-8">
+          
+          <header class="mb-8">
+
+            {postData.featuredImage && (
+              <div class="mb-6 overflow-hidden rounded-2xl">
+                <img 
+                  src={postData.featuredImage} 
+                  alt={postData.title}
+                  class="w-full h-64 md:h-[400px] object-cover"
+                  loading="eager"
+                />
+              </div>
+            )}
+
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+              {postData.title}
+            </h1>
+            
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-gray-400 text-sm mb-6">
+              <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                  <img 
+                    src={postData.authorAvatar} 
+                    alt={postData.author}
+                    class="w-8 h-8 rounded-full"
+                  />
+                  <span class="font-medium text-white">{postData.author}</span>
+                </div>
+                
+                <span>•</span>
+                
+                <time datetime={postData.date} class="flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  {new Date(postData.date).toLocaleDateString('es-ES', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </time>
+                
+                <span>•</span>
+                <span id="reading-time">5 min de lectura</span>
+              </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-[#2847d7]/10 to-blue-600/10 border border-[#2847d7]/30 rounded-xl p-4 mb-6">
+              <h2 class="text-lg font-semibold text-white mb-2 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                TL;DR
+              </h2>
+              <p class="text-gray-300 leading-relaxed">
+                {tldr}
+              </p>
+            </div>
+          </header>
+
+          {postData.puntosClave && (
+            <section class="content-area">
+              <h2 class="text-2xl font-bold text-[#2847d7] mb-4">Puntos clave</h2>
+              <div class="max-w-none mb-8" set:html={postData.puntosClave} />
+            </section>
+          )}
+
+          <section class="content-area">
+            <div class="max-w-none mb-8" set:html={postData.content} />
+          </section>
+
+          {postData.faqPairs.length > 0 && (
+            <section class="content-area">
+              <h2 class="text-2xl font-bold text-[#2847d7] mb-6">Preguntas frecuentes</h2>
+              <div class="space-y-4">
+                {postData.faqPairs.map((faq: {question: string, answer: string}, index: number) => (
+                  <div class="border border-[#2847d7] rounded-lg faq-item">
+                    <input type="checkbox" id={`faq${index}`} class="hidden faq-checkbox" />
+                    <label for={`faq${index}`} class="flex justify-between items-center p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors duration-200 focus:outline-none">
+                      <span class="font-medium text-white pr-4">{faq.question}</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-5 h-5 text-gray-400 transform transition-transform duration-300 faq-icon"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </label>
+                    <div class="overflow-hidden max-h-0 faq-content transition-all duration-500 ease-in-out">
+                      <div class="max-w-none p-4 text-gray-300" set:html={faq.answer} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+        </main>
+        <aside class="lg:col-span-4 mt-12 lg:mt-0">
+          <div class="lg:top-8 space-y-8">
+
+            <div class="bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 border border-gray-800">
+              <h3 class="text-xl font-bold text-white mb-1 pb-2 border-b-2 border-[#2847d7] inline-block">
+                Tendencias
+              </h3>
+              <p class="text-gray-400 text-sm mb-4">Lo más leído</p>
+              
+              <div class="space-y-4">
+                {trendingPosts.slice(0, 6).map((post: any, index: number) => (
+                  <a 
+                    href={`/posts/${post.slug}`}
+                    class="block group hover:bg-gray-800/50 p-3 rounded-lg transition-all duration-300"
+                  >
+                    <div class="flex items-start space-x-3">
+                      <span class="flex-shrink-0 w-6 h-6 bg-[#2847d7] text-white text-xs font-bold rounded-full flex items-center justify-center">
+                        {index + 1}
+                      </span>
+                      <div class="flex-1 min-w-0">
+                        <h4 class="text-white font-medium text-sm leading-snug group-hover:text-[#2847d7] transition-colors duration-300 line-clamp-2">
+                          {post.title}
+                        </h4>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </aside>
       </div>
-    </header>
 
-    <div class="prose prose-lg prose-invert max-w-none" set:html={content} />
-  </article>
+      {relatedPosts.length > 0 && (
+        <section class="mt-16 border-t border-gray-800 pt-12">
+          <h2 class="text-2xl md:text-3xl font-bold text-white mb-8 text-left">
+            Noticias Relacionadas
+          </h2>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {relatedPosts.slice(0, 4).map((post: any) => {
+              // Get category name for the post
+              const categoryName = post.categories?.[0]?.name || 'Sin categoría';
+              
+              return (
+                <PostCard
+                  id={post.id}
+                  title={post.title}
+                  excerpt={post.excerpt}
+                  slug={post.slug}
+                  date={post.date}
+                  image={post.image}
+                  category={categoryName}
+                  featured={false}
+                />
+              );
+            })}
+          </div>
+        </section>
+      )}
 
-  <script>
+    </div>
+  </div>
+
+  <script define:vars={{ slug }}>
+    // Post slug for view tracking
+    const POST_SLUG = slug;
+    
+    // Function to check if user is likely a bot
+    function isLikelyBot() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const botPatterns = [
+        'googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider',
+        'yandexbot', 'facebookexternalhit', 'twitterbot', 'linkedinbot',
+        'whatsapp', 'telegram', 'discord', 'crawler', 'spider', 'bot'
+      ];
+      
+      return botPatterns.some(pattern => userAgent.includes(pattern));
+    }
+
+    // Function to increment view count with real user validation
+    async function trackRealView() {
+      // Don't track if it's likely a bot
+      if (isLikelyBot()) {
+        console.log('🤖 Bot detected, skipping view tracking');
+        return;
+      }
+
+      // Check if this view was already counted in this session
+      const sessionKey = `viewed_post_${POST_SLUG}`;
+      const alreadyViewed = sessionStorage.getItem(sessionKey);
+      
+      if (alreadyViewed) {
+        console.log('👀 Post already viewed in this session, skipping increment');
+        return;
+      }
+
+      try {
+        // Mark as viewed in this session
+        sessionStorage.setItem(sessionKey, 'true');
+        
+        // Send the view increment request
+        const response = await fetch('/api/increment-view', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ slug: POST_SLUG })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(`📊 View tracked for ${POST_SLUG}. New count: ${data.views}`);
+          
+          // Update the view count display
+          const viewCountElement = document.getElementById('view-count');
+          if (viewCountElement) {
+            viewCountElement.textContent = `${data.views} vista${data.views === 1 ? '' : 's'}`;
+          }
+        } else {
+          console.error('Failed to track view:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error tracking view:', error);
+      }
+    }
+
     // Calculate reading time
     function calculateReadingTime() {
       const article = document.querySelector('.prose');
@@ -69,89 +418,131 @@ export const prerender = false;
     // Initialize when DOM is loaded
     document.addEventListener('DOMContentLoaded', () => {
       calculateReadingTime();
+      
+      // Track view after a small delay to ensure user engagement
+      setTimeout(() => {
+        trackRealView();
+      }, 2000); // 2 second delay to ensure real engagement
     });
   </script>
 </Layout>
 
 <style>
-  .prose {
-    color: #d1d5db;
-  }
-  
-  .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-    color: white;
-    font-weight: bold;
-  }
-  
-  .prose h2 {
-    font-size: 2.5rem;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
-    line-height: 1.2;
-  }
-  
-  .prose h3 {
-    font-size: 2rem;
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-    line-height: 1.3;
-  }
-  
-  .prose p {
-    margin-bottom: 1rem;
-    line-height: 1.6;
-  }
-  
-  .prose a {
-    color: #2847d7;
-    transition: color 0.2s;
+  /* Line clamp utility for trending posts */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  .prose a:hover {
-    color: #3b82f6;
+  /* CSS-only FAQ accordion animation fix */
+  .peer-checked\:max-h-screen:checked ~ * {
+    max-height: 1000px;
   }
-  
-  .prose ul, .prose ol {
-    margin-bottom: 1rem;
-    padding-left: 1.5rem;
+
+  /* Smooth scroll for anchor links */
+  html {
+    scroll-behavior: smooth;
   }
-  
-  .prose li {
-    margin-bottom: 0.5rem;
+
+  /* Enhanced focus states without blue ring */
+  label:focus {
+    outline: none;
   }
-  
-  .prose blockquote {
-    border-left: 4px solid #2847d7;
-    padding-left: 1rem;
-    font-style: italic;
-    color: #9ca3af;
-    margin: 1.5rem 0;
+
+  input[type="checkbox"]:focus + label {
+    outline: 2px solid #2847d7;
+    outline-offset: 2px;
   }
-  
-  .prose img {
-    border-radius: 0.5rem;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    margin: 1.5rem 0;
+
+  /* Responsive design */
+  @media (max-width: 1024px) {
+    .lg\:sticky {
+      position: relative !important;
+    }
   }
-  
-  .prose code {
-    background-color: #1f2937;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-    color: #d1d5db;
+
+  /* Ensure content styling doesn't get overridden */
+  .content-area h1,
+  .content-area h2,
+  .content-area h3,
+  .content-area h4,
+  .content-area h5,
+  .content-area h6 {
+    color: inherit !important;
+    font-weight: inherit !important;
   }
-  
-  .prose pre {
-    background-color: #111827;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    overflow-x: auto;
-    margin: 1.5rem 0;
+
+  .content-area p {
+    color: inherit !important;
+    margin-bottom: inherit !important;
+    line-height: inherit !important;
   }
-  
-  .prose pre code {
-    background-color: transparent;
-    padding: 0;
+
+  .content-area img {
+    border-radius: inherit !important;
+    margin: inherit !important;
+    width: inherit !important;
+  }
+
+  .content-area ul,
+  .content-area ol {
+    color: inherit !important;
+    margin: inherit !important;
+    padding-left: inherit !important;
+  }
+
+  .content-area li {
+    color: inherit !important;
+    margin-bottom: inherit !important;
+  }
+
+  .content-area a {
+    color: inherit !important;
+    text-decoration: inherit !important;
+  }
+
+  .content-area blockquote {
+    color: inherit !important;
+    border-left: inherit !important;
+    padding: inherit !important;
+    background: inherit !important;
+  }
+
+  .content-area code {
+    background-color: inherit !important;
+    color: inherit !important;
+    padding: inherit !important;
+    border-radius: inherit !important;
+  }
+
+  .content-area pre {
+    background-color: inherit !important;
+    border: inherit !important;
+    padding: inherit !important;
+    border-radius: inherit !important;
+  }
+
+  .content-area table {
+    width: inherit !important;
+    border: inherit !important;
+    background: inherit !important;
+  }
+
+  .content-area th,
+  .content-area td {
+    color: inherit !important;
+    border: inherit !important;
+    padding: inherit !important;
+  }
+
+  /* FAQ Accordion Styles */
+  .faq-checkbox:checked + label .faq-icon {
+    transform: rotate(180deg);
+  }
+
+  .faq-checkbox:checked ~ .faq-content {
+    max-height: 1000px;
   }
 </style>

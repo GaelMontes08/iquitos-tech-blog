@@ -54,6 +54,7 @@ const gradientClass = getCategoryGradient(category);
   group relative overflow-hidden rounded-2xl bg-gray-900 border border-gray-800 
   hover:border-gray-700 transition-all duration-500 ease-out
   hover:shadow-2xl hover:shadow-black/50 hover:-translate-y-2
+  h-full flex flex-col
   ${featured ? 'md:col-span-2 md:row-span-2' : ''}
 `}>
   
@@ -101,7 +102,7 @@ const gradientClass = getCategoryGradient(category);
   )}
 
   <div class={`
-    relative p-6 flex flex-col h-full
+    relative p-6 flex flex-col flex-1
     ${!image ? 'pt-8' : ''}
     ${featured ? 'md:p-8' : ''}
   `}>
@@ -184,5 +185,20 @@ const gradientClass = getCategoryGradient(category);
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  /* Ensure consistent card heights */
+  article {
+    min-height: 320px;
+  }
+
+  /* Better hover effects */
+  .group:hover .group-hover\:scale-110 {
+    transform: scale(1.1);
+  }
+
+  /* Smooth transitions */
+  * {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 </style>

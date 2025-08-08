@@ -141,8 +141,8 @@ export const prerender = false;
           </p>
         </div>
 
-        <!-- Search and Filter Section -->
-        <div class="rounded-xl p-4 lg:p-6 border border-[#2847d7] mb-8">
+    <!-- Search and Filter Section -->
+        <div class="bg-gray-900/50 backdrop-blur-sm rounded-xl p-4 lg:p-6 border border-gray-800 mb-8">
           
           <!-- Search Bar -->
             <div class="mb-6">
@@ -158,11 +158,14 @@ export const prerender = false;
                 )}
                 <div class="flex w-full">
                 <div class="relative flex-1">
+                    <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
                     <input 
                     type="text" 
                     name="search" 
                     value={searchQuery}
-                    placeholder="Buscar..."
+                    placeholder="Buscar artículos..."
                     class="w-full h-12 px-4 pl-10 bg-gray-800 border border-gray-700 border-r-0 rounded-l-lg text-white placeholder-gray-400 focus:border-[#2847d7] focus:ring-1 focus:ring-[#2847d7] focus:outline-none transition-all duration-300"
                     />
                 </div>
@@ -209,7 +212,7 @@ export const prerender = false;
               {categories.slice(0, 8).map((category) => (
                 <a 
                   href={`/posts?category=${category.slug}`}
-                  class={`items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                  class={`inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                     selectedCategory === category.slug 
                       ? 'bg-[#2847d7] text-white' 
                       : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white border border-gray-700'
@@ -311,7 +314,7 @@ export const prerender = false;
           </div>
         ) : (
           <!-- Posts Grid - Responsive -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 mb-8">
             {posts.map((post: any) => (
                 <PostCard
                 id={post.id}
@@ -387,3 +390,34 @@ export const prerender = false;
 
   </main>
 </Layout>
+
+<style>
+  /* Enhanced responsive design */
+  @media (max-width: 640px) {
+    .grid {
+      gap: 1rem;
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .grid {
+      gap: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .grid {
+      gap: 2rem;
+    }
+  }
+
+  /* Better button styles */
+  button, a[class*="bg-"] {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Improved search input */
+  input[type="text"]:focus {
+    box-shadow: 0 0 0 3px rgba(40, 71, 215, 0.1);
+  }
+</style>
