@@ -1,15 +1,13 @@
 import type { APIRoute } from 'astro';
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 
 // Configuration from environment variables
 const RECAPTCHA_SECRET_KEY = import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY;
-const SENDGRID_API_KEY = import.meta.env.SENDGRID_API_KEY || process.env.SENDGRID_API_KEY;
+const RESEND_API_KEY = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
 const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
-// Configure SendGrid
-if (SENDGRID_API_KEY) {
-  sgMail.setApiKey(SENDGRID_API_KEY);
-}
+// Initialize Resend
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -115,13 +113,13 @@ export const POST: APIRoute = async ({ request }) => {
       ip: request.headers.get('x-forwarded-for') || 'unknown'
     });
 
-    // Send email using SendGrid
-    if (SENDGRID_API_KEY) {
+    // Send email using Resend
+    if (resend) {
       try {
-        const emailContent = {
-          to: 'contacto@iquitostech.com',
-          from: 'noreply@iquitostech.com', // This should be a verified sender in SendGrid
-          replyTo: email, // So you can reply directly to the user
+        const { data, error } = await resend.emails.send({
+          from: 'Iquitos Tech <noreply@iquitostech.com>',
+          to: ['contacto@iquitostech.com'],
+          replyTo: email,
           subject: `[Iquitos Tech] Nuevo mensaje de contacto: ${subject}`,
           html: `
             <!DOCTYPE html>
@@ -209,17 +207,20 @@ IP: ${request.headers.get('x-forwarded-for') || 'No disponible'}
 ---
 Para responder, simplemente responde a este email.
           `.trim()
-        };
+        });
 
-        await sgMail.send(emailContent);
-        console.log('✅ Email sent successfully via SendGrid');
+        if (error) {
+          console.error('❌ Resend email error:', error);
+        } else {
+          console.log('✅ Email sent successfully via Resend:', data);
+        }
         
       } catch (emailError) {
-        console.error('❌ SendGrid email error:', emailError);
+        console.error('❌ Resend email error:', emailError);
         // Don't fail the entire request if email fails, just log it
       }
     } else {
-      console.warn('⚠️ SendGrid API key not configured, email not sent');
+      console.warn('⚠️ Resend API key not configured, email not sent');
     }
 
     // Return success response
