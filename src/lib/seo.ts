@@ -221,8 +221,22 @@ export function generateSEOTags(props: SEOProps) {
   const finalDescription = processedSEO?.description || description || 'Noticias de tecnología, gaming y tendencias digitales';
   const finalCanonical = processedSEO?.canonical || fixAstroUrlStructure(replaceCMSDomain(canonical), urlType);
   const finalOgUrl = processedSEO?.og_url || finalCanonical;
-  // Keep images with CMS domain since they're served from there
-  const finalImage = image || processedSEO?.og_image?.[0]?.url;
+  // ENHANCED: Prioritize actual featured image over potentially incorrect Yoast og_image
+  // The issue: Yoast might capture first content image instead of featured image
+  let finalImage: string | undefined;
+  
+  if (image) {
+    // Always prefer the explicitly passed featured image from WordPress API
+    finalImage = image;
+    console.log('✅ Using WordPress featured image:', image);
+  } else if (processedSEO?.og_image?.[0]?.url) {
+    // Only use Yoast og_image as fallback, but log this for debugging
+    finalImage = processedSEO.og_image[0].url;
+    console.log('⚠️ Fallback to Yoast og_image (may be incorrect):', finalImage);
+  } else {
+    console.log('❌ No image found - will use default fallback');
+  }
+  
   const siteName = processedSEO?.og_site_name || 'Iquitos Tech';
 
   return {

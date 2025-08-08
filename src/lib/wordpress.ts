@@ -97,24 +97,44 @@ export async function getPostInfo(slug: string): Promise<PostInfo | null> {
     // Parse the content
     const { puntosClave, mainContent, faqPairs } = parseWordPressContent(post.content?.rendered || '');
     
-    // Get featured image - try multiple sources for reliability
+    // ENHANCED: Get featured image with better validation and fallback logic
     let featuredImage: string | undefined;
+    let imageSource = 'none';
     
-    // First try embedded media
-    featuredImage = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
-    
-    // If no embedded media but there's a featured_media ID, fetch it directly
-    if (!featuredImage && post.featured_media) {
+    // Method 1: Try embedded media (most reliable)
+    if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+      featuredImage = post._embedded['wp:featuredmedia'][0].source_url;
+      imageSource = 'embedded_media';
+    }
+    // Method 2: If no embedded media but there's a featured_media ID, fetch it directly
+    else if (post.featured_media) {
       try {
         const mediaResponse = await fetchWithTimeout(`${apiUrl}/media/${post.featured_media}`);
         if (mediaResponse.ok) {
           const mediaData = await mediaResponse.json();
           featuredImage = mediaData.source_url;
+          imageSource = 'direct_media_api';
         }
       } catch (mediaError) {
         console.warn('Failed to fetch featured media directly:', mediaError);
       }
     }
+    
+    // Method 3: Last resort - use Yoast og_image but validate it's reasonable
+    if (!featuredImage && post.yoast_head_json?.og_image?.[0]?.url) {
+      const yoastImage = post.yoast_head_json.og_image[0].url;
+      featuredImage = yoastImage;
+      imageSource = 'yoast_fallback';
+      console.warn(`⚠️ Using Yoast og_image as fallback for post ${post.slug}. This might be the first content image, not the featured image.`);
+    }
+
+    // Validation logging
+    console.log(`🖼️ Image source for "${post.slug}": ${imageSource}`, {
+      featuredMediaId: post.featured_media,
+      hasEmbeddedMedia: !!post._embedded?.['wp:featuredmedia']?.[0],
+      finalImageUrl: featuredImage,
+      yoastImageAvailable: !!post.yoast_head_json?.og_image?.[0]?.url
+    });
     
     return {
       id: post.id,
