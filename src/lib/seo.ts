@@ -12,9 +12,19 @@ export function replaceCMSDomain(url: string | undefined): string | undefined {
   const prodDomain = 'iquitostech.com';
   const prodUrl = 'https://iquitostech.com';
   
-  return url.replace(`https://${cmsDomain}`, prodUrl)
-            .replace(`http://${cmsDomain}`, prodUrl)
-            .replace(cmsDomain, prodDomain);
+  let result = url.replace(`https://${cmsDomain}`, prodUrl)
+                  .replace(`http://${cmsDomain}`, prodUrl)
+                  .replace(cmsDomain, prodDomain);
+  
+  // Ensure HTTPS for all production URLs
+  if (result.includes('iquitostech.com') && !result.startsWith('https://')) {
+    result = result.replace(/^http:\/\//, 'https://');
+    if (!result.startsWith('http')) {
+      result = `https://${result}`;
+    }
+  }
+  
+  return result;
 }
 
 /**
