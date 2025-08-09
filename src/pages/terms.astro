@@ -1,0 +1,435 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = 'Términos de Servicio | Iquitos Tech';
+const pageDescription = 'Términos de Servicio de Iquitos Tech. Conoce las condiciones de uso de nuestro sitio web y servicios de contenido tecnológico.';
+const lastUpdated = '09/08/2025';
+
+export const prerender = true;
+---
+
+<Layout 
+  title={pageTitle}
+  description={pageDescription}
+  canonical="https://iquitostech.com/terms"
+  type="website"
+>
+  <section class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-transparent">
+      
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+          Términos de Servicio
+        </h1>
+        <p class="text-xl text-gray-300 mb-6">
+          Condiciones de uso para los servicios y contenido de Iquitos Tech
+        </p>
+        <div class="inline-flex items-center px-4 py-2 bg-transparent ring-1 ring-white/10 rounded-lg">
+          <svg class="w-5 h-5 text-[#2847d7] mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <span class="text-gray-200 text-sm">Fecha de vigencia: {lastUpdated}</span>
+        </div>
+      </div>
+
+      <div class="lg:grid lg:grid-cols-12 lg:gap-8 items-start overflow-visible">
+        
+        <aside class="lg:col-span-3 self-start sticky top-24">
+          
+          <div class="lg:hidden mb-6">
+            <button 
+              id="toc-toggle"
+              class="w-full flex items-center justify-between px-4 py-3 bg-transparent border border-white/10 rounded-2xl text-white hover:border-white/20 transition-colors"
+            >
+              <span class="font-medium">Índice de contenidos</span>
+              <svg id="toc-icon" class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+          </div>
+
+          <nav id="toc-content" class="hidden lg:block rounded-2xl border border-white/10 p-4 max-h-[calc(100vh-8rem)] overflow-auto">
+            <h3 class="text-lg font-semibold text-white mb-4">Contenidos</h3>
+            <ul class="space-y-2 text-sm" id="toc-list">
+              <li><a href="#introduccion" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">1. Introducción</a></li>
+              <li><a href="#descripcion-servicio" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">2. Descripción del Servicio</a></li>
+              <li><a href="#aceptacion-terminos" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">3. Aceptación de los Términos</a></li>
+              <li><a href="#uso-aceptable" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">4. Uso Aceptable</a></li>
+              <li><a href="#contenido-usuario" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">5. Contenido del Usuario</a></li>
+              <li><a href="#propiedad-intelectual" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">6. Propiedad Intelectual</a></li>
+              <li><a href="#privacidad-datos" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">7. Privacidad y Datos</a></li>
+              <li><a href="#descargo-responsabilidad" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">8. Descargo de Responsabilidad</a></li>
+              <li><a href="#limitacion-responsabilidad" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">9. Limitación de Responsabilidad</a></li>
+              <li><a href="#indemnizacion" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">10. Indemnización</a></li>
+              <li><a href="#modificaciones-servicio" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">11. Modificaciones del Servicio</a></li>
+              <li><a href="#terminacion" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">12. Terminación</a></li>
+              <li><a href="#ley-aplicable" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">13. Ley Aplicable</a></li>
+              <li><a href="#resolucion-disputas" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">14. Resolución de Disputas</a></li>
+              <li><a href="#disposiciones-generales" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">15. Disposiciones Generales</a></li>
+              <li><a href="#contacto" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">16. Información de Contacto</a></li>
+            </ul>
+          </nav>
+        </aside>
+
+        <article class="lg:col-span-7 min-w-0">
+          <div class="prose prose-invert max-w-none">
+            
+            <section id="introduccion">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">1. Introducción</h2>
+              <p class="text-gray-300 mb-4">
+                Bienvenido a Iquitos Tech ("nosotros", "nuestro" o "el Sitio"). Estos Términos de Servicio ("Términos") rigen el uso del sitio web iquitostech.com y todos los servicios relacionados proporcionados por Iquitos Tech.
+              </p>
+              <p class="text-gray-300 mb-6">
+                Al acceder o utilizar nuestros servicios, usted acepta estar sujeto a estos Términos. Si no está de acuerdo con alguna parte de estos términos, no puede acceder al servicio.
+              </p>
+            </section>
+
+            <section id="descripcion-servicio">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">2. Descripción del Servicio</h2>
+              <p class="text-gray-300 mb-4">
+                Iquitos Tech es una plataforma de contenido tecnológico que proporciona:
+              </p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Artículos y noticias sobre tecnología</li>
+                <li>• Análisis y reseñas de productos tecnológicos</li>
+                <li>• Newsletter con contenido curado</li>
+                <li>• Recursos educativos sobre tecnología</li>
+              </ul>
+            </section>
+
+            <section id="aceptacion-terminos">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">3. Aceptación de los Términos</h2>
+              <p class="text-gray-300 mb-4">
+                Al utilizar nuestros servicios, usted confirma que:
+              </p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Tiene al menos 18 años de edad o cuenta con el consentimiento de sus padres/tutores</li>
+                <li>• Tiene la capacidad legal para celebrar estos Términos</li>
+                <li>• Utilizará los servicios de acuerdo con estos Términos y todas las leyes aplicables</li>
+              </ul>
+            </section>
+
+            <section id="uso-aceptable">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">4. Uso Aceptable</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">4.1 Usos Permitidos</h3>
+              <p class="text-gray-300 mb-4">Puede utilizar nuestros servicios para:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Leer y compartir contenido</li>
+                <li>• Suscribirse a nuestro newsletter</li>
+                <li>• Participar en discusiones constructivas</li>
+                <li>• Contactarnos con consultas legítimas</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">4.2 Usos Prohibidos</h3>
+              <p class="text-gray-300 mb-4">No puede utilizar nuestros servicios para:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Violar cualquier ley local, estatal, nacional o internacional</li>
+                <li>• Transmitir material que sea difamatorio, obsceno, fraudulento o ilegal</li>
+                <li>• Realizar actividades de spam o envío masivo no solicitado</li>
+                <li>• Intentar obtener acceso no autorizado a nuestros sistemas</li>
+                <li>• Interferir con el funcionamiento normal del sitio</li>
+                <li>• Copiar, distribuir o modificar nuestro contenido sin autorización</li>
+              </ul>
+            </section>
+
+            <section id="contenido-usuario">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">5. Contenido del Usuario</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">5.1 Responsabilidad del Contenido</h3>
+              <p class="text-gray-300 mb-4">
+                Usted es responsable de cualquier contenido que publique, incluidos comentarios, sugerencias o comunicaciones. El contenido debe:
+              </p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Ser preciso y no engañoso</li>
+                <li>• No infringir derechos de terceros</li>
+                <li>• No contener material ofensivo o inapropiado</li>
+                <li>• Cumplir con todas las leyes aplicables</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">5.2 Licencia de Contenido</h3>
+              <p class="text-gray-300 mb-6">
+                Al enviar contenido, nos otorga una licencia mundial, no exclusiva, libre de regalías para usar, modificar, mostrar y distribuir dicho contenido en relación con nuestros servicios.
+              </p>
+            </section>
+
+            <section id="propiedad-intelectual">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">6. Propiedad Intelectual</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">6.1 Nuestro Contenido</h3>
+              <p class="text-gray-300 mb-6">
+                Todo el contenido del sitio, incluyendo textos, gráficos, logos, imágenes, audio, video y software, es propiedad de Iquitos Tech y está protegido por las leyes de derechos de autor y otras leyes de propiedad intelectual.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">6.2 Uso Limitado</h3>
+              <p class="text-gray-300 mb-6">
+                Se le concede una licencia limitada, no exclusiva y no transferible para acceder y utilizar el contenido únicamente para uso personal y no comercial.
+              </p>
+            </section>
+
+            <section id="privacidad-datos">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">7. Privacidad y Datos</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">7.1 Recopilación de Datos</h3>
+              <p class="text-gray-300 mb-6">
+                Recopilamos y procesamos datos personales de acuerdo con nuestra <a href="/privacy" class="text-[#2847d7] hover:underline">Política de Privacidad</a>, que forma parte integral de estos Términos.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">7.2 Newsletter</h3>
+              <p class="text-gray-300 mb-4">Al suscribirse a nuestro newsletter:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Acepta recibir comunicaciones periódicas</li>
+                <li>• Puede cancelar la suscripción en cualquier momento</li>
+                <li>• Sus datos serán tratados conforme a nuestra Política de Privacidad</li>
+              </ul>
+            </section>
+
+            <section id="descargo-responsabilidad">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">8. Descargo de Responsabilidad</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">8.1 Contenido Informativo</h3>
+              <p class="text-gray-300 mb-6">
+                El contenido proporcionado es únicamente para fines informativos y educativos. No constituye asesoramiento profesional y no debe ser considerado como tal.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">8.2 Precisión</h3>
+              <p class="text-gray-300 mb-6">
+                Aunque nos esforzamos por mantener la información actualizada y precisa, no garantizamos la exactitud, integridad o actualidad de toda la información.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">8.3 Enlaces Externos</h3>
+              <p class="text-gray-300 mb-6">
+                Nuestro sitio puede contener enlaces a sitios web de terceros. No somos responsables del contenido o las prácticas de privacidad de estos sitios externos.
+              </p>
+            </section>
+
+            <section id="limitacion-responsabilidad">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">9. Limitación de Responsabilidad</h2>
+              <p class="text-gray-300 mb-4">En la máxima medida permitida por la ley:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Iquitos Tech no será responsable de daños directos, indirectos, incidentales, especiales o consecuentes</li>
+                <li>• Nuestra responsabilidad total no excederá la cantidad pagada por usted (si corresponde) en los últimos 12 meses</li>
+                <li>• No garantizamos que el servicio será ininterrumpido o libre de errores</li>
+              </ul>
+            </section>
+
+            <section id="indemnizacion">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">10. Indemnización</h2>
+              <p class="text-gray-300 mb-4">
+                Usted acepta indemnizar y eximir de responsabilidad a Iquitos Tech, sus directores, empleados y agentes de cualquier reclamo, pérdida, responsabilidad, daño o gasto (incluidos los honorarios legales) que surjan de:
+              </p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Su uso de los servicios</li>
+                <li>• Su violación de estos Términos</li>
+                <li>• Su violación de los derechos de terceros</li>
+              </ul>
+            </section>
+
+            <section id="modificaciones-servicio">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">11. Modificaciones del Servicio</h2>
+              <p class="text-gray-300 mb-4">Nos reservamos el derecho de:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Modificar, suspender o discontinuar cualquier parte del servicio</li>
+                <li>• Cambiar estos Términos en cualquier momento</li>
+                <li>• Restringir el acceso a ciertas funciones</li>
+              </ul>
+              <p class="text-gray-300 mb-6">
+                Las modificaciones entrarán en vigencia inmediatamente tras su publicación en el sitio.
+              </p>
+            </section>
+
+            <section id="terminacion">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">12. Terminación</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">12.1 Terminación por su Parte</h3>
+              <p class="text-gray-300 mb-6">
+                Puede dejar de usar nuestros servicios en cualquier momento.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">12.2 Terminación por Nuestra Parte</h3>
+              <p class="text-gray-300 mb-6">
+                Podemos terminar o suspender su acceso inmediatamente, sin previo aviso, por cualquier motivo, incluyendo la violación de estos Términos.
+              </p>
+            </section>
+
+            <section id="ley-aplicable">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">13. Ley Aplicable</h2>
+              <p class="text-gray-300 mb-6">
+                Estos Términos se regirán e interpretarán de acuerdo con las leyes de Perú, sin dar efecto a ningún principio de conflictos de ley.
+              </p>
+            </section>
+
+            <section id="resolucion-disputas">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">14. Resolución de Disputas</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">14.1 Negociación</h3>
+              <p class="text-gray-300 mb-6">
+                En caso de disputa, las partes intentarán resolverla mediante negociación de buena fe.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">14.2 Jurisdicción</h3>
+              <p class="text-gray-300 mb-6">
+                Cualquier disputa que no pueda resolverse mediante negociación será sometida a la jurisdicción exclusiva de los tribunales competentes de Lima, Perú.
+              </p>
+            </section>
+
+            <section id="disposiciones-generales">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">15. Disposiciones Generales</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">15.1 Acuerdo Completo</h3>
+              <p class="text-gray-300 mb-6">
+                Estos Términos constituyen el acuerdo completo entre usted y Iquitos Tech con respecto al uso de los servicios.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">15.2 Divisibilidad</h3>
+              <p class="text-gray-300 mb-6">
+                Si alguna disposición de estos Términos se considera inválida o inaplicable, las disposiciones restantes seguirán siendo válidas y aplicables.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">15.3 Renuncia</h3>
+              <p class="text-gray-300 mb-6">
+                El hecho de que no ejerzamos algún derecho no constituye una renuncia a dicho derecho.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">15.4 Cesión</h3>
+              <p class="text-gray-300 mb-6">
+                No puede transferir ni ceder sus derechos bajo estos Términos sin nuestro consentimiento previo por escrito.
+              </p>
+            </section>
+
+            <section id="contacto">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">16. Información de Contacto</h2>
+              <p class="text-gray-300 mb-4">
+                Si tiene preguntas sobre estos Términos de Servicio, puede contactarnos:
+              </p>
+              <div class="bg-transparent border border-white/10 rounded-2xl p-6">
+                <div class="flex items-center space-x-3 mb-3">
+                  <svg class="w-5 h-5 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                  </svg>
+                  <span class="text-white font-medium">Email:</span>
+                  <a href="mailto:legal@iquitostech.com" class="text-[#2847d7] hover:underline">gaelmontes@iquitostech.com</a>
+                </div>
+                <div class="flex items-center space-x-3 mb-3">
+                  <svg class="w-5 h-5 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
+                    <path d="M2 12h20" stroke-width="1"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke-width="1"/>
+                    <path d="M8 12c0-4.5 1.8-8 4-8s4 3.5 4 8-1.8 8-4 8-4-3.5-4-8z" stroke-width="1" opacity="0.6"/>
+                  </svg>
+                  <span class="text-white font-medium">Contacto:</span>
+                  <a href="/contact" class="text-[#2847d7] hover:underline">iquitostech.com/contact</a>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <svg class="w-5 h-5 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <span class="text-white font-medium">Ubicación:</span>
+                  <span class="text-gray-300">Iquitos, Perú</span>
+                </div>
+              </div>
+
+              <div class="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-2xl">
+                <div class="flex items-start space-x-3">
+                  <svg class="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <div>
+                    <p class="text-sm text-blue-200 font-medium mb-1">Nota Legal</p>
+                    <p class="text-sm text-blue-200/80">
+                      Estos términos de servicio son un documento legal vinculante. Si no comprende alguna sección, le recomendamos buscar asesoramiento legal independiente.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+  </section>
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    .toc-link.active {
+      color: #2847d7;
+      font-weight: 600;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile TOC toggle
+      const tocToggle = document.getElementById('toc-toggle');
+      const tocContent = document.getElementById('toc-content');
+      const tocIcon = document.getElementById('toc-icon');
+      
+      if (tocToggle && tocContent && tocIcon) {
+        tocToggle.addEventListener('click', function() {
+          tocContent.classList.toggle('hidden');
+          tocIcon.classList.toggle('rotate-180');
+        });
+      }
+
+      // Intersection Observer for active section highlighting
+      const sections = document.querySelectorAll('section[id]');
+      const tocLinks = document.querySelectorAll('.toc-link');
+      
+      const observerOptions = {
+        rootMargin: '-20% 0px -70% 0px',
+        threshold: 0
+      };
+      
+      const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // Remove active class from all links
+            tocLinks.forEach(link => {
+              link.classList.remove('active');
+              link.removeAttribute('aria-current');
+            });
+            
+            // Add active class to current link
+            const activeLink = document.querySelector(`a[href="#${entry.target.id}"]`);
+            if (activeLink) {
+              activeLink.classList.add('active');
+              activeLink.setAttribute('aria-current', 'true');
+            }
+          }
+        });
+      }, observerOptions);
+      
+      sections.forEach(section => {
+        observer.observe(section);
+      });
+
+      // Smooth scroll for TOC links
+      for (let i = 0; i < tocLinks.length; i++) {
+        const link = tocLinks[i];
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const href = link.getAttribute('href') || '';
+          const targetId = href.substring(1);
+          const targetElement = document.getElementById(targetId);
+          
+          if (targetElement) {
+            const offsetTop = targetElement.offsetTop - 100; // Account for header
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth'
+            });
+            
+            // Close mobile TOC after clicking
+            if (window.innerWidth < 1024 && tocContent && tocIcon) {
+              tocContent.classList.add('hidden');
+              tocIcon.classList.remove('rotate-180');
+            }
+          }
+        });
+      }
+    });
+  </script>
+</Layout>
