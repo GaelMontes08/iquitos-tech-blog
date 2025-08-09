@@ -1,0 +1,537 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SEO from '../components/SEO.astro';
+
+const seo = {
+  title: 'Acerca de Iquitos Tech - Nuestra Visión y Misión',
+  description: 'Conoce más sobre Iquitos Tech: convertimos tecnología compleja en decisiones claras con velocidad, criterio y calidad editorial.',
+  canonical: 'https://iquitostech.com/about'
+};
+---
+
+<Layout>
+  <SEO 
+    slot="head"
+    title={seo.title}
+    description={seo.description}
+    canonical={seo.canonical}
+  />
+
+  <main class="about-page">
+    <section class="hero-vision relative overflow-hidden">
+      <div class="container relative z-10">
+        <div class="text-center max-w-5xl mx-auto">
+          <p class="overline">Nuestra visión</p>
+          <div class="hero-pills">
+            <div class="hero-pill green">
+              <span class="pill-text">Convertir tecnología compleja</span>
+            </div>
+            <div class="hero-pill blue">
+              <span class="pill-text">& información técnica</span>
+            </div>
+            <div class="hero-pill purple">
+              <span class="pill-text">en decisiones claras</span>
+              <svg class="sparkle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+              </svg>
+            </div>
+          </div>
+          
+          <div class="vision-content">
+            <p class="vision-text">
+              En Iquitos Tech creemos que la tecnología no debe ser intimidante. 
+              Nuestro objetivo es transformar información compleja en conocimiento 
+              accesible que empodere a nuestros lectores para tomar mejores decisiones.
+            </p>
+            <p class="vision-text">
+              Combinamos velocidad en la cobertura, criterio editorial riguroso y 
+              calidad en cada pieza de contenido para mantenerte al día con lo que 
+              realmente importa en el mundo tech.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission Banner with Stacked Pills -->
+    <section class="mission-section">
+      <div class="container">
+        <div class="text-center max-w-4xl mx-auto">
+          <p class="overline">Nuestra misión</p>
+          
+          <div class="mission-pills">
+            <div class="pill">
+              <svg class="pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              <span>Informar con velocidad y precisión sobre las últimas tendencias tecnológicas</span>
+            </div>
+            
+            <div class="pill">
+              <svg class="pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Mantener la independencia editorial y la transparencia en cada publicación</span>
+            </div>
+            
+            <div class="pill">
+              <svg class="pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <span>Construir una comunidad informada que valore el tiempo y la calidad del contenido</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Valores Section -->
+    <section class="valores-section">
+      <div class="container">
+        <div class="text-center mb-16">
+          <p class="overline">Nuestros valores</p>
+          <h2 class="section-title">Lo que nos define</h2>
+        </div>
+        
+        <div class="valores-grid">
+          <div class="valor-card">
+            <h3>Claridad primero</h3>
+            <p>Transformamos conceptos técnicos complejos en explicaciones claras y comprensibles para todos los niveles de conocimiento.</p>
+          </div>
+          
+          <div class="valor-card">
+            <h3>Independencia editorial</h3>
+            <p>Mantenemos nuestra objetividad y criterio independiente, sin influencias externas que comprometan la calidad de nuestro contenido.</p>
+          </div>
+          
+          <div class="valor-card">
+            <h3>Respeto por tu tiempo</h3>
+            <p>Entregamos información concisa y relevante, priorizando la calidad sobre la cantidad para optimizar tu experiencia de lectura.</p>
+          </div>
+          
+          <div class="valor-card">
+            <h3>Comunidad y colaboración</h3>
+            <p>Fomentamos el diálogo constructivo y la participación activa de nuestra audiencia en la conversación tecnológica.</p>
+          </div>
+          
+          <div class="valor-card">
+            <h3>Accesibilidad</h3>
+            <p>Diseñamos contenido y experiencias inclusivas que sean accesibles para todos, independientemente de sus capacidades o conocimientos previos.</p>
+          </div>
+          
+          <div class="valor-card">
+            <h3>Transparencia & ética</h3>
+            <p>Operamos con total transparencia en nuestros procesos editoriales y mantenemos los más altos estándares éticos en todo lo que hacemos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-content text-center">
+          <h2 class="cta-title">¿Listo para mantenerte al día?</h2>
+          <p class="cta-text">
+            Únete a nuestra comunidad y recibe las últimas noticias tecnológicas 
+            directamente en tu bandeja de entrada.
+          </p>
+          
+          <div class="cta-buttons">
+            <a href="/newsletter" class="btn btn-primary">
+              Suscribirme al newsletter
+            </a>
+            <a href="/contact" class="btn btn-secondary">
+              Contacto
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  :root {
+    --accent-color: #2847d7;
+    --container-max-width: 1200px;
+  }
+
+  .about-page {
+    position: relative;
+  }
+
+  .container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Typography */
+  .overline {
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+  }
+
+  .vision-headline {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    line-height: 0.9;
+    margin-bottom: 3rem;
+    background: linear-gradient(135deg, #ffffff 0%, #e5e7eb 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Hero Pills */
+  .hero-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 3rem 0;
+    align-items: center;
+  }
+
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 1.5rem 3rem;
+    border-radius: 3rem;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 800;
+    color: #1f2937;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    margin: 0.5rem;
+  }
+
+  .hero-pill:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .hero-pill.green {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  }
+
+  .hero-pill.blue {
+    background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%);
+  }
+
+  .hero-pill.purple {
+    background: linear-gradient(135deg, #e9d5ff 0%, #c4b5fd 100%);
+  }
+
+  .pill-text {
+    line-height: 1.2;
+  }
+
+  .sparkle-icon {
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-left: 0.75rem;
+    color: #7c3aed;
+    fill: currentColor;
+    stroke: none;
+    animation: sparkle 2s ease-in-out infinite;
+  }
+
+  @keyframes sparkle {
+    0%, 100% { 
+      transform: scale(1) rotate(0deg);
+      opacity: 0.8;
+    }
+    50% { 
+      transform: scale(1.1) rotate(180deg);
+      opacity: 1;
+    }
+  }
+
+  .text-accent {
+    color: var(--accent-color);
+    background: linear-gradient(135deg, var(--accent-color) 0%, #60a5fa 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  /* Hero / Vision Section */
+  .hero-vision {
+    padding: 8rem 0 6rem;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  .hero-vision::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: radial-gradient(#2847d7 1.75px, transparent 1.75px), radial-gradient(#2847d7 1.75px, transparent 1.75px);
+    background-size: 100px 100px;
+    background-position: 0 0, 35px 35px;
+    opacity: 0.3;
+    z-index: 1;
+  }
+
+  .vision-content {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .vision-text {
+    font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+    line-height: 1.7;
+    color: #d1d5db;
+    margin-bottom: 1.5rem;
+  }
+
+  .vision-text:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Mission Section */
+  .mission-section {
+    padding: 6rem 0;
+    background: linear-gradient(135deg, rgba(40, 71, 215, 0.08) 0%, rgba(0, 0, 0, 0.2) 100%);
+  }
+
+  .mission-pills {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(40, 71, 215, 0.2);
+    border-radius: 3rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .pill:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-color);
+    box-shadow: 0 8px 32px rgba(40, 71, 215, 0.2);
+  }
+
+  .pill-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--accent-color);
+    flex-shrink: 0;
+  }
+
+  .pill span {
+    font-size: clamp(1rem, 2vw, 1.125rem);
+    line-height: 1.6;
+    color: #f3f4f6;
+  }
+
+  /* Valores Section */
+  .valores-section {
+    padding: 6rem 0;
+  }
+
+  .valores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .valor-card {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .valor-card:hover {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(40, 71, 215, 0.3);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .valor-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+  }
+
+  .valor-card p {
+    line-height: 1.7;
+    color: #d1d5db;
+  }
+
+  /* CTA Section */
+  .cta-section {
+    padding: 6rem 0 8rem;
+    background: linear-gradient(135deg, rgba(40, 71, 215, 0.08) 0%, rgba(0, 0, 0, 0.2) 100%);
+  }
+
+  .cta-content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .cta-title {
+    font-size: clamp(2rem, 4vw, 2.5rem);
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+  }
+
+  .cta-text {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: #d1d5db;
+    margin-bottom: 3rem;
+  }
+
+  .cta-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--accent-color);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #1e3a8a;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 71, 215, 0.4);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: #f3f4f6;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero-vision {
+      padding: 6rem 0 4rem;
+      min-height: 70vh;
+    }
+
+    .hero-pills {
+      gap: 0.75rem;
+      margin: 2rem 0;
+    }
+
+    .hero-pill {
+      padding: 1.25rem 2rem;
+      font-size: clamp(1.25rem, 5vw, 1.75rem);
+      margin: 0.25rem;
+    }
+
+    .valores-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .valor-card {
+      padding: 1.5rem;
+    }
+
+    .pill {
+      padding: 1.25rem 1.5rem;
+      flex-direction: column;
+      text-align: center;
+      gap: 0.75rem;
+    }
+
+    .cta-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .btn {
+      width: 100%;
+      max-width: 300px;
+      justify-content: center;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .valor-card:hover,
+    .pill:hover,
+    .btn:hover,
+    .hero-pill:hover {
+      transform: none;
+    }
+
+    .pill,
+    .valor-card,
+    .btn,
+    .hero-pill {
+      transition: none;
+    }
+
+    .sparkle-icon {
+      animation: none;
+    }
+  }
+
+  /* Focus States for Accessibility */
+  .btn:focus-visible,
+  .pill:focus-visible,
+  .valor-card:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+  }
+</style>
