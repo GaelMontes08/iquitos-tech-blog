@@ -8,6 +8,9 @@ const RESEND_API_KEY = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_
 const RECAPTCHA_SECRET_KEY = import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY;
 const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
+// Resend audience ID for newsletter subscribers
+const RESEND_AUDIENCE_ID = import.meta.env.RESEND_AUDIENCE_ID || process.env.RESEND_AUDIENCE_ID;
+
 // Initialize Resend
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
@@ -263,6 +266,42 @@ export const POST: APIRoute = async ({ request }) => {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
       });
+    }
+
+    // Add subscriber to Resend audience
+    if (resend && RESEND_AUDIENCE_ID) {
+      try {
+        console.log('📋 Adding subscriber to Resend audience...');
+        
+        const audienceContact = {
+          email: email,
+          first_name: firstName || '',
+          last_name: lastName || '',
+          unsubscribed: false
+        };
+
+        const { data: audienceData, error: audienceError } = await resend.contacts.create({
+          email: audienceContact.email,
+          firstName: audienceContact.first_name,
+          lastName: audienceContact.last_name,
+          unsubscribed: audienceContact.unsubscribed,
+          audienceId: RESEND_AUDIENCE_ID,
+        });
+
+        if (audienceError) {
+          console.error('❌ Error adding to Resend audience:', audienceError);
+          // Don't fail the entire request - subscriber is already in database
+          console.warn('⚠️ Subscriber added to database but not to Resend audience');
+        } else {
+          console.log('✅ Subscriber added to Resend audience:', audienceData);
+        }
+
+      } catch (audienceError) {
+        console.error('❌ Resend audience error:', audienceError);
+        // Don't fail the entire request - subscriber is already in database
+      }
+    } else {
+      console.warn('⚠️ Resend API key or audience ID not configured');
     }
 
     // Log successful attempt
