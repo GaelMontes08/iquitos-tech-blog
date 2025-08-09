@@ -321,7 +321,7 @@ export const defaultSEO: Partial<SEOProps> = {
 export const siteConfig = {
   siteName: 'Iquitos Tech',
   siteUrl: 'https://iquitostech.com',
-  defaultImage: '/logo.svg',
+  defaultImage: '/fallback-banner.webp',
   twitterHandle: '@IquitosTech',
   locale: 'es_ES',
   themeColor: '#2847d7'
