@@ -1,0 +1,508 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const pageTitle = 'Preguntas Frecuentes | Iquitos Tech';
+const pageDescription = 'Encuentra respuestas a las preguntas más frecuentes sobre nuestros servicios de SEO, SEM, diseño web y contenido tecnológico en Iquitos Tech.';
+const lastUpdated = '09/08/2025';
+
+export const prerender = true;
+---
+
+<Layout 
+  title={pageTitle}
+  description={pageDescription}
+  canonical="https://iquitostech.com/faqs"
+  type="website"
+>
+  <section class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-transparent">
+      
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+          Preguntas Frecuentes
+        </h1>
+        <p class="text-xl text-gray-300 mb-6">
+          Encuentra respuestas sobre nuestros servicios de marketing digital y contenido tecnológico
+        </p>
+        <div class="inline-flex items-center px-4 py-2 bg-transparent ring-1 ring-white/10 rounded-lg">
+          <svg class="w-5 h-5 text-[#2847d7] mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="text-gray-200 text-sm">Actualizado: {lastUpdated}</span>
+        </div>
+      </div>
+
+      <div class="lg:grid lg:grid-cols-12 lg:gap-8 items-start overflow-visible">
+        
+        <aside class="lg:col-span-3 self-start sticky top-24">
+          
+          <div class="lg:hidden mb-6">
+            <button 
+              id="toc-toggle"
+              class="w-full flex items-center justify-between px-4 py-3 bg-transparent border border-white/10 rounded-2xl text-white hover:border-white/20 transition-colors"
+            >
+              <span class="font-medium">Categorías</span>
+              <svg id="toc-icon" class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+          </div>
+
+          <nav id="toc-content" class="hidden lg:block rounded-2xl border border-white/10 p-4 max-h-[calc(100vh-8rem)] overflow-auto">
+            <h3 class="text-lg font-semibold text-white mb-4">Categorías</h3>
+            <ul class="space-y-2 text-sm" id="toc-list">
+              <li><a href="#general" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">General</a></li>
+              <li><a href="#servicios-seo" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">Servicios SEO</a></li>
+              <li><a href="#marketing-sem" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">Marketing SEM</a></li>
+              <li><a href="#diseno-web" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">Diseño Web</a></li>
+              <li><a href="#contenido-noticias" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">Contenido y Noticias</a></li>
+              <li><a href="#newsletter" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">Newsletter</a></li>
+              <li><a href="#precios-facturacion" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">Precios y Facturación</a></li>
+              <li><a href="#soporte-contacto" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">Soporte y Contacto</a></li>
+            </ul>
+          </nav>
+        </aside>
+
+        <article class="lg:col-span-7 min-w-0">
+          <div class="prose prose-invert max-w-none">
+            
+            <section id="general">
+              <h2 class="text-2xl font-bold text-white mb-6 scroll-mt-24">General</h2>
+              
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Qué es Iquitos Tech?</h3>
+                <p class="text-gray-300 mb-4">
+                  Iquitos Tech es una agencia especializada en marketing digital y contenido tecnológico. Ofrecemos servicios de SEO, SEM, diseño web y creamos contenido de calidad sobre tecnología. Nuestro objetivo es ayudar a empresas y profesionales a mejorar su presencia digital mientras mantenemos informada a nuestra audiencia sobre las últimas tendencias tecnológicas.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Desde cuándo operan?</h3>
+                <p class="text-gray-300 mb-4">
+                  Iquitos Tech fue fundada en 2025 con la misión de democratizar el acceso a servicios de marketing digital de calidad y proporcionar información tecnológica confiable desde la perspectiva única de la región amazónica peruana.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Trabajan solo con empresas locales?</h3>
+                <p class="text-gray-300 mb-4">
+                  No, trabajamos con clientes tanto locales como internacionales. Aunque tenemos raíces en Iquitos, nuestros servicios digitales nos permiten colaborar con empresas de cualquier parte del mundo, adaptándonos a diferentes husos horarios y necesidades regionales.
+                </p>
+              </div>
+            </section>
+
+            <section id="servicios-seo">
+              <h2 class="text-2xl font-bold text-white mb-6 scroll-mt-24">Servicios SEO</h2>
+              
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Qué incluye su servicio de implementación SEO?</h3>
+                <p class="text-gray-300 mb-4">
+                  Nuestro servicio de SEO incluye:
+                </p>
+                <ul class="text-gray-300 space-y-2 mb-4">
+                  <li>• Auditoría técnica completa del sitio web</li>
+                  <li>• Investigación y análisis de palabras clave</li>
+                  <li>• Optimización on-page (títulos, meta descripciones, contenido)</li>
+                  <li>• Optimización técnica (velocidad, Core Web Vitals, estructura)</li>
+                  <li>• Estrategia de contenido SEO</li>
+                  <li>• Construcción de enlaces (link building)</li>
+                  <li>• Reportes mensuales de rendimiento</li>
+                </ul>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Cuánto tiempo toma ver resultados en SEO?</h3>
+                <p class="text-gray-300 mb-4">
+                  Los resultados de SEO generalmente comienzan a ser visibles entre 3-6 meses, dependiendo de la competitividad del sector y el estado inicial del sitio web. Mejoras técnicas pueden verse más rápido (1-2 meses), mientras que el posicionamiento para palabras clave competitivas puede tomar 6-12 meses.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Garantizan posiciones específicas en Google?</h3>
+                <p class="text-gray-300 mb-4">
+                  No garantizamos posiciones específicas ya que Google cambia sus algoritmos constantemente. Sin embargo, sí garantizamos mejoras medibles en tráfico orgánico, visibilidad y rendimiento técnico del sitio. Trabajamos con objetivos realistas basados en análisis de competencia y potencial del negocio.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Trabajan con e-commerce?</h3>
+                <p class="text-gray-300 mb-4">
+                  Sí, tenemos experiencia optimizando tiendas online en plataformas como Shopify, WooCommerce, Magento y otras. Nos especializamos en SEO para e-commerce incluyendo optimización de fichas de producto, estructura de categorías, schema markup para productos y estrategias de contenido comercial.
+                </p>
+              </div>
+            </section>
+
+            <section id="marketing-sem">
+              <h2 class="text-2xl font-bold text-white mb-6 scroll-mt-24">Marketing SEM</h2>
+              
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Qué plataformas de SEM manejan?</h3>
+                <p class="text-gray-300 mb-4">
+                  Gestionamos campañas publicitarias en:
+                </p>
+                <ul class="text-gray-300 space-y-2 mb-4">
+                  <li>• Google Ads (búsqueda, display, shopping, YouTube)</li>
+                  <li>• Microsoft Advertising (Bing Ads)</li>
+                  <li>• Facebook Ads e Instagram Ads</li>
+                  <li>• LinkedIn Ads para B2B</li>
+                  <li>• Twitter Ads</li>
+                  <li>• TikTok Ads (para audiencias jóvenes)</li>
+                </ul>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Cuál es el presupuesto mínimo para campañas SEM?</h3>
+                <p class="text-gray-300 mb-4">
+                  Recomendamos un presupuesto mínimo de $500 USD mensuales para campañas efectivas, aunque podemos trabajar con presupuestos menores para proyectos específicos o mercados de nicho. El presupuesto se divide entre inversión publicitaria (80-85%) y gestión profesional (15-20%).
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Cómo miden el éxito de las campañas?</h3>
+                <p class="text-gray-300 mb-4">
+                  Utilizamos métricas clave como ROAS (Return on Ad Spend), CPA (Costo por Adquisición), CTR (Click Through Rate), Quality Score y conversiones. Proporcionamos reportes detallados con análisis de rendimiento y recomendaciones de optimización mensualmente.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Ofrecen gestión de campañas 24/7?</h3>
+                <p class="text-gray-300 mb-4">
+                  Monitoreamos las campañas continuamente y realizamos ajustes según sea necesario. Para emergencias o campañas de alto volumen, ofrecemos monitoreo extendido. Nuestro horario principal es de 8 AM a 6 PM (hora de Perú), con disponibilidad extendida según las necesidades del cliente.
+                </p>
+              </div>
+            </section>
+
+            <section id="diseno-web">
+              <h2 class="text-2xl font-bold text-white mb-6 scroll-mt-24">Diseño Web</h2>
+              
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Qué tipo de sitios web diseñan?</h3>
+                <p class="text-gray-300 mb-4">
+                  Diseñamos y desarrollamos:
+                </p>
+                <ul class="text-gray-300 space-y-2 mb-4">
+                  <li>• Sitios web corporativos y landing pages</li>
+                  <li>• Tiendas online (e-commerce)</li>
+                  <li>• Blogs y sitios de contenido</li>
+                  <li>• Portafolios profesionales</li>
+                  <li>• Aplicaciones web personalizadas</li>
+                  <li>• Sitios web con sistemas de gestión (CMS)</li>
+                </ul>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Qué tecnologías utilizan?</h3>
+                <p class="text-gray-300 mb-4">
+                  Trabajamos con tecnologías modernas como React, Next.js, Astro, WordPress, Shopify, y frameworks CSS como Tailwind. Seleccionamos la tecnología más adecuada según los objetivos del proyecto, presupuesto y necesidades de mantenimiento a largo plazo.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Incluyen hosting y dominio?</h3>
+                <p class="text-gray-300 mb-4">
+                  Sí, podemos gestionar la compra y configuración de dominio y hosting. Trabajamos con proveedores confiables como Vercel, Netlify, AWS, y hostings tradicionales según las necesidades del proyecto. También podemos trabajar con su proveedor actual si prefiere mantenerlo.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Los sitios web son responsive?</h3>
+                <p class="text-gray-300 mb-4">
+                  Absolutamente. Todos nuestros diseños son completamente responsive y optimizados para dispositivos móviles. Seguimos un enfoque "mobile-first" y garantizamos que su sitio se vea y funcione perfectamente en smartphones, tablets y computadoras de escritorio.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Cuánto tiempo toma desarrollar un sitio web?</h3>
+                <p class="text-gray-300 mb-4">
+                  Los tiempos varían según la complejidad:
+                </p>
+                <ul class="text-gray-300 space-y-2 mb-4">
+                  <li>• Landing page: 1-2 semanas</li>
+                  <li>• Sitio corporativo (5-10 páginas): 3-4 semanas</li>
+                  <li>• E-commerce básico: 4-6 semanas</li>
+                  <li>• Sitio web complejo o aplicación: 6-12 semanas</li>
+                </ul>
+              </div>
+            </section>
+
+            <section id="contenido-noticias">
+              <h2 class="text-2xl font-bold text-white mb-6 scroll-mt-24">Contenido y Noticias</h2>
+              
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Qué tipo de contenido publican?</h3>
+                <p class="text-gray-300 mb-4">
+                  Publicamos contenido variado sobre tecnología incluyendo:
+                </p>
+                <ul class="text-gray-300 space-y-2 mb-4">
+                  <li>• Noticias y tendencias tecnológicas</li>
+                  <li>• Reseñas de productos y servicios</li>
+                  <li>• Tutoriales y guías técnicas</li>
+                  <li>• Análisis de industria y mercado</li>
+                  <li>• Consejos de marketing digital</li>
+                  <li>• Entrevistas con expertos del sector</li>
+                </ul>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Crean contenido personalizado para empresas?</h3>
+                <p class="text-gray-300 mb-4">
+                  Sí, ofrecemos servicios de creación de contenido personalizado incluyendo artículos para blogs corporativos, case studies, whitepapers, contenido para redes sociales y materiales educativos. Adaptamos el tono y estilo a la identidad de cada marca.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Con qué frecuencia publican contenido nuevo?</h3>
+                <p class="text-gray-300 mb-4">
+                  Publicamos contenido nuevo regularmente en nuestro blog, típicamente 3-5 artículos por por día. Para clientes corporativos, establecemos calendarios editoriales personalizados que pueden incluir desde 1 artículo semanal hasta contenido diario según las necesidades y presupuesto.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Cómo garantizan la calidad del contenido?</h3>
+                <p class="text-gray-300 mb-4">
+                  Nuestro proceso incluye investigación exhaustiva, verificación de fuentes, revisión editorial y optimización SEO. Todo el contenido pasa por múltiples etapas de revisión antes de publicación. Nos mantenemos actualizados con las últimas tendencias y desarrollos tecnológicos.
+                </p>
+              </div>
+            </section>
+
+            <section id="newsletter">
+              <h2 class="text-2xl font-bold text-white mb-6 scroll-mt-24">Newsletter</h2>
+              
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Qué incluye su newsletter?</h3>
+                <p class="text-gray-300 mb-4">
+                  Nuestro newsletter semanal incluye:
+                </p>
+                <ul class="text-gray-300 space-y-2 mb-4">
+                  <li>• Resumen de las noticias tecnológicas más importantes</li>
+                  <li>• Análisis exclusivos de tendencias</li>
+                  <li>• Recomendaciones de herramientas y recursos</li>
+                  <li>• Tips de marketing digital</li>
+                  <li>• Ofertas especiales en nuestros servicios</li>
+                </ul>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Con qué frecuencia envían el newsletter?</h3>
+                <p class="text-gray-300 mb-4">
+                  Enviamos nuestro newsletter principal una vez por semana, típicamente los domingos. Ocasionalmente enviamos boletines especiales para noticias urgentes o eventos importantes. Respetamos tu bandeja de entrada y nunca enviamos spam.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Puedo personalizar qué contenido recibo?</h3>
+                <p class="text-gray-300 mb-4">
+                  Actualmente enviamos un newsletter curado con el contenido más relevante. Estamos trabajando en opciones de personalización que permitirán elegir temas específicos de interés. Mientras tanto, puedes contactarnos para solicitudes especiales de contenido.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Cómo me desuscribo?</h3>
+                <p class="text-gray-300 mb-4">
+                  Puedes desuscribirte fácilmente haciendo clic en el enlace "Desuscribirse" en cualquier email que recibas de nosotros. El proceso es inmediato y respetamos completamente tu decisión. También puedes contactarnos directamente si prefieres gestionar tu suscripción de otra manera.
+                </p>
+              </div>
+            </section>
+
+            <section id="precios-facturacion">
+              <h2 class="text-2xl font-bold text-white mb-6 scroll-mt-24">Precios y Facturación</h2>
+              
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Cómo estructuran sus precios?</h3>
+                <p class="text-gray-300 mb-4">
+                  Nuestros precios varían según el servicio:
+                </p>
+                <ul class="text-gray-300 space-y-2 mb-4">
+                  <li>• <strong>SEO:</strong> Planes mensuales desde $800 USD</li>
+                  <li>• <strong>SEM:</strong> 15-20% del presupuesto publicitario mensual</li>
+                  <li>• <strong>Diseño Web:</strong> Desde $1,500 USD para proyectos básicos</li>
+                  <li>• <strong>Contenido:</strong> Desde $150 USD por artículo profesional</li>
+                </ul>
+                <p class="text-gray-300 mb-4">
+                  Ofrecemos cotizaciones personalizadas según las necesidades específicas de cada proyecto.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Qué métodos de pago aceptan?</h3>
+                <p class="text-gray-300 mb-4">
+                  Aceptamos transferencias bancarias, PayPal, tarjetas de crédito (Visa, MasterCard) y para clientes locales, también Yape y Plin. Para proyectos grandes, podemos estructurar planes de pago por etapas.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Ofrecen descuentos por contratos anuales?</h3>
+                <p class="text-gray-300 mb-4">
+                  Sí, ofrecemos descuentos del 10-15% para contratos anuales pagados por adelantado. También tenemos descuentos especiales para startups, ONGs y proyectos educativos. Contactanos para conocer las ofertas actuales.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Hay costos adicionales ocultos?</h3>
+                <p class="text-gray-300 mb-4">
+                  No, somos transparentes con todos los costos. Las cotizaciones incluyen todos los servicios especificados. Los únicos costos adicionales serían cambios en el alcance del proyecto o servicios adicionales solicitados por el cliente, siempre previa aprobación.
+                </p>
+              </div>
+            </section>
+
+            <section id="soporte-contacto">
+              <h2 class="text-2xl font-bold text-white mb-6 scroll-mt-24">Soporte y Contacto</h2>
+              
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Qué horarios de soporte manejan?</h3>
+                <p class="text-gray-300 mb-4">
+                  Nuestro horario principal de soporte es de lunes a viernes de 8:00 AM a 6:00 PM (hora de Perú). Para clientes con servicios premium o campañas activas, ofrecemos soporte extendido y respuesta prioritaria. Los fines de semana atendemos emergencias.
+                </p>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Cuál es la mejor forma de contactarlos?</h3>
+                <p class="text-gray-300 mb-4">
+                  Puedes contactarnos a través de:
+                </p>
+                <ul class="text-gray-300 space-y-2 mb-4">
+                  <li>• Email: <a href="mailto:contact@iquitostech.com" class="text-[#2847d7] hover:underline">contact@iquitostech.com</a></li>
+                  <li>• Formulario de contacto en nuestro <a href="/contact" class="text-[#2847d7] hover:underline">sitio web</a></li>
+                  <li>• Redes sociales para consultas generales</li>
+                </ul>
+              </div>
+
+              <div class="faq-item mb-6">
+                <h3 class="text-xl font-semibold text-white mb-3">¿Tienen oficinas físicas?</h3>
+                <p class="text-gray-300 mb-4">
+                  Operamos principalmente de forma digital, lo que nos permite ofrecer mejores precios y flexibilidad. Para clientes locales en Iquitos, podemos coordinar reuniones presenciales según sea necesario. Para clientes internacionales, utilizamos videoconferencias y herramientas de colaboración online.
+                </p>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Section -->
+      <div class="mt-16 text-center">
+        <div class="bg-gradient-to-r from-[#2847d7]/10 to-purple-600/10 rounded-2xl p-8 border border-white/10">
+          <h3 class="text-2xl font-bold text-white mb-4">¿No encontraste lo que buscabas?</h3>
+          <p class="text-gray-300 mb-6">
+            Estamos aquí para ayudarte. Contáctanos y resolveremos todas tus dudas sobre nuestros servicios.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a 
+              href="/contact" 
+              class="inline-flex items-center px-6 py-3 bg-[#2847d7] text-white font-semibold rounded-lg hover:bg-[#1e3a8a] transition-colors"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              Contáctanos
+            </a>
+            <a 
+              href="/newsletter" 
+              class="inline-flex items-center px-6 py-3 bg-transparent border border-white/20 text-white font-semibold rounded-lg hover:bg-white/5 transition-colors"
+            >
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4 4h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+              </svg>
+              Suscribirse al Newsletter
+            </a>
+          </div>
+        </div>
+      </div>
+  </section>
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    .toc-link.active {
+      color: #2847d7;
+      font-weight: 600;
+    }
+    
+    .faq-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .faq-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(40, 71, 215, 0.3);
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mobile TOC toggle
+      const tocToggle = document.getElementById('toc-toggle');
+      const tocContent = document.getElementById('toc-content');
+      const tocIcon = document.getElementById('toc-icon');
+      
+      if (tocToggle && tocContent && tocIcon) {
+        tocToggle.addEventListener('click', function() {
+          tocContent.classList.toggle('hidden');
+          tocIcon.classList.toggle('rotate-180');
+        });
+      }
+
+      // Intersection Observer for active section highlighting
+      const sections = document.querySelectorAll('section[id]');
+      const tocLinks = document.querySelectorAll('.toc-link');
+      
+      const observerOptions = {
+        rootMargin: '-20% 0px -70% 0px',
+        threshold: 0
+      };
+      
+      const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // Remove active class from all links
+            tocLinks.forEach(link => {
+              link.classList.remove('active');
+              link.removeAttribute('aria-current');
+            });
+            
+            // Add active class to current link
+            const activeLink = document.querySelector(`a[href="#${entry.target.id}"]`);
+            if (activeLink) {
+              activeLink.classList.add('active');
+              activeLink.setAttribute('aria-current', 'true');
+            }
+          }
+        });
+      }, observerOptions);
+      
+      sections.forEach(section => {
+        observer.observe(section);
+      });
+
+      // Smooth scroll for TOC links
+      for (let i = 0; i < tocLinks.length; i++) {
+        const link = tocLinks[i];
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const href = link.getAttribute('href') || '';
+          const targetId = href.substring(1);
+          const targetElement = document.getElementById(targetId);
+          
+          if (targetElement) {
+            const offsetTop = targetElement.offsetTop - 100;
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth'
+            });
+            
+            // Close mobile TOC after clicking
+            if (window.innerWidth < 1024 && tocContent && tocIcon) {
+              tocContent.classList.add('hidden');
+              tocIcon.classList.remove('rotate-180');
+            }
+          }
+        });
+      }
+    });
+  </script>
+</Layout>
