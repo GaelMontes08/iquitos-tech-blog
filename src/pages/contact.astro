@@ -189,6 +189,9 @@ export const prerender = false;
     </div>
   </div>
 
+  <!-- reCAPTCHA v3 Script - Only loaded on contact page -->
+  <script src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`} async defer></script>
+
   <script define:vars={{ RECAPTCHA_SITE_KEY }}>
     // Contact form handling with reCAPTCHA v3
     document.addEventListener('DOMContentLoaded', function() {
