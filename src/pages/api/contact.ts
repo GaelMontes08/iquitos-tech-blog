@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
+import { supabase } from '../../lib/supabase.js';
 
 // Configuration from environment variables
 const RECAPTCHA_SECRET_KEY = import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY;
@@ -9,7 +10,77 @@ const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 // Initialize Resend
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
+// Rate limiting configuration - 1 contact per day
+const RATE_LIMIT_ATTEMPTS = 1;
+const RATE_LIMIT_HOURS = 24;
+
+interface ContactAttempt {
+  email: string;
+  ipAddress: string;
+  name?: string;
+  messagePreview?: string;
+  success: boolean;
+  errorMessage?: string;
+  userAgent?: string;
+}
+
+function getClientIP(request: Request): string {
+  return request.headers.get('x-forwarded-for')?.split(',')[0] || 
+         request.headers.get('x-real-ip') || 
+         request.headers.get('cf-connecting-ip') || 
+         'unknown';
+}
+
+function getUserAgent(request: Request): string {
+  return request.headers.get('user-agent') || 'unknown';
+}
+
+async function checkContactRateLimit(ipAddress: string): Promise<number> {
+  try {
+    const hoursAgo = new Date();
+    hoursAgo.setHours(hoursAgo.getHours() - RATE_LIMIT_HOURS);
+
+    const { data, error } = await supabase
+      .from('contact_attempts')
+      .select('id')
+      .eq('ip_address', ipAddress)
+      .gte('attempted_at', hoursAgo.toISOString());
+
+    if (error) {
+      console.error('Rate limit check error:', error);
+      return 0; // Allow on error
+    }
+
+    return data?.length || 0;
+  } catch (error) {
+    console.error('Rate limit check error:', error);
+    return 0;
+  }
+}
+
+async function logContactAttempt(attempt: ContactAttempt): Promise<void> {
+  try {
+    await supabase
+      .from('contact_attempts')
+      .insert({
+        email: attempt.email.toLowerCase().trim(),
+        ip_address: attempt.ipAddress,
+        name: attempt.name,
+        message_preview: attempt.messagePreview,
+        success: attempt.success,
+        error_message: attempt.errorMessage,
+        user_agent: attempt.userAgent
+      });
+  } catch (error) {
+    console.error('Error logging contact attempt:', error);
+    // Don't throw error - logging is not critical
+  }
+}
+
 export const POST: APIRoute = async ({ request }) => {
+  const ipAddress = getClientIP(request);
+  const userAgent = getUserAgent(request);
+  
   try {
     // Parse form data
     const formData = await request.formData();
@@ -21,6 +92,16 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Validate required fields
     if (!name || !email || !subject || !message) {
+      await logContactAttempt({
+        email: email || 'missing',
+        ipAddress,
+        name,
+        messagePreview: message?.substring(0, 100),
+        success: false,
+        errorMessage: 'Campos obligatorios faltantes',
+        userAgent
+      });
+
       return new Response(JSON.stringify({
         success: false,
         message: 'Todos los campos son obligatorios.'
@@ -33,6 +114,16 @@ export const POST: APIRoute = async ({ request }) => {
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
+      await logContactAttempt({
+        email,
+        ipAddress,
+        name,
+        messagePreview: message.substring(0, 100),
+        success: false,
+        errorMessage: 'Formato de email inválido',
+        userAgent
+      });
+
       return new Response(JSON.stringify({
         success: false,
         message: 'El formato del email no es válido.'
@@ -42,8 +133,42 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
+    // Check rate limiting - 1 contact per day
+    const recentAttempts = await checkContactRateLimit(ipAddress);
+    if (recentAttempts >= RATE_LIMIT_ATTEMPTS) {
+      await logContactAttempt({
+        email,
+        ipAddress,
+        name,
+        messagePreview: message.substring(0, 100),
+        success: false,
+        errorMessage: 'Rate limit exceeded',
+        userAgent
+      });
+
+      console.log(`🚫 Contact rate limit exceeded for IP ${ipAddress}: ${recentAttempts} attempts in last ${RATE_LIMIT_HOURS} hours`);
+      
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'Solo puedes enviar un mensaje por día. Inténtalo mañana.'
+      }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     // Verify reCAPTCHA
     if (!recaptchaResponse) {
+      await logContactAttempt({
+        email,
+        ipAddress,
+        name,
+        messagePreview: message.substring(0, 100),
+        success: false,
+        errorMessage: 'reCAPTCHA token missing',
+        userAgent
+      });
+
       return new Response(JSON.stringify({
         success: false,
         message: 'Por favor, completa el reCAPTCHA.'
@@ -59,13 +184,24 @@ export const POST: APIRoute = async ({ request }) => {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: `secret=${RECAPTCHA_SECRET_KEY}&response=${recaptchaResponse}`
+      body: `secret=${RECAPTCHA_SECRET_KEY}&response=${recaptchaResponse}&remoteip=${ipAddress}`
     });
 
     const recaptchaResult = await recaptchaVerification.json();
 
     if (!recaptchaResult.success) {
       console.log('reCAPTCHA verification failed:', recaptchaResult);
+      
+      await logContactAttempt({
+        email,
+        ipAddress,
+        name,
+        messagePreview: message.substring(0, 100),
+        success: false,
+        errorMessage: 'reCAPTCHA verification failed',
+        userAgent
+      });
+
       return new Response(JSON.stringify({
         success: false,
         message: 'Verificación reCAPTCHA fallida. Inténtalo de nuevo.'
@@ -79,6 +215,17 @@ export const POST: APIRoute = async ({ request }) => {
     if (recaptchaResult.score !== undefined) {
       if (recaptchaResult.score < 0.5) {
         console.log('reCAPTCHA score too low:', recaptchaResult.score);
+        
+        await logContactAttempt({
+          email,
+          ipAddress,
+          name,
+          messagePreview: message.substring(0, 100),
+          success: false,
+          errorMessage: `reCAPTCHA score too low: ${recaptchaResult.score}`,
+          userAgent
+        });
+
         return new Response(JSON.stringify({
           success: false,
           message: 'Verificación de seguridad fallida. Inténtalo de nuevo.'
@@ -91,6 +238,17 @@ export const POST: APIRoute = async ({ request }) => {
       // Also check if the action matches
       if (recaptchaResult.action && recaptchaResult.action !== 'contact_form') {
         console.log('reCAPTCHA action mismatch:', recaptchaResult.action);
+        
+        await logContactAttempt({
+          email,
+          ipAddress,
+          name,
+          messagePreview: message.substring(0, 100),
+          success: false,
+          errorMessage: `reCAPTCHA action mismatch: ${recaptchaResult.action}`,
+          userAgent
+        });
+
         return new Response(JSON.stringify({
           success: false,
           message: 'Verificación de seguridad fallida. Inténtalo de nuevo.'
@@ -223,6 +381,16 @@ Para responder, simplemente responde a este email.
       console.warn('⚠️ Resend API key not configured, email not sent');
     }
 
+    // Log successful contact attempt
+    await logContactAttempt({
+      email,
+      ipAddress,
+      name,
+      messagePreview: message.substring(0, 100),
+      success: true,
+      userAgent
+    });
+
     // Return success response
     return new Response(JSON.stringify({
       success: true,
@@ -234,6 +402,19 @@ Para responder, simplemente responde a este email.
 
   } catch (error) {
     console.error('Contact form error:', error);
+    
+    // Log error attempt
+    try {
+      await logContactAttempt({
+        email: 'unknown',
+        ipAddress,
+        success: false,
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        userAgent
+      });
+    } catch (logError) {
+      console.error('Error logging failed contact attempt:', logError);
+    }
     
     return new Response(JSON.stringify({
       success: false,
