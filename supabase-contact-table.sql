@@ -61,6 +61,48 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Grant execute permission to anon users (needed for contact form)
 GRANT EXECUTE ON FUNCTION get_recent_contact_attempts_by_ip TO anon, authenticated;
 
+-- Create RPC function to log contact attempt (bypasses RLS like newsletter system)
+CREATE OR REPLACE FUNCTION log_contact_attempt(
+  user_name TEXT,
+  user_email TEXT,
+  user_message TEXT,
+  ip_addr TEXT,
+  user_agent_param TEXT DEFAULT NULL,
+  attempt_success BOOLEAN DEFAULT true,
+  error_msg TEXT DEFAULT NULL
+)
+RETURNS BOOLEAN AS $$
+BEGIN
+  INSERT INTO contact_attempts (
+    name,
+    email,
+    message_preview,
+    ip_address,
+    user_agent,
+    success,
+    error_message
+  ) VALUES (
+    user_name,
+    user_email,
+    LEFT(user_message, 100), -- Store first 100 chars only
+    ip_addr,
+    user_agent_param,
+    attempt_success,
+    error_msg
+  );
+  
+  RETURN true;
+EXCEPTION
+  WHEN OTHERS THEN
+    -- Log error but don't fail silently
+    RAISE WARNING 'Failed to log contact attempt: %', SQLERRM;
+    RETURN false;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Grant execute permission to anon users (needed for contact form)
+GRANT EXECUTE ON FUNCTION log_contact_attempt TO anon, authenticated;
+
 -- Optional: Create a view for contact analytics (accessible only to authenticated users)
 CREATE OR REPLACE VIEW contact_stats AS
 SELECT 

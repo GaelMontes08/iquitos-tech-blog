@@ -84,25 +84,19 @@ async function logContactAttempt(attempt: ContactAttempt): Promise<boolean> {
   try {
     console.log(`📝 Logging contact attempt: ${attempt.email}, success: ${attempt.success}, IP: ${attempt.ipAddress}`);
     
-    const insertData = {
-      email: attempt.email.toLowerCase().trim(),
-      ip_address: attempt.ipAddress,
-      name: attempt.name,
-      message_preview: attempt.messagePreview,
-      success: attempt.success,
-      error_message: attempt.errorMessage,
-      user_agent: attempt.userAgent
-    };
-    
-    console.log('📝 Insert data:', JSON.stringify(insertData, null, 2));
-    
-    const { data, error } = await supabase
-      .from('contact_attempts')
-      .insert(insertData)
-      .select(); // Add select to get the inserted data back
+    // Use RPC function like newsletter system (bypasses RLS)
+    const { data, error } = await supabase.rpc('log_contact_attempt', {
+      user_name: attempt.name || '',
+      user_email: attempt.email.toLowerCase().trim(),
+      user_message: attempt.messagePreview || '',
+      ip_addr: attempt.ipAddress,
+      user_agent_param: attempt.userAgent || null,
+      attempt_success: attempt.success,
+      error_msg: attempt.errorMessage || null
+    });
 
     if (error) {
-      console.error('❌ Error logging contact attempt:', error);
+      console.error('❌ Error logging contact attempt via RPC:', error);
       console.error('Error details:', {
         message: error.message,
         details: error.details,
@@ -111,7 +105,7 @@ async function logContactAttempt(attempt: ContactAttempt): Promise<boolean> {
       });
       return false;
     } else {
-      console.log('✅ Contact attempt logged successfully, inserted data:', data);
+      console.log(`✅ Contact attempt logged successfully via RPC. Result: ${data}`);
       return true;
     }
   } catch (error) {
