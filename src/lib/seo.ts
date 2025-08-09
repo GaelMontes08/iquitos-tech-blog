@@ -30,12 +30,32 @@ export function replaceCMSDomain(url: string | undefined): string | undefined {
 /**
  * Fixes URL structure for Astro routing (adds /posts/ and /categoria/ paths)
  */
-export function fixAstroUrlStructure(url: string | undefined, type: 'post' | 'category' = 'post'): string | undefined {
+export function fixAstroUrlStructure(url: string | undefined, type: 'post' | 'category' | 'page' = 'post'): string | undefined {
   if (!url) return url;
   
   // If URL already has the correct structure, return as is
   if (url.includes('/posts/') || url.includes('/categoria/')) {
     return url;
+  }
+  
+  // For static pages (like homepage, privacy, contact), don't modify the URL
+  if (type === 'page') {
+    return replaceCMSDomain(url);
+  }
+  
+  // Static page patterns that should not get /posts/ prefix
+  const staticPagePatterns = [
+    '/',
+    '/privacy',
+    '/contact', 
+    '/about',
+    '/404',
+    '/debug-seo'
+  ];
+  
+  const urlPath = url.replace(/^https?:\/\/[^\/]+/, ''); // Extract path from URL
+  if (staticPagePatterns.some(pattern => urlPath === pattern || urlPath === pattern + '/')) {
+    return replaceCMSDomain(url);
   }
   
   // Remove trailing slash and extract the slug from the URL
@@ -45,10 +65,10 @@ export function fixAstroUrlStructure(url: string | undefined, type: 'post' | 'ca
   
   // If we can't extract a slug, return the original URL
   if (!slug || slug.length === 0) {
-    return url;
+    return replaceCMSDomain(url);
   }
   
-  // Build the correct URL structure
+  // Build the correct URL structure only for posts and categories
   const baseUrl = 'https://iquitostech.com';
   if (type === 'post') {
     return `${baseUrl}/posts/${slug}`;
@@ -56,7 +76,7 @@ export function fixAstroUrlStructure(url: string | undefined, type: 'post' | 'ca
     return `${baseUrl}/categoria/${slug}`;
   }
   
-  return url;
+  return replaceCMSDomain(url);
 }
 
 /**
@@ -83,7 +103,7 @@ function cleanTitle(title: string | undefined): string | undefined {
 /**
  * Processes Yoast SEO data to replace domains and ensure proper indexing
  */
-export function processSEOData(seo: YoastSEO | undefined, urlType: 'post' | 'category' = 'post'): YoastSEO | undefined {
+export function processSEOData(seo: YoastSEO | undefined, urlType: 'post' | 'category' | 'page' = 'post'): YoastSEO | undefined {
   if (!seo) return seo;
 
   return {
@@ -126,7 +146,7 @@ export function processSEOData(seo: YoastSEO | undefined, urlType: 'post' | 'cat
 /**
  * Processes schema URLs to replace CMS domain
  */
-function processSchemaURLs(schema: any, urlType: 'post' | 'category' = 'post'): any {
+function processSchemaURLs(schema: any, urlType: 'post' | 'category' | 'page' = 'post'): any {
   if (!schema) return schema;
   
   const processValue = (value: any): any => {
@@ -204,14 +224,14 @@ export interface SEOProps {
   modifiedTime?: string;
   author?: string;
   type?: 'website' | 'article';
-  urlType?: 'post' | 'category';
+  urlType?: 'post' | 'category' | 'page';
 }
 
 /**
  * Generates meta tags from Yoast SEO data
  */
 export function generateSEOTags(props: SEOProps) {
-  const { title, description, canonical, seo, image, publishedTime, modifiedTime, author, type = 'website', urlType = 'post' } = props;
+  const { title, description, canonical, seo, image, publishedTime, modifiedTime, author, type = 'website', urlType = 'page' } = props;
 
   // Process SEO data to replace domains and ensure indexing
   const processedSEO = processSEOData(seo, urlType);
