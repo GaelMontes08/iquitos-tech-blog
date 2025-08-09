@@ -258,8 +258,11 @@ export function generateSEOTags(props: SEOProps) {
   const finalCanonical = canonical 
     ? fixAstroUrlStructure(replaceCMSDomain(canonical), urlType)
     : processedSEO?.canonical || 'https://iquitostech.com';
-    
-  const finalOgUrl = processedSEO?.og_url || finalCanonical;
+  
+  // For homepage, always use the canonical URL for og:url too
+  const finalOgUrl = (urlType === 'page' && canonical) 
+    ? finalCanonical 
+    : processedSEO?.og_url || finalCanonical;
   // ENHANCED: Prioritize actual featured image over potentially incorrect Yoast og_image
   // The issue: Yoast might capture first content image instead of featured image
   let finalImage: string | undefined;
