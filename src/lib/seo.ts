@@ -57,9 +57,15 @@ export function fixAstroUrlStructure(url: string | undefined, type: 'post' | 'ca
   
   const urlPath = url.replace(/^https?:\/\/[^\/]+/, ''); // Extract path from URL
   
-  // Special handling for homepage
+  // Special handling for homepage - preserve www if present in input
   if (urlPath === '/home' || urlPath === '/home/') {
-    return 'https://iquitostech.com';
+    const hasWww = url.includes('www.');
+    return hasWww ? 'https://www.iquitostech.com' : 'https://iquitostech.com';
+  }
+  
+  // Also handle homepage without www
+  if (urlPath === '' || urlPath === '/') {
+    return replaceCMSDomain(url);
   }
   
   if (staticPagePatterns.some(pattern => urlPath === pattern || urlPath === pattern + '/')) {
@@ -247,7 +253,12 @@ export function generateSEOTags(props: SEOProps) {
   // Fallback values with title cleaning
   const finalTitle = cleanTitle(processedSEO?.title || title) || 'Iquitos Tech';
   const finalDescription = processedSEO?.description || description || 'Noticias de tecnología, gaming y tendencias digitales';
-  const finalCanonical = processedSEO?.canonical || fixAstroUrlStructure(replaceCMSDomain(canonical), urlType);
+  
+  // Prioritize explicit canonical over SEO data canonical
+  const finalCanonical = canonical 
+    ? fixAstroUrlStructure(replaceCMSDomain(canonical), urlType)
+    : processedSEO?.canonical || 'https://iquitostech.com';
+    
   const finalOgUrl = processedSEO?.og_url || finalCanonical;
   // ENHANCED: Prioritize actual featured image over potentially incorrect Yoast og_image
   // The issue: Yoast might capture first content image instead of featured image
