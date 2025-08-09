@@ -44,12 +44,9 @@ const secondSection = newsItems.slice(5, 10);
     <p class="text-gray-400 lg:ml-0">Mantente al día con las últimas tendencias en tecnología y gaming</p>
   </div>
 
-  <!-- Desktop Layout -->
   <div class="hidden lg:block space-y-12">
     
-    <!-- First Section: Featured card on LEFT -->
     <div class="grid grid-cols-4 gap-6 h-[400px]">
-      <!-- Featured card (spans 2 columns) -->
       {firstSection.length > 0 && (
         <a href={`/posts/${firstSection[0].slug}`} class="col-span-2 relative bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#313131] hover:border-[#2847d7] hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 ease-in-out group cursor-pointer h-full">
           <article class="relative h-full">
@@ -74,7 +71,6 @@ const secondSection = newsItems.slice(5, 10);
         </a>
       )}
 
-      <!-- Right side: 4 smaller cards in 2x2 grid -->
       <div class="col-span-2 grid grid-cols-2 gap-6 h-full">
         {firstSection.slice(1).map((item: typeof newsItems[0]) => (
           <a href={`/posts/${item.slug}`} class="relative bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#313131] hover:border-[#2847d7] hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 ease-in-out group cursor-pointer h-full">
@@ -111,9 +107,7 @@ const secondSection = newsItems.slice(5, 10);
       </div>
     </div>
 
-    <!-- Second Section: Featured card on RIGHT -->
     <div class="grid grid-cols-4 gap-6 h-[400px] mt-[250px] mb-[150px]">
-      <!-- Left side: 4 smaller cards in 2x2 grid -->
       <div class="col-span-2 grid grid-cols-2 gap-6 h-full">
         {secondSection.slice(1).map((item: typeof newsItems[0]) => (
           <a href={`/posts/${item.slug}`} class="relative bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#313131] hover:border-[#2847d7] hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 ease-in-out group cursor-pointer h-full">
@@ -149,7 +143,6 @@ const secondSection = newsItems.slice(5, 10);
         ))}
       </div> 
 
-      <!-- Featured card (spans 2 columns) -->
       {secondSection.length > 0 && (
         <a href={`/posts/${secondSection[0].slug}`} class="col-span-2 relative bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#313131] hover:border-[#2847d7] hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 ease-in-out group cursor-pointer h-full">
           <article class="relative h-full">
@@ -176,9 +169,7 @@ const secondSection = newsItems.slice(5, 10);
     </div>
   </div>
 
-  <!-- Mobile Layout -->
   <div class="lg:hidden px-4 space-y-6">
-    <!-- First Featured Card (Full Width) -->
     {firstSection.length > 0 && (
       <a href={`/posts/${firstSection[0].slug}`} class="block relative bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#313131] hover:border-[#2847d7] hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 ease-in-out group">
         <article class="relative">
@@ -226,7 +217,6 @@ const secondSection = newsItems.slice(5, 10);
       </a>
     )}
 
-    <!-- Grid of first section smaller cards (2 columns) -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {firstSection.slice(1).map((item: typeof newsItems[0]) => (
         <a href={`/posts/${item.slug}`} class="block relative bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#313131] hover:border-[#2847d7] hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 ease-in-out group">
@@ -276,7 +266,6 @@ const secondSection = newsItems.slice(5, 10);
       ))}
     </div>
 
-    <!-- Second Featured Card (Full Width) -->
     {secondSection.length > 0 && (
       <a href={`/posts/${secondSection[0].slug}`} class="block relative bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#313131] hover:border-[#2847d7] hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 ease-in-out group">
         <article class="relative">
@@ -324,7 +313,6 @@ const secondSection = newsItems.slice(5, 10);
       </a>
     )}
 
-    <!-- Grid of second section smaller cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {secondSection.slice(1).map((item: typeof newsItems[0]) => (
         <a href={`/posts/${item.slug}`} class="block relative bg-[#1a1a1a] rounded-xl overflow-hidden border border-[#313131] hover:border-[#2847d7] hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 ease-in-out group">

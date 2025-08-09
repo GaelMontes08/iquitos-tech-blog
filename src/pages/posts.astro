@@ -119,12 +119,10 @@ export const prerender = false;
 
 <Layout title={pageTitle} description={pageDescription}>
   <main class="min-h-screen">
-    
-    <!-- Header Section -->
+
     <section class="w-full py-12 lg:py-16">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <!-- Page Title -->
+
         <div class="text-center mb-8">
           <h1 class="text-3xl lg:text-4xl font-black text-white mb-4">
             {searchQuery ? 'Resultados de Búsqueda' : selectedCategory ? categories.find(cat => cat.slug === selectedCategory)?.name || 'Artículos' : 'Todos los Artículos'}
@@ -141,10 +139,8 @@ export const prerender = false;
           </p>
         </div>
 
-    <!-- Search and Filter Section -->
         <div class="bg-gray-900/50 backdrop-blur-sm rounded-xl p-4 lg:p-6 border border-gray-800 mb-8">
-          
-          <!-- Search Bar -->
+
             <div class="mb-6">
             <h3 class="text-base font-semibold text-white mb-3 flex items-center">
                 <svg class="w-4 h-4 mr-2 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,7 +178,6 @@ export const prerender = false;
             </form>
             </div>
 
-          <!-- Category Filters -->
           <div>
             <h3 class="text-base font-semibold text-white mb-3 flex items-center">
               <svg class="w-4 h-4 mr-2 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -190,10 +185,8 @@ export const prerender = false;
               </svg>
               Filtrar por Categoría
             </h3>
-            
-            <!-- Mobile: Stack categories -->
+
             <div class="flex flex-col sm:flex-row sm:flex-wrap gap-4">
-              <!-- All Posts Button -->
               <a 
                 href="/posts"
                 class={`inline-flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
@@ -208,7 +201,6 @@ export const prerender = false;
                 Todos
               </a>
               
-              <!-- Category Buttons -->
               {categories.slice(0, 8).map((category) => (
                 <a 
                   href={`/posts?category=${category.slug}`}
@@ -227,7 +219,6 @@ export const prerender = false;
             </div>
           </div>
 
-          <!-- Active Filters -->
           {(selectedCategory || searchQuery) && (
             <div class="mt-4 pt-4 border-t border-gray-800">
               <div class="flex flex-wrap items-center gap-4">
@@ -278,7 +269,6 @@ export const prerender = false;
       </div>
     </section>
 
-    <!-- Posts Section -->
     <section class="w-full pb-12">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -330,7 +320,6 @@ export const prerender = false;
             </div>
         )}
 
-        <!-- Pagination -->
         {totalPages > 1 && (
           <div class="flex items-center justify-center">
             <nav class="flex items-center space-x-1 bg-gray-900 rounded-lg p-1 border border-gray-800">

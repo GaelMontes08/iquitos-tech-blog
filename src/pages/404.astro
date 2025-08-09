@@ -9,16 +9,13 @@ const { title, content } = await getPageInfo('404-2');
   <div class="pb-10 flex items-center justify-center px-4">
     <div class="max-w-6xl mx-auto">
       <div class="grid lg:grid-cols-2 gap-12 items-center">
-        
-        <!-- Donut Chart with 404 -->
+
         <div class="relative flex items-center justify-center">
           <div class="absolute left-0 text-9xl lg:text-[12rem] font-black text-white opacity-20 select-none">
             4
           </div>
-          <!-- SVG Donut Chart -->
           <div class="relative z-10">
             <svg class="w-60 h-60 lg:w-80 lg:h-80" viewBox="0 0 200 200">
-              <!-- Background circle -->
               <circle
                 cx="100"
                 cy="100"
@@ -27,8 +24,7 @@ const { title, content } = await getPageInfo('404-2');
                 stroke="#1f2937"
                 stroke-width="20"
               />
-              
-              <!-- Large segment (99.5%) -->
+
               <circle
                 cx="100"
                 cy="100"
@@ -41,8 +37,7 @@ const { title, content } = await getPageInfo('404-2');
                 transform="rotate(-90 100 100)"
                 class="animate-pulse"
               />
-              
-              <!-- Center text -->
+
               <text
                 x="100"
                 y="90"
@@ -63,16 +58,14 @@ const { title, content } = await getPageInfo('404-2');
               </text>
             </svg>
           </div>
-          
-          <!-- Large "4" on the right -->
+
           <div class="absolute right-0 text-9xl lg:text-[12rem] font-black text-white opacity-20 select-none">
             4
           </div>
         </div>
-        
-        <!-- Message and Stats -->
+
         <div class="space-y-8 text-center lg:text-left">
-          <!-- Main Message -->
+
           <div class="space-y-4">
             <h1 class="text-4xl lg:text-6xl font-black text-white">
               ¡Ups!
@@ -84,8 +77,7 @@ const { title, content } = await getPageInfo('404-2');
               La página que buscas no existe o ha sido movida a otra dimensión digital.
             </p>
           </div>
-          
-          <!-- Statistics -->
+
           <div class="space-y-4 p-6 bg-black-700 rounded-xl border border-[#2847d7]">
             <h3 class="text-lg font-semibold text-white mb-4">Estadísticas curiosas:</h3>
         
@@ -100,8 +92,7 @@ const { title, content } = await getPageInfo('404-2');
                 <span class="font-bold text-white">0.5%</span> la descubren por accidente
               </span>
             </div>
-            
-            <!-- Congratulations message -->
+
             <div class="mt-4 p-3 bg-gray-800 rounded-lg border-l-4 border-[#2847d7]">
               <p class="text-sm text-gray-300">
                 🎉 <span class="text-white font-semibold">¡Felicidades!</span> 
@@ -109,8 +100,7 @@ const { title, content } = await getPageInfo('404-2');
               </p>
             </div>
           </div>
-          
-          <!-- Action Buttons -->
+
           <div class="space-y-4 lg:space-y-0 lg:space-x-4 lg:flex">
             <a 
               href="/" 

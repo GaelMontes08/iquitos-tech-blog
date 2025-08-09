@@ -6,8 +6,6 @@ import { getFeaturedPosts } from '@/lib/wp';
 const featuredPosts = await getFeaturedPosts({ perPage: 2, categoryId: 25 });
 ---
 
-<!-- Desktop: Grid with col-span-7 and col-span-3 -->
-<!-- Mobile: Stacked layout -->
 <div class="grid grid-cols-1 lg:grid-cols-10 gap-4 lg:gap-6">
   {featuredPosts.map((post: { slug: string; featuredImage?: string; title: string; excerpt?: string }, index: number) => (
     <a 
