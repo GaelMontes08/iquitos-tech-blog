@@ -37,49 +37,106 @@ function getUserAgent(request: Request): string {
 
 async function checkContactRateLimit(ipAddress: string): Promise<number> {
   try {
+    console.log(`🔍 Checking rate limit for IP: ${ipAddress}, time window: ${RATE_LIMIT_HOURS} hours`);
+
+    // Try RPC function first (preferred method)
+    const { data: rpcData, error: rpcError } = await supabase.rpc('get_recent_contact_attempts_by_ip', {
+      ip_addr: ipAddress,
+      hours_back: RATE_LIMIT_HOURS
+    });
+
+    if (!rpcError) {
+      const attemptCount = rpcData || 0;
+      console.log(`📊 Found ${attemptCount} recent attempts for IP ${ipAddress} (via RPC)`);
+      return attemptCount;
+    }
+
+    console.warn('⚠️ RPC function failed, trying direct query:', rpcError.message);
+
+    // Fallback to direct query
     const hoursAgo = new Date();
     hoursAgo.setHours(hoursAgo.getHours() - RATE_LIMIT_HOURS);
 
-    const { data, error } = await supabase
+    const { data: directData, error: directError } = await supabase
       .from('contact_attempts')
       .select('id')
       .eq('ip_address', ipAddress)
       .gte('attempted_at', hoursAgo.toISOString());
 
-    if (error) {
-      console.error('Rate limit check error:', error);
-      return 0; // Allow on error
+    if (directError) {
+      console.error('❌ Both RPC and direct query failed:', directError);
+      console.error('Please run the SQL script: supabase-contact-table.sql');
+      // Return 999 to indicate error - this will trigger rate limiting as a safety measure
+      return 999;
     }
 
-    return data?.length || 0;
+    const attemptCount = directData?.length || 0;
+    console.log(`📊 Found ${attemptCount} recent attempts for IP ${ipAddress} (via direct query)`);
+    return attemptCount;
   } catch (error) {
-    console.error('Rate limit check error:', error);
-    return 0;
+    console.error('❌ Rate limit check exception:', error);
+    // Return 999 to indicate error - this will trigger rate limiting as a safety measure
+    return 999;
   }
 }
 
-async function logContactAttempt(attempt: ContactAttempt): Promise<void> {
+async function logContactAttempt(attempt: ContactAttempt): Promise<boolean> {
   try {
-    await supabase
+    console.log(`📝 Logging contact attempt: ${attempt.email}, success: ${attempt.success}, IP: ${attempt.ipAddress}`);
+    
+    const insertData = {
+      email: attempt.email.toLowerCase().trim(),
+      ip_address: attempt.ipAddress,
+      name: attempt.name,
+      message_preview: attempt.messagePreview,
+      success: attempt.success,
+      error_message: attempt.errorMessage,
+      user_agent: attempt.userAgent
+    };
+    
+    console.log('📝 Insert data:', JSON.stringify(insertData, null, 2));
+    
+    const { data, error } = await supabase
       .from('contact_attempts')
-      .insert({
-        email: attempt.email.toLowerCase().trim(),
-        ip_address: attempt.ipAddress,
-        name: attempt.name,
-        message_preview: attempt.messagePreview,
-        success: attempt.success,
-        error_message: attempt.errorMessage,
-        user_agent: attempt.userAgent
+      .insert(insertData)
+      .select(); // Add select to get the inserted data back
+
+    if (error) {
+      console.error('❌ Error logging contact attempt:', error);
+      console.error('Error details:', {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
       });
+      return false;
+    } else {
+      console.log('✅ Contact attempt logged successfully, inserted data:', data);
+      return true;
+    }
   } catch (error) {
-    console.error('Error logging contact attempt:', error);
-    // Don't throw error - logging is not critical
+    console.error('❌ Exception logging contact attempt:', error);
+    return false;
   }
 }
 
 export const POST: APIRoute = async ({ request }) => {
   const ipAddress = getClientIP(request);
   const userAgent = getUserAgent(request);
+  
+  console.log(`📞 New contact form submission from IP: ${ipAddress}`);
+  
+  // Check if Supabase is configured
+  if (!supabase) {
+    console.error('❌ Supabase client not configured');
+    return new Response(JSON.stringify({
+      success: false,
+      message: 'Error de configuración del servidor. Inténtalo de nuevo más tarde.'
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
   
   try {
     // Parse form data

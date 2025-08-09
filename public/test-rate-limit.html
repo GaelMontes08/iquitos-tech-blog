@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Rate Limit Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #111; color: white; }
+        .container { max-width: 600px; margin: 0 auto; }
+        button { background: #2847d7; color: white; padding: 15px 25px; border: none; border-radius: 4px; cursor: pointer; margin: 10px; font-size: 16px; }
+        button:hover { background: #1e3a8a; }
+        button:disabled { background: #666; cursor: not-allowed; }
+        #result { background: #333; padding: 15px; border-radius: 8px; white-space: pre-wrap; margin: 20px 0; }
+        .error { color: #ff6b6b; }
+        .success { color: #51cf66; }
+        .info { color: #74c0fc; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Rate Limiting Test</h1>
+        <p>This will test if the contact form rate limiting (1 per day) is working correctly.</p>
+        
+        <button onclick="testSingleSubmission()">Test Single Submission</button>
+        <button onclick="testMultipleSubmissions()">Test Multiple Submissions (Rate Limit)</button>
+        <button onclick="checkCurrentStatus()">Check Current Status</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const resultDiv = document.getElementById('result');
+
+        async function testSingleSubmission() {
+            resultDiv.innerHTML = '🧪 Testing single submission...\n';
+            resultDiv.className = 'info';
+            
+            try {
+                const response = await fetch('/api/test-contact-submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML += `✅ SUCCESS: ${result.message}\n`;
+                    resultDiv.innerHTML += `📊 Previous attempts: ${result.previousAttempts}\n`;
+                    resultDiv.innerHTML += `📊 Current attempts: ${result.currentAttempts}\n`;
+                    resultDiv.innerHTML += `🌐 IP: ${result.ipAddress}\n`;
+                    resultDiv.className = 'success';
+                } else {
+                    resultDiv.innerHTML += `❌ FAILED (${response.status}): ${result.message}\n`;
+                    resultDiv.innerHTML += `📊 Current attempts: ${result.currentAttempts}\n`;
+                    resultDiv.className = 'error';
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML += `💥 ERROR: ${error.message}\n`;
+                resultDiv.className = 'error';
+            }
+        }
+
+        async function testMultipleSubmissions() {
+            resultDiv.innerHTML = '🧪 Testing multiple submissions (rate limiting)...\n';
+            resultDiv.className = 'info';
+            
+            for (let i = 1; i <= 3; i++) {
+                resultDiv.innerHTML += `\n--- Attempt ${i} ---\n`;
+                
+                try {
+                    const response = await fetch('/api/test-contact-submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    const result = await response.json();
+                    
+                    if (response.ok) {
+                        resultDiv.innerHTML += `✅ Attempt ${i}: SUCCESS - ${result.message}\n`;
+                        if (i === 1) resultDiv.className = 'success';
+                    } else {
+                        resultDiv.innerHTML += `🚫 Attempt ${i}: RATE LIMITED - ${result.message}\n`;
+                        resultDiv.className = 'error';
+                    }
+                    
+                } catch (error) {
+                    resultDiv.innerHTML += `💥 Attempt ${i}: ERROR - ${error.message}\n`;
+                    resultDiv.className = 'error';
+                }
+                
+                // Wait 1 second between attempts
+                if (i < 3) await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+
+        async function checkCurrentStatus() {
+            resultDiv.innerHTML = '🔍 Checking current rate limit status...\n';
+            resultDiv.className = 'info';
+            
+            try {
+                const response = await fetch('/api/test-rate-limit');
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML += `✅ Status check successful\n`;
+                    resultDiv.innerHTML += `🌐 IP Address: ${result.ipAddress}\n`;
+                    resultDiv.innerHTML += `📊 Recent attempts: ${result.recentAttempts}\n`;
+                    resultDiv.innerHTML += `⏰ Time window: ${result.timeWindow}\n`;
+                    resultDiv.innerHTML += `🚫 Rate limited: ${result.rateLimited ? 'YES' : 'NO'}\n`;
+                    resultDiv.innerHTML += `📅 Window start: ${result.timeWindowStart}\n`;
+                    
+                    if (result.attempts && result.attempts.length > 0) {
+                        resultDiv.innerHTML += `\n📝 Recent attempts:\n`;
+                        result.attempts.forEach((attempt, index) => {
+                            resultDiv.innerHTML += `  ${index + 1}. ${attempt.attempted_at} - ${attempt.success ? 'SUCCESS' : 'FAILED'}\n`;
+                        });
+                    }
+                    
+                    resultDiv.className = result.rateLimited ? 'error' : 'success';
+                } else {
+                    resultDiv.innerHTML += `❌ Status check failed: ${result.error}\n`;
+                    resultDiv.className = 'error';
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML += `💥 ERROR: ${error.message}\n`;
+                resultDiv.className = 'error';
+            }
+        }
+    </script>
+</body>
+</html>
