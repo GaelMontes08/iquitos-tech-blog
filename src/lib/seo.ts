@@ -46,6 +46,8 @@ export function fixAstroUrlStructure(url: string | undefined, type: 'post' | 'ca
   // Static page patterns that should not get /posts/ prefix
   const staticPagePatterns = [
     '/',
+    '/home',
+    '/home/',
     '/privacy',
     '/contact', 
     '/about',
@@ -54,6 +56,12 @@ export function fixAstroUrlStructure(url: string | undefined, type: 'post' | 'ca
   ];
   
   const urlPath = url.replace(/^https?:\/\/[^\/]+/, ''); // Extract path from URL
+  
+  // Special handling for homepage
+  if (urlPath === '/home' || urlPath === '/home/') {
+    return 'https://iquitostech.com';
+  }
+  
   if (staticPagePatterns.some(pattern => urlPath === pattern || urlPath === pattern + '/')) {
     return replaceCMSDomain(url);
   }
