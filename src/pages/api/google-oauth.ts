@@ -114,16 +114,19 @@ export const POST: APIRoute = async ({ request }) => {
 
     // Subscribe user to newsletter
     try {
-      const subscribeResponse = await fetch(`${request.url.replace('/api/google-oauth', '/api/newsletter-subscribe')}`, {
+      const subscribeResponse = await fetch(`${new URL(request.url).origin}/api/newsletter-subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-forwarded-for': request.headers.get('x-forwarded-for') || '',
+          'user-agent': request.headers.get('user-agent') || ''
         },
         body: JSON.stringify({
           email: userData.email,
           firstName: userData.given_name,
           lastName: userData.family_name,
-          source: 'google'
+          source: 'google',
+          googleId: userData.id
         }),
       });
 

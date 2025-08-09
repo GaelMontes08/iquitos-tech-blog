@@ -7,6 +7,9 @@ const pageDescription = 'Únete a nuestra newsletter semanal y recibe las mejore
 // Get Google Client ID from environment variables
 const googleClientId = import.meta.env.PUBLIC_GOOGLE_CLIENT_ID;
 
+// Get reCAPTCHA site key from environment variables
+const recaptchaSiteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY;
+
 export const prerender = true;
 ---
 
@@ -149,10 +152,16 @@ export const prerender = true;
 
   <!-- Google Sign-In SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  
+  <!-- reCAPTCHA v3 SDK -->
+  {recaptchaSiteKey && (
+    <script src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`} async defer></script>
+  )}
 
-  <script define:vars={{ googleClientId }}>
+  <script define:vars={{ googleClientId, recaptchaSiteKey }}>
     // Google OAuth configuration from environment variables
     const GOOGLE_CLIENT_ID = googleClientId;
+    const RECAPTCHA_SITE_KEY = recaptchaSiteKey;
     const REDIRECT_URI = window.location.origin + '/newsletter';
 
     // Global variables
@@ -240,10 +249,37 @@ export const prerender = true;
       submitLoading.classList.remove('hidden');
 
       try {
+        // Get reCAPTCHA token if available
+        let recaptchaToken = null;
+        if (RECAPTCHA_SITE_KEY && window.grecaptcha) {
+          try {
+            recaptchaToken = await window.grecaptcha.execute(RECAPTCHA_SITE_KEY, {
+              action: 'newsletter_subscribe'
+            });
+            console.log('✅ reCAPTCHA token obtained');
+          } catch (recaptchaError) {
+            console.warn('⚠️ reCAPTCHA not available:', recaptchaError);
+            // Continue without reCAPTCHA - it's optional
+          }
+        }
+
         // Split fullname into first and last name
         const nameParts = fullname.split(' ');
         const firstName = nameParts[0];
         const lastName = nameParts.slice(1).join(' ');
+
+        // Prepare request data
+        const requestData = {
+          email: email,
+          firstName: firstName,
+          lastName: lastName,
+          source: 'manual'
+        };
+
+        // Add reCAPTCHA token if available
+        if (recaptchaToken) {
+          requestData.recaptchaToken = recaptchaToken;
+        }
 
         // Subscribe to newsletter
         const response = await fetch('/api/newsletter-subscribe', {
@@ -251,12 +287,7 @@ export const prerender = true;
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            email: email,
-            firstName: firstName,
-            lastName: lastName,
-            source: 'manual'
-          }),
+          body: JSON.stringify(requestData),
         });
 
         const result = await response.json();

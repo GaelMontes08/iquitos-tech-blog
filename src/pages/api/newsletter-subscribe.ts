@@ -1,26 +1,60 @@
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
+import { NewsletterDB } from '../../lib/newsletter-db.js';
+import type { NewsletterSubscriber } from '../../lib/newsletter-db.js';
 
 // Configuration from environment variables
 const RESEND_API_KEY = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
+const RECAPTCHA_SECRET_KEY = import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY;
+const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
 // Initialize Resend
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
-interface NewsletterSubscriber {
+// Rate limiting configuration
+const RATE_LIMIT_ATTEMPTS = 3; // Max attempts per hour
+const RATE_LIMIT_HOURS = 1; // Time window in hours
+
+interface NewsletterSubscribeRequest {
   email: string;
   firstName?: string;
   lastName?: string;
   source: 'manual' | 'google';
+  googleId?: string;
+  recaptchaToken?: string;
+}
+
+function getClientIP(request: Request): string {
+  return request.headers.get('x-forwarded-for')?.split(',')[0] || 
+         request.headers.get('x-real-ip') || 
+         request.headers.get('cf-connecting-ip') || 
+         'unknown';
+}
+
+function getUserAgent(request: Request): string {
+  return request.headers.get('user-agent') || 'unknown';
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  const ipAddress = getClientIP(request);
+  const userAgent = getUserAgent(request);
+  
   try {
     const body = await request.json();
-    const { email, firstName, lastName, source = 'manual' }: NewsletterSubscriber = body;
+    const { email, firstName, lastName, source = 'manual', googleId, recaptchaToken }: NewsletterSubscribeRequest = body;
 
     // Validate required fields
     if (!email) {
+      // Log failed attempt
+      await NewsletterDB.logAttempt({
+        email: email || 'missing',
+        ipAddress,
+        success: false,
+        source,
+        errorMessage: 'Email requerido',
+        userAgent
+      });
+
       return new Response(JSON.stringify({
         success: false,
         message: 'El email es obligatorio.'
@@ -33,6 +67,16 @@ export const POST: APIRoute = async ({ request }) => {
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
+      // Log failed attempt
+      await NewsletterDB.logAttempt({
+        email,
+        ipAddress,
+        success: false,
+        source,
+        errorMessage: 'Formato de email inválido',
+        userAgent
+      });
+
       return new Response(JSON.stringify({
         success: false,
         message: 'El formato del email no es válido.'
@@ -42,23 +86,207 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Log the newsletter subscription
-    console.log('📧 New newsletter subscription:', {
+    // Validate reCAPTCHA for manual subscriptions (Google OAuth doesn't need it)
+    if (source === 'manual' && recaptchaToken && RECAPTCHA_SECRET_KEY) {
+      try {
+        console.log('🔍 Validating reCAPTCHA token...');
+        
+        const recaptchaResponse = await fetch(RECAPTCHA_VERIFY_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `secret=${RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}&remoteip=${ipAddress}`
+        });
+
+        const recaptchaResult = await recaptchaResponse.json();
+
+        if (!recaptchaResult.success) {
+          console.log('❌ reCAPTCHA verification failed:', recaptchaResult);
+          
+          // Log failed attempt
+          await NewsletterDB.logAttempt({
+            email,
+            ipAddress,
+            success: false,
+            source,
+            errorMessage: 'reCAPTCHA verification failed',
+            userAgent
+          });
+
+          return new Response(JSON.stringify({
+            success: false,
+            message: 'Verificación de seguridad fallida. Inténtalo de nuevo.'
+          }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' }
+          });
+        }
+
+        // For reCAPTCHA v3, check the score (0.0 to 1.0, higher is better)
+        if (recaptchaResult.score !== undefined) {
+          if (recaptchaResult.score < 0.5) {
+            console.log('❌ reCAPTCHA score too low:', recaptchaResult.score);
+            
+            // Log failed attempt
+            await NewsletterDB.logAttempt({
+              email,
+              ipAddress,
+              success: false,
+              source,
+              errorMessage: `reCAPTCHA score too low: ${recaptchaResult.score}`,
+              userAgent
+            });
+
+            return new Response(JSON.stringify({
+              success: false,
+              message: 'Verificación de seguridad fallida. Inténtalo de nuevo.'
+            }), {
+              status: 400,
+              headers: { 'Content-Type': 'application/json' }
+            });
+          }
+
+          // Check if the action matches
+          if (recaptchaResult.action && recaptchaResult.action !== 'newsletter_subscribe') {
+            console.log('❌ reCAPTCHA action mismatch:', recaptchaResult.action);
+            
+            // Log failed attempt
+            await NewsletterDB.logAttempt({
+              email,
+              ipAddress,
+              success: false,
+              source,
+              errorMessage: `reCAPTCHA action mismatch: ${recaptchaResult.action}`,
+              userAgent
+            });
+
+            return new Response(JSON.stringify({
+              success: false,
+              message: 'Verificación de seguridad fallida. Inténtalo de nuevo.'
+            }), {
+              status: 400,
+              headers: { 'Content-Type': 'application/json' }
+            });
+          }
+
+          console.log('✅ reCAPTCHA v3 verification successful. Score:', recaptchaResult.score);
+        } else {
+          console.log('✅ reCAPTCHA v2 verification successful');
+        }
+
+      } catch (recaptchaError) {
+        console.error('❌ reCAPTCHA validation error:', recaptchaError);
+        
+        // Log the error but don't fail the request - reCAPTCHA might be temporarily unavailable
+        console.warn('⚠️ Proceeding without reCAPTCHA validation due to error');
+      }
+    } else if (source === 'manual' && !recaptchaToken && RECAPTCHA_SECRET_KEY) {
+      console.log('⚠️ reCAPTCHA token missing for manual subscription, but continuing...');
+    }
+
+    // Check rate limiting
+    const recentAttempts = await NewsletterDB.getRecentAttemptsByIP(ipAddress, RATE_LIMIT_HOURS);
+    if (recentAttempts >= RATE_LIMIT_ATTEMPTS) {
+      // Log rate limit exceeded
+      await NewsletterDB.logAttempt({
+        email,
+        ipAddress,
+        success: false,
+        source,
+        errorMessage: 'Rate limit exceeded',
+        userAgent
+      });
+
+      console.log(`🚫 Rate limit exceeded for IP ${ipAddress}: ${recentAttempts} attempts in last ${RATE_LIMIT_HOURS} hour(s)`);
+      
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'Demasiados intentos. Inténtalo de nuevo más tarde.'
+      }), {
+        status: 429,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Check if email is already subscribed
+    const alreadySubscribed = await NewsletterDB.isEmailSubscribed(email);
+    if (alreadySubscribed) {
+      // Log duplicate attempt
+      await NewsletterDB.logAttempt({
+        email,
+        ipAddress,
+        success: false,
+        source,
+        errorMessage: 'Email ya suscrito',
+        userAgent
+      });
+
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'Este email ya está suscrito al newsletter.'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Prepare subscriber data
+    const subscriberData: NewsletterSubscriber = {
+      email: email.toLowerCase().trim(),
+      firstName: firstName?.trim(),
+      lastName: lastName?.trim(),
+      source,
+      ipAddress,
+      userAgent,
+      googleId
+    };
+
+    // Add subscriber to database
+    const dbResult = await NewsletterDB.addSubscriber(subscriberData);
+    
+    if (!dbResult.success) {
+      // Log database error
+      await NewsletterDB.logAttempt({
+        email,
+        ipAddress,
+        success: false,
+        source,
+        errorMessage: dbResult.error || 'Database error',
+        userAgent
+      });
+
+      return new Response(JSON.stringify({
+        success: false,
+        message: dbResult.error || 'Error al suscribirse al newsletter.'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Log successful attempt
+    await NewsletterDB.logAttempt({
+      email,
+      ipAddress,
+      success: true,
+      source,
+      userAgent
+    });
+
+    console.log('✅ Newsletter subscription successful:', {
       email,
       firstName,
       lastName,
       source,
-      timestamp: new Date().toISOString(),
-      ip: request.headers.get('x-forwarded-for') || 'unknown'
+      ipAddress,
+      timestamp: new Date().toISOString()
     });
 
+    // Send welcome email using Resend
     if (resend) {
       try {
-        // Add subscriber to Resend audience
-        // Note: You'll need to create an audience in Resend dashboard first
-        // For now, we'll just send a welcome email and log the subscription
-        
-        // Send welcome email
+        // Send welcome email to subscriber
         const { data, error } = await resend.emails.send({
           from: 'Iquitos Tech <newsletter@iquitostech.com>',
           to: [email],
@@ -110,6 +338,15 @@ export const POST: APIRoute = async ({ request }) => {
                   color: #6c757d; 
                 }
                 .footer a { color: #2847d7; text-decoration: none; }
+                .stats { 
+                  background: #e3f2fd; 
+                  padding: 15px; 
+                  border-radius: 8px; 
+                  margin: 20px 0; 
+                  text-align: center; 
+                  font-size: 14px; 
+                  color: #1565c0; 
+                }
               </style>
             </head>
             <body>
@@ -147,6 +384,15 @@ export const POST: APIRoute = async ({ request }) => {
                     </div>
                   </div>
                   
+                  <div class="stats">
+                    <strong>Suscripción completada el ${new Date().toLocaleDateString('es-ES', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}</strong><br>
+                    Fuente: ${source === 'google' ? 'Google Sign-In' : 'Suscripción manual'}
+                  </div>
+                  
                   <p>
                     Mientras tanto, puedes explorar nuestro sitio web para no perderte nada:
                   </p>
@@ -165,7 +411,7 @@ export const POST: APIRoute = async ({ request }) => {
                   <p><strong>Iquitos Tech</strong></p>
                   <p>
                     Si no deseas recibir más emails, puedes 
-                    <a href="https://iquitostech.com/newsletter?unsubscribe=true">darte de baja aquí</a>
+                    <a href="https://iquitostech.com/newsletter?unsubscribe=${encodeURIComponent(email)}">darte de baja aquí</a>
                   </p>
                   <p style="margin-top: 15px;">
                     <a href="https://iquitostech.com">Sitio Web</a> • 
@@ -189,12 +435,14 @@ Qué puedes esperar:
 ⚡ Contenido fresco cada semana
 🎯 Sin spam, solo contenido de calidad
 
+Suscripción completada: ${new Date().toLocaleDateString('es-ES')}
+Fuente: ${source === 'google' ? 'Google Sign-In' : 'Suscripción manual'}
+
 Visita nuestro sitio: https://iquitostech.com
 
 Recibirás nuestro primer newsletter muy pronto. Si tienes alguna pregunta, contáctanos en: https://iquitostech.com/contact
 
----
-Para darte de baja: https://iquitostech.com/newsletter?unsubscribe=true
+Para darte de baja: https://iquitostech.com/newsletter?unsubscribe=${encodeURIComponent(email)}
           `.trim()
         });
 
@@ -204,7 +452,7 @@ Para darte de baja: https://iquitostech.com/newsletter?unsubscribe=true
           console.log('✅ Welcome email sent successfully via Resend:', data);
         }
 
-        // Also send notification to admin
+        // Send notification to admin
         await resend.emails.send({
           from: 'Iquitos Tech <noreply@iquitostech.com>',
           to: ['admin@iquitostech.com'],
@@ -215,13 +463,16 @@ Para darte de baja: https://iquitostech.com/newsletter?unsubscribe=true
             <p><strong>Nombre:</strong> ${firstName || 'No proporcionado'} ${lastName || ''}</p>
             <p><strong>Fuente:</strong> ${source === 'google' ? 'Google Sign-In' : 'Manual'}</p>
             <p><strong>Fecha:</strong> ${new Date().toLocaleString('es-ES', { timeZone: 'America/Lima' })}</p>
-            <p><strong>IP:</strong> ${request.headers.get('x-forwarded-for') || 'No disponible'}</p>
+            <p><strong>IP:</strong> ${ipAddress}</p>
+            <p><strong>User Agent:</strong> ${userAgent}</p>
+            <hr>
+            <p><em>Suscripción almacenada en Supabase con protección anti-spam.</em></p>
           `,
         });
         
       } catch (emailError) {
         console.error('❌ Newsletter email error:', emailError);
-        // Don't fail the entire request if email fails
+        // Don't fail the entire request if email fails, just log it
       }
     } else {
       console.warn('⚠️ Resend API key not configured, emails not sent');
@@ -231,7 +482,8 @@ Para darte de baja: https://iquitostech.com/newsletter?unsubscribe=true
     return new Response(JSON.stringify({
       success: true,
       message: 'Te has suscrito correctamente al newsletter.',
-      email: email
+      email: email,
+      subscriber: dbResult.data
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
@@ -239,6 +491,20 @@ Para darte de baja: https://iquitostech.com/newsletter?unsubscribe=true
 
   } catch (error) {
     console.error('Newsletter subscription error:', error);
+    
+    // Log error attempt
+    try {
+      await NewsletterDB.logAttempt({
+        email: 'unknown',
+        ipAddress,
+        success: false,
+        source: 'manual',
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
+        userAgent
+      });
+    } catch (logError) {
+      console.error('Error logging failed attempt:', logError);
+    }
     
     return new Response(JSON.stringify({
       success: false,
