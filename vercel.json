@@ -10,7 +10,7 @@
       ]
     },
     {
-      "source": "/fonts/(.*)",
+      "source": "/(.*).woff2",
       "headers": [
         {
           "key": "Cache-Control",
@@ -19,7 +19,7 @@
       ]
     },
     {
-      "source": "/(.*\\.(woff2|woff|ttf|otf))$",
+      "source": "/(.*).woff",
       "headers": [
         {
           "key": "Cache-Control",
@@ -28,7 +28,7 @@
       ]
     },
     {
-      "source": "/(.*\\.(jpg|jpeg|png|webp|avif|svg|ico))$",
+      "source": "/(.*).jpg",
       "headers": [
         {
           "key": "Cache-Control",
@@ -37,11 +37,29 @@
       ]
     },
     {
-      "source": "/(.*\\.(js|css))$",
+      "source": "/(.*).png",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
+          "value": "public, max-age=2592000"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).webp",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).svg",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000"
         }
       ]
     },
@@ -62,12 +80,6 @@
           "value": "public, max-age=300"
         }
       ]
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/robots.txt",
-      "destination": "/robots.txt"
     }
   ]
 }
