@@ -100,12 +100,10 @@ export const prerender = false;
   type="website"
   urlType="category"
 >
-  <!-- Loading skeleton that will be replaced by actual content -->
   <div id="content-skeleton" class="animate-pulse">
     <CategoryPageSkeleton />
   </div>
   
-  <!-- Actual content that loads progressively -->
   <div id="actual-content" style="display: none;">
     <main class="min-h-screen">
 
@@ -250,7 +248,7 @@ export const prerender = false;
     </section>
 
   </main>
-  </div> <!-- Close actual-content -->
+  </div>
 </Layout>
 
 <style>

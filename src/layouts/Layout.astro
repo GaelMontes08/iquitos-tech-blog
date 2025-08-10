@@ -19,7 +19,6 @@ const seoProps = Astro.props as Props;
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         
-        <!-- ViewTransition Optimizations -->
         <style>
           /* Smooth content transitions without ViewTransitions */
           @keyframes fadeIn {
@@ -86,31 +85,23 @@ const seoProps = Astro.props as Props;
           }
         </style>        
         
-        <!-- Preconnect for faster resource loading (max 4 critical connections) -->
         <link rel="preconnect" href="https://cms-iquitostech.com" crossorigin>
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
         
-        <!-- DNS prefetch for less critical connections -->
         <link rel="dns-prefetch" href="//news.google.com">
         <link rel="dns-prefetch" href="//iquitostech.wordpress.com">
         <link rel="dns-prefetch" href="//wp-content.com">
         
-        <!-- Optimized font loading - Let @fontsource-variable/onest handle font loading -->
-        <!-- No manual preload needed as fonts are bundled with the app -->
-        
-        <!-- Fallback Google Fonts loaded with low priority -->
         <link rel="preload" href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" media="print">
         <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap"></noscript>
         
-        <!-- SEO and Schema components -->
         <SEO {...seoProps} />
         <Schema {...seoProps} />
     </head>
     <body>
         
-        <!-- Simplified skeleton loading script -->
         <script is:inline>
           // Simple skeleton content loading without ViewTransitions
           document.addEventListener('DOMContentLoaded', () => {
@@ -139,9 +130,6 @@ const seoProps = Astro.props as Props;
         <Footer />
         <Analytics />
         
-        <!-- Optimized scripts at end of body for better ViewTransitions -->
-        
-        <!-- Google Analytics - Deferred Loading for better critical path -->
         <script is:inline>
           // Load Google Analytics after critical resources
           window.addEventListener('load', function() {
@@ -162,7 +150,6 @@ const seoProps = Astro.props as Props;
           });
         </script>
         
-        <!-- Optimized Iframe Accessibility Handler - Deferred -->
         <script is:inline>
           window.addEventListener('load', function() {
             // Global iframe accessibility handler
@@ -212,8 +199,6 @@ const seoProps = Astro.props as Props;
             window.iframeObserver.observe(document.body, { childList: true, subtree: true });
           });
         </script>
-        
-        <!-- Service Worker Registration - Deferred -->
         <script is:inline>
           window.addEventListener('load', function() {
             if ('serviceWorker' in navigator && !navigator.serviceWorker.controller) {
@@ -222,7 +207,6 @@ const seoProps = Astro.props as Props;
           });
         </script>
         
-        <!-- Performance monitoring - Load after critical resources -->
         <script is:inline>
           window.addEventListener('load', function() {
             setTimeout(function() {
@@ -242,7 +226,6 @@ const seoProps = Astro.props as Props;
           });
         </script>
         
-        <!-- Google News Script - Load after critical resources -->
         <script is:inline>
           window.addEventListener('load', function() {
             // Load Google News script after page is fully loaded

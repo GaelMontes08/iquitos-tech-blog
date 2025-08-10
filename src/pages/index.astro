@@ -19,12 +19,10 @@ const { title, content, date, seo } = await getPageInfo('home');
   type="website"
   urlType="page"
 >
-    <!-- Loading skeleton that will be replaced by actual content -->
     <div id="content-skeleton" class="animate-pulse">
       <HomepageSkeleton />
     </div>
     
-    <!-- Actual content that loads progressively -->
     <div id="actual-content" style="display: none;">
       <ImportantNews />   
       <News1 />
