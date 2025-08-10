@@ -127,10 +127,10 @@ const websiteSchema = type === 'website' ? {
   }
 } : null;
 
-// Article schema for blog posts
+// Article schema for blog posts (Enhanced for Google News)
 const articleSchema = type === 'article' ? {
   "@context": "https://schema.org",
-  "@type": "Article",
+  "@type": "NewsArticle", // Changed from "Article" to "NewsArticle" for Google News
   "headline": title,
   "description": description,
   "url": currentUrl,
@@ -155,12 +155,35 @@ const articleSchema = type === 'article' ? {
     "@id": "https://iquitostech.com/#organization"
   },
   "articleSection": category || "Tecnología",
-  "keywords": tags.length > 0 ? tags.join(', ') : "tecnología, gaming, noticias tech",
+  "keywords": tags.length > 0 ? tags.join(', ') : "tecnología, gaming, noticias tech, Perú, Amazonía",
   "inLanguage": "es-PE",
   "isAccessibleForFree": true,
   "about": {
     "@type": "Thing",
     "name": category || "Tecnología"
+  },
+  // Google News specific fields
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": ["h1", ".article-content p"]
+  },
+  "locationCreated": {
+    "@type": "Place",
+    "name": "Iquitos, Perú",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Iquitos",
+      "addressRegion": "Loreto", 
+      "addressCountry": "PE"
+    }
+  },
+  "contentLocation": {
+    "@type": "Place",
+    "name": "Perú",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "PE"
+    }
   }
 } : null;
 

@@ -24,7 +24,9 @@ const STATIC_PAGES = [
   'terms',
   'privacy',
   'newsletter',
-  'posts'
+  'posts',
+  'editorial',    // Editorial Guidelines
+  'corrections'   // Corrections Policy
 ];
 
 interface SitemapURL {

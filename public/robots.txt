@@ -7,6 +7,7 @@ Allow: /
 
 # Sitemap location
 Sitemap: https://iquitostech.com/sitemap.xml
+Sitemap: https://iquitostech.com/news-sitemap.xml
 
 # Specific rules for major search engines
 User-agent: Googlebot
@@ -26,6 +27,8 @@ Allow: /faqs
 Allow: /terms
 Allow: /privacy
 Allow: /newsletter
+Allow: /editorial
+Allow: /corrections
 
 # Block access to development and testing areas
 Disallow: /api/debug*

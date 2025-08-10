@@ -1,0 +1,167 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SEO from '../components/SEO.astro';
+import Schema from '../components/Schema.astro';
+
+const seoData = {
+  title: 'Estándares Editoriales | Iquitos Tech',
+  description: 'Conoce nuestros estándares editoriales, procesos de verificación y compromiso con la transparencia informativa en Iquitos Tech.',
+  url: 'https://iquitostech.com/editorial'
+};
+---
+
+<Layout>
+  <head>
+    <SEO {...seoData} />
+    <Schema {...seoData} />
+  </head>
+
+  <main class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900">
+    <div class="container mx-auto px-4 py-16 max-w-4xl">
+      
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+          Estándares Editoriales
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          Nuestro compromiso con la calidad, transparencia y responsabilidad informativa
+        </p>
+      </div>
+
+      <!-- Content -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 space-y-8">
+        
+        <!-- Mission -->
+        <section>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Nuestra Misión Editorial
+          </h2>
+          <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+            En Iquitos Tech nos comprometemos a ofrecer información precisa, verificada y relevante sobre tecnología, 
+            gaming e innovación, con especial enfoque en el desarrollo tecnológico del Perú y la región amazónica.
+          </p>
+        </section>
+
+        <!-- Standards -->
+        <section>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Estándares de Calidad
+          </h2>
+          <div class="space-y-4">
+            <div class="border-l-4 border-blue-500 pl-4">
+              <h3 class="font-semibold text-gray-900 dark:text-white">Verificación de Fuentes</h3>
+              <p class="text-gray-700 dark:text-gray-300">
+                Todas nuestras noticias son verificadas con al menos dos fuentes independientes y confiables.
+              </p>
+            </div>
+            <div class="border-l-4 border-green-500 pl-4">
+              <h3 class="font-semibold text-gray-900 dark:text-white">Transparencia</h3>
+              <p class="text-gray-700 dark:text-gray-300">
+                Identificamos claramente nuestras fuentes cuando es posible y señalamos cuando la información es especulativa.
+              </p>
+            </div>
+            <div class="border-l-4 border-purple-500 pl-4">
+              <h3 class="font-semibold text-gray-900 dark:text-white">Actualización Continua</h3>
+              <p class="text-gray-700 dark:text-gray-300">
+                Actualizamos nuestros artículos cuando hay nueva información relevante y documentamos los cambios.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Editorial Process -->
+        <section>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Proceso Editorial
+          </h2>
+          <ol class="list-decimal list-inside space-y-3 text-gray-700 dark:text-gray-300">
+            <li><strong>Investigación:</strong> Recopilación de información de fuentes primarias y secundarias confiables</li>
+            <li><strong>Verificación:</strong> Confirmación de datos con múltiples fuentes independientes</li>
+            <li><strong>Redacción:</strong> Creación de contenido claro, preciso y accesible</li>
+            <li><strong>Revisión:</strong> Verificación de hechos, gramática y coherencia editorial</li>
+            <li><strong>Publicación:</strong> Distribución con metadatos apropiados y seguimiento de rendimiento</li>
+            <li><strong>Monitoreo:</strong> Seguimiento posterior para actualizaciones y correcciones necesarias</li>
+          </ol>
+        </section>
+
+        <!-- Ethics -->
+        <section>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Principios Éticos
+          </h2>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Independencia</h3>
+              <p class="text-gray-700 dark:text-gray-300 text-sm">
+                Mantenemos independencia editorial y señalamos claramente cualquier relación comercial o conflicto de interés.
+              </p>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Responsabilidad</h3>
+              <p class="text-gray-700 dark:text-gray-300 text-sm">
+                Asumimos responsabilidad por nuestro contenido y corregimos errores de manera transparente y oportuna.
+              </p>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Diversidad</h3>
+              <p class="text-gray-700 dark:text-gray-300 text-sm">
+                Buscamos representar diversas perspectivas y voces en nuestro contenido, especialmente de la región amazónica.
+              </p>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Precisión</h3>
+              <p class="text-gray-700 dark:text-gray-300 text-sm">
+                Priorizamos la precisión sobre la velocidad y preferimos reportar menos que reportar incorrectamente.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sources -->
+        <section>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Fuentes Confiables
+          </h2>
+          <p class="text-gray-700 dark:text-gray-300 mb-4">
+            Priorizamos información de fuentes oficiales y reconocidas:
+          </p>
+          <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
+            <li>Comunicados oficiales de empresas tecnológicas</li>
+            <li>Publicaciones académicas y de investigación</li>
+            <li>Medios de comunicación establecidos con buena reputación</li>
+            <li>Organismos gubernamentales y regulatorios</li>
+            <li>Entrevistas directas con expertos y protagonistas</li>
+          </ul>
+        </section>
+
+        <!-- Contact -->
+        <section class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Contacto Editorial
+          </h2>
+          <p class="text-gray-700 dark:text-gray-300 mb-4">
+            Si tienes dudas sobre nuestros estándares editoriales, quieres reportar un error o sugerir una corrección:
+          </p>
+          <div class="space-y-2">
+            <p class="text-gray-700 dark:text-gray-300">
+              <strong>Email:</strong> editorial@iquitostech.com
+            </p>
+            <p class="text-gray-700 dark:text-gray-300">
+              <strong>Ubicación:</strong> Iquitos, Loreto, Perú
+            </p>
+          </div>
+        </section>
+
+        <!-- Last Updated -->
+        <div class="text-center pt-8 border-t border-gray-200 dark:border-gray-700">
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Última actualización: Enero 2025 | 
+            <a href="/corrections" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Ver política de correcciones</a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</Layout>

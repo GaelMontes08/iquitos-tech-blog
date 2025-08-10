@@ -147,15 +147,25 @@ const gradientClass = getCategoryGradient(category);
 
     <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-800">
       
-      <a 
-        href={`/posts/${slug}`}
-        class="inline-flex items-center text-white hover:text-blue-400 font-semibold text-sm transition-colors duration-300 group/link"
-      >
-        Leer más
-        <svg class="w-4 h-4 ml-1 transition-transform duration-300 group-hover/link:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+      <div class="flex items-center space-x-2">
+        <a 
+          href={`/posts/${slug}`}
+          class="inline-flex items-center text-white hover:text-blue-400 font-semibold text-sm transition-colors duration-300 group/link"
+        >
+          Leer más
+          <svg class="w-4 h-4 ml-1 transition-transform duration-300 group-hover/link:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="flex items-center space-x-1 text-xs text-gray-500">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
         </svg>
-      </a>
+        <span>Perú</span>
+      </div>
     </div>
 
   </div>

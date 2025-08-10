@@ -1,0 +1,236 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SEO from '../components/SEO.astro';
+import Schema from '../components/Schema.astro';
+
+const seoData = {
+  title: 'Política de Correcciones | Iquitos Tech',
+  description: 'Nuestra política de transparencia para correcciones, actualizaciones y manejo de errores en el contenido de Iquitos Tech.',
+  url: 'https://iquitostech.com/corrections'
+};
+---
+
+<Layout>
+  <head>
+    <SEO {...seoData} />
+    <Schema {...seoData} />
+  </head>
+
+  <main class="min-h-screen bg-gradient-to-br from-gray-50 to-red-50 dark:from-gray-900 dark:to-red-900">
+    <div class="container mx-auto px-4 py-16 max-w-4xl">
+      
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+          Política de Correcciones
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          Transparencia y responsabilidad en el manejo de errores y actualizaciones
+        </p>
+      </div>
+
+      <!-- Content -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 space-y-8">
+        
+        <!-- Commitment -->
+        <section>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Nuestro Compromiso
+          </h2>
+          <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+            En Iquitos Tech nos comprometemos a mantener los más altos estándares de precisión en nuestro contenido. 
+            Cuando cometemos errores, los corregimos de manera transparente y oportuna, manteniendo un registro 
+            claro de los cambios realizados.
+          </p>
+        </section>
+
+        <!-- Types of Corrections -->
+        <section>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Tipos de Correcciones
+          </h2>
+          <div class="space-y-6">
+            
+            <div class="border border-red-200 dark:border-red-800 rounded-lg p-4">
+              <h3 class="text-lg font-semibold text-red-700 dark:text-red-300 mb-2">
+                🚨 Correcciones Críticas
+              </h3>
+              <p class="text-gray-700 dark:text-gray-300 mb-2">
+                <strong>Errores factuales significativos</strong> que pueden afectar la comprensión del lector:
+              </p>
+              <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                <li>Información incorrecta sobre fechas de lanzamiento</li>
+                <li>Especificaciones técnicas erróneas</li>
+                <li>Precios incorrectos</li>
+                <li>Atribución incorrecta de declaraciones</li>
+              </ul>
+              <p class="text-sm text-red-600 dark:text-red-400 mt-2">
+                <strong>Tiempo de corrección:</strong> Dentro de 2 horas de la identificación
+              </p>
+            </div>
+
+            <div class="border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+              <h3 class="text-lg font-semibold text-yellow-700 dark:text-yellow-300 mb-2">
+                ⚠️ Correcciones Menores
+              </h3>
+              <p class="text-gray-700 dark:text-gray-300 mb-2">
+                <strong>Errores que no afectan sustancialmente el contenido:</strong>
+              </p>
+              <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                <li>Errores ortográficos o gramaticales</li>
+                <li>Errores tipográficos</li>
+                <li>Inconsistencias menores de formato</li>
+                <li>Enlaces rotos</li>
+              </ul>
+              <p class="text-sm text-yellow-600 dark:text-yellow-400 mt-2">
+                <strong>Tiempo de corrección:</strong> Dentro de 24 horas
+              </p>
+            </div>
+
+            <div class="border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <h3 class="text-lg font-semibold text-blue-700 dark:text-blue-300 mb-2">
+                📝 Actualizaciones
+              </h3>
+              <p class="text-gray-700 dark:text-gray-300 mb-2">
+                <strong>Información nueva que complementa o actualiza el contenido original:</strong>
+              </p>
+              <ul class="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                <li>Desarrollos posteriores a la publicación</li>
+                <li>Información adicional relevante</li>
+                <li>Aclaraciones solicitadas por los lectores</li>
+                <li>Cambios en disponibilidad o precios</li>
+              </ul>
+              <p class="text-sm text-blue-600 dark:text-blue-400 mt-2">
+                <strong>Tiempo de actualización:</strong> Según relevancia y urgencia
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Process -->
+        <section>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Proceso de Corrección
+          </h2>
+          <div class="space-y-4">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Identificación</h3>
+                <p class="text-gray-700 dark:text-gray-300 text-sm">
+                  Error detectado por nuestro equipo o reportado por lectores
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Verificación</h3>
+                <p class="text-gray-700 dark:text-gray-300 text-sm">
+                  Confirmación del error y determinación del tipo de corrección necesaria
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Corrección</h3>
+                <p class="text-gray-700 dark:text-gray-300 text-sm">
+                  Aplicación de la corrección con nota de transparencia cuando sea necesario
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">4</div>
+              <div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Documentación</h3>
+                <p class="text-gray-700 dark:text-gray-300 text-sm">
+                  Registro del cambio en nuestros sistemas internos y, cuando sea significativo, en el artículo
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Transparency -->
+        <section>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Transparencia en Correcciones
+          </h2>
+          <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-3">
+              Cuándo agregamos notas de corrección:
+            </h3>
+            <ul class="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
+              <li>Errores factuales que cambian sustancialmente el significado del contenido</li>
+              <li>Información que fue incorrecta al momento de la publicación</li>
+              <li>Correcciones solicitadas por fuentes citadas</li>
+              <li>Cambios significativos después de la publicación inicial</li>
+            </ul>
+            
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-3 mt-6">
+              Formato de las notas de corrección:
+            </h3>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded border-l-4 border-red-500">
+              <p class="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                <strong>Corrección [Fecha]:</strong> Una versión anterior de este artículo indicaba incorrectamente [descripción del error]. 
+                El artículo ha sido actualizado para reflejar que [información correcta].
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- How to Report -->
+        <section>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Cómo Reportar Errores
+          </h2>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Por Email</h3>
+              <p class="text-gray-700 dark:text-gray-300 text-sm mb-2">
+                Envía detalles del error a:
+              </p>
+              <p class="text-blue-600 dark:text-blue-400 font-medium">
+                correcciones@iquitostech.com
+              </p>
+            </div>
+            <div class="bg-green-50 dark:bg-green-900/20 p-6 rounded-lg">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Información Necesaria</h3>
+              <ul class="text-gray-700 dark:text-gray-300 text-sm space-y-1">
+                <li>• URL del artículo</li>
+                <li>• Descripción específica del error</li>
+                <li>• Información correcta (si la tienes)</li>
+                <li>• Fuentes de verificación</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recent Corrections -->
+        <section>
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Correcciones Recientes
+          </h2>
+          <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+            <p class="text-gray-700 dark:text-gray-300 text-center">
+              No hay correcciones significativas registradas en los últimos 30 días.
+            </p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 text-center mt-2">
+              Esta sección se actualiza mensualmente.
+            </p>
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <div class="text-center pt-8 border-t border-gray-200 dark:border-gray-700">
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Última actualización: Enero 2025 | 
+            <a href="/editorial" class="text-blue-600 hover:text-blue-800 dark:text-blue-400">Ver estándares editoriales</a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</Layout>
