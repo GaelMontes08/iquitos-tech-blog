@@ -13,8 +13,7 @@ export default defineConfig({
     }
   }),
   redirects: {
-    '/home': '/',
-    '/home/': '/',
+    '/home': '/'
   },
   vite: {
     plugins: [tailwindcss()],
