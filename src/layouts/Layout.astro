@@ -3,7 +3,7 @@ import Header from "@/components/Header.astro";
 import SEO from "@/components/SEO.astro";
 import Schema from "@/components/Schema.astro";
 import "@/styles/global.css";
-import '@fontsource-variable/onest';
+// Remove blocking font import - we'll load it optimally
 import Footer from "@/components/Footer.astro";
 import type { SEOProps } from '@/lib/seo';
 
@@ -16,28 +16,146 @@ const seoProps = Astro.props as Props;
 <html lang="es">
     <head>
         <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        
+        <!-- Preload critical font with optimized loading -->
+        <link rel="preload" href="/_astro/onest-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+        <link rel="preload" href="/_astro/onest-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
+        
+        <!-- Optimized font loading with font-display: swap -->
+        <style>
+          @font-face {
+            font-family: 'Onest Variable';
+            src: url('/_astro/onest-latin-400-normal.woff2') format('woff2');
+            font-weight: 100 900;
+            font-style: normal;
+            font-display: swap;
+          }
+          
+          /* Critical CSS - Above the fold styles */
+          * {
+            box-sizing: border-box;
+          }
+          
+          :root {
+            font-family: 'Onest Variable', system-ui, -apple-system, sans-serif;
+            color-scheme: dark;
+          }
+          
+          html {
+            background-color: #131313;
+          }
+          
+          body {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            min-height: 100vh;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+          }
+          
+          /* Critical layout styles */
+          .pt-16 { padding-top: 4rem; }
+          .text-white { color: rgb(255 255 255); }
+          .bg-gray-900 { background-color: rgb(17 24 39); }
+        </style>
+        
+        <!-- DNS prefetch and preconnect for external resources -->
+        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="//news.google.com" />
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+        <link rel="preconnect" href="https://news.google.com" crossorigin />
+        
+        <!-- Resource hints for WordPress API -->
+        <link rel="dns-prefetch" href="//iquitostech.wordpress.com" />
+        <link rel="preconnect" href="https://iquitostech.wordpress.com" crossorigin />
+        
         <SEO {...seoProps} />
         <Schema {...seoProps} />
         
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXGSVHTJJL"></script>
+        <!-- Optimized Google Analytics with delayed loading -->
         <script is:inline>
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
           gtag('config', 'G-XXGSVHTJJL');
+          
+          // Performance monitoring
+          window.addEventListener('load', function() {
+            // Send Core Web Vitals to Google Analytics
+            if (typeof gtag === 'function') {
+              // LCP
+              new PerformanceObserver((entryList) => {
+                for (const entry of entryList.getEntries()) {
+                  gtag('event', 'LCP', {
+                    custom_map: {metric_value: entry.startTime}
+                  });
+                }
+              }).observe({entryTypes: ['largest-contentful-paint']});
+              
+              // FID
+              new PerformanceObserver((entryList) => {
+                for (const entry of entryList.getEntries()) {
+                  gtag('event', 'FID', {
+                    custom_map: {metric_value: entry.processingStart - entry.startTime}
+                  });
+                }
+              }).observe({entryTypes: ['first-input']});
+              
+              // CLS
+              let clsValue = 0;
+              new PerformanceObserver((entryList) => {
+                for (const entry of entryList.getEntries()) {
+                  if (!entry.hadRecentInput) {
+                    clsValue += entry.value;
+                  }
+                }
+                gtag('event', 'CLS', {
+                  custom_map: {metric_value: clsValue}
+                });
+              }).observe({entryTypes: ['layout-shift']});
+            }
+            
+            // Load GA script after page load to improve performance
+            var script = document.createElement('script');
+            script.async = true;
+            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXGSVHTJJL';
+            document.head.appendChild(script);
+          });
         </script>
         
-        <!-- Google News Reader Revenue Manager -->
-        <script async type="application/javascript"
-                src="https://news.google.com/swg/js/v1/swg-basic.js"></script>
+        <!-- Google News Reader Revenue Manager - Deferred -->
         <script is:inline>
-          (self.SWG_BASIC = self.SWG_BASIC || []).push( basicSubscriptions => {
-            basicSubscriptions.init({
-              type: "NewsArticle",
-              isPartOfType: ["Product"],
-              isPartOfProductId: "CAowoPTcCw:openaccess",
-              clientOptions: { theme: "light", lang: "es" },
-            });
+          window.addEventListener('load', function() {
+            // Register Service Worker for caching
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                  console.log('SW registered:', registration);
+                })
+                .catch(error => {
+                  console.log('SW registration failed:', error);
+                });
+            }
+            
+            // Load Google News script
+            var swgScript = document.createElement('script');
+            swgScript.async = true;
+            swgScript.type = 'application/javascript';
+            swgScript.src = 'https://news.google.com/swg/js/v1/swg-basic.js';
+            document.head.appendChild(swgScript);
+            
+            swgScript.onload = function() {
+              (self.SWG_BASIC = self.SWG_BASIC || []).push( function(basicSubscriptions) {
+                basicSubscriptions.init({
+                  type: "NewsArticle",
+                  isPartOfType: ["Product"],
+                  isPartOfProductId: "CAowoPTcCw:openaccess",
+                  clientOptions: { theme: "light", lang: "es" },
+                });
+              });
+            };
           });
         </script>
     </head>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sin conexión | Iquitos Tech</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: #131313;
+            color: white;
+            margin: 0;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .container {
+            max-width: 500px;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #2847d7;
+        }
+        
+        p {
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .button {
+            background: #2847d7;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0 8px;
+        }
+        
+        .button:hover {
+            background: #1e3a8a;
+        }
+        
+        .icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">📡</div>
+        <h1>Sin conexión a internet</h1>
+        <p>
+            Parece que no tienes conexión a internet en este momento. 
+            Algunas páginas que visitaste anteriormente podrían estar disponibles sin conexión.
+        </p>
+        <a href="/" class="button">Volver al inicio</a>
+        <button onclick="window.history.back()" class="button">Página anterior</button>
+        <button onclick="location.reload()" class="button">Reintentar</button>
+    </div>
+</body>
+</html>

@@ -24,14 +24,26 @@ const featuredPosts = await getFeaturedPosts({ perPage: 2, categoryId: 25 });
         bg-gradient-to-b from-transparent from-40% to-black/80
       "></div>
 
-      {/* Featured Image */}
+      {/* Featured Image with LCP optimization and modern formats */}
       {post.featuredImage && (
-        <img 
-          src={post.featuredImage} 
-          alt={post.title}
-          class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-          loading="lazy"
-        />
+        <picture>
+          <source 
+            srcset={post.featuredImage.replace(/\.(jpg|jpeg|png)$/i, '.webp')} 
+            type="image/webp"
+            sizes={index === 0 ? "(min-width: 1024px) 700px, 100vw" : "(min-width: 1024px) 300px, 100vw"}
+          />
+          <img 
+            src={post.featuredImage} 
+            alt={post.title}
+            class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+            loading={index === 0 ? "eager" : "lazy"}
+            fetchpriority={index === 0 ? "high" : "auto"}
+            decoding="async"
+            sizes={index === 0 ? "(min-width: 1024px) 700px, 100vw" : "(min-width: 1024px) 300px, 100vw"}
+            width={index === 0 ? "700" : "300"}
+            height={index === 0 ? "500" : "500"}
+          />
+        </picture>
       )}
 
       <div class="relative z-20 flex h-full select-none flex-col justify-end gap-1 p-4 text-lg md:p-6">
