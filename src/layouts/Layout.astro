@@ -3,7 +3,7 @@ import Header from "@/components/Header.astro";
 import SEO from "@/components/SEO.astro";
 import Schema from "@/components/Schema.astro";
 import "@/styles/global.css";
-// Remove blocking font import - we'll load it optimally
+import '@fontsource-variable/onest';
 import Footer from "@/components/Footer.astro";
 import { ViewTransitions } from 'astro:transitions';
 import Analytics from '@vercel/analytics/astro';
@@ -20,10 +20,6 @@ const seoProps = Astro.props as Props;
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         
-        <!-- Optimized font loading with system fonts fallback -->
-        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
-        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" /></noscript>
-        
         <!-- Critical CSS - Above the fold styles -->
         <style>
           * {
@@ -31,7 +27,7 @@ const seoProps = Astro.props as Props;
           }
           
           :root {
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Onest Variable', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color-scheme: dark;
           }
           
@@ -57,11 +53,8 @@ const seoProps = Astro.props as Props;
         <!-- DNS prefetch and preconnect for external resources -->
         <link rel="dns-prefetch" href="//www.googletagmanager.com" />
         <link rel="dns-prefetch" href="//news.google.com" />
-        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
         <link rel="preconnect" href="https://news.google.com" crossorigin />
-        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         
         <!-- Resource hints for WordPress API -->
         <link rel="dns-prefetch" href="//iquitostech.wordpress.com" />
