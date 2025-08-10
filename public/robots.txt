@@ -1,17 +1,85 @@
+# Robots.txt for Iquitos Tech
+# https://iquitostech.com/robots.txt
+
+# Allow all crawlers access to all content
 User-agent: *
 Allow: /
 
 # Sitemap location
 Sitemap: https://iquitostech.com/sitemap.xml
 
-# Allow crawling of all content
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+# Explicitly allow important content areas
 Allow: /posts/
 Allow: /categoria/
-Allow: /api/
+Allow: /about
+Allow: /contact
+Allow: /faqs
+Allow: /terms
+Allow: /privacy
+Allow: /newsletter
 
-# Block any admin or sensitive areas (if they exist)
+# Block access to development and testing areas
+Disallow: /api/debug*
+Disallow: /api/test*
+Disallow: /_dev/
+Disallow: /.well-known/
 Disallow: /admin/
 Disallow: /_admin/
+Disallow: /_astro/
 
-# Crawl delay (optional - helps with server load)
+# Block access to sensitive files and patterns
+Disallow: /*.json$
+Disallow: /*.log$
+Disallow: /*.config.*$
+Disallow: /*?debug*
+Disallow: /*?test*
+
+# Allow specific important files
+Allow: /sitemap.xml
+Allow: /robots.txt
+Allow: /favicon.ico
+Allow: /favicon.svg
+Allow: /logo.svg
+Allow: /logo-blue.svg
+
+# Rate limiting for SEO crawlers that might be aggressive
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Crawl-delay: 10
+
+User-agent: DotBot
+Crawl-delay: 10
+
+# Allow social media crawlers for rich previews
+User-agent: facebookexternalhit
+Allow: /
+Crawl-delay: 1
+
+User-agent: Twitterbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: LinkedInBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: WhatsApp
+Allow: /
+Crawl-delay: 1
+
+# Default crawl delay for performance
 Crawl-delay: 1
