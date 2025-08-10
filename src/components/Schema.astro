@@ -27,11 +27,30 @@ const {
   seo
 } = Astro.props;
 
-// Extract current URL for schema
-const currentUrl = canonical || 'https://iquitostech.com';
+// Extract current URL for schema and fix homepage URL
+let currentUrl = canonical || 'https://iquitostech.com';
 
-// Base organization schema - always include this
-const organizationSchema = {
+// Fix homepage URL - if it ends with /home/ or /home, make it the root
+if (currentUrl.endsWith('/home/') || currentUrl.endsWith('/home')) {
+  currentUrl = 'https://iquitostech.com';
+}
+
+// Also check if SEO data has a different canonical and fix it too
+let seoCanonical = seo?.canonical;
+if (seoCanonical?.endsWith('/home/') || seoCanonical?.endsWith('/home')) {
+  seoCanonical = 'https://iquitostech.com';
+}
+
+// Use the explicitly passed canonical over SEO canonical for homepage
+if (type === 'website' && canonical) {
+  currentUrl = canonical;
+}
+
+// Check if WordPress Yoast already provides organization schema
+const hasYoastOrganizationSchema = seo?.schema?.['@graph']?.some((item: any) => item['@type'] === 'Organization');
+
+// Enhanced organization schema - only add if Yoast doesn't provide it, or enhance the existing one
+const organizationSchema = !hasYoastOrganizationSchema ? {
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "Iquitos Tech",
@@ -47,6 +66,7 @@ const organizationSchema = {
   "image": "https://iquitostech.com/logo.svg",
   "sameAs": [
     "https://facebook.com/iquitostech",
+    "https://instagram.com/iquitostech",
     "https://youtube.com/@iquitostech",
     "https://x.com/iquitostech",
     "https://tiktok.com/@iquitostech"
@@ -60,9 +80,11 @@ const organizationSchema = {
   },
   "address": {
     "@type": "PostalAddress",
-    "addressCountry": "PE",
+    "streetAddress": "Calle Jaén 454",
+    "addressLocality": "Iquitos",
     "addressRegion": "Loreto",
-    "addressLocality": "Iquitos"
+    "postalCode": "16001",
+    "addressCountry": "PE"
   },
   "foundingDate": "2024",
   "keywords": "tecnología, gaming, videojuegos, inteligencia artificial, Perú, Amazonía, noticias tech",
@@ -75,20 +97,20 @@ const organizationSchema = {
     "SEM",
     "Desarrollo Web"
   ]
-};
+} : null;
 
 // Website schema for homepage and general pages
 const websiteSchema = type === 'website' ? {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "Iquitos Tech",
-  "alternateName": "IquitosTech",
+  "alternateName": "IquitosTech", 
   "description": description,
-  "url": "https://iquitostech.com",
+  "url": "https://iquitostech.com", // Always use root URL for website
   "inLanguage": "es-PE",
   "isAccessibleForFree": true,
   "publisher": {
-    "@id": "https://iquitostech.com/#organization"
+    "@id": hasYoastOrganizationSchema ? "https://iquitostech.com/#organization" : "https://iquitostech.com/#organization"
   },
   "potentialAction": {
     "@type": "SearchAction",
@@ -175,6 +197,23 @@ const webPageSchema = type !== 'website' && type !== 'article' ? {
   }
 } : null;
 
+// Override WordPress WebPage schema for homepage if it has wrong URL
+const homepageWebPageOverride = type === 'website' && (seo?.canonical?.includes('/home') || currentUrl.includes('/home')) ? {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": title,
+  "description": description,
+  "url": "https://iquitostech.com",
+  "@id": "https://iquitostech.com/",
+  "isPartOf": {
+    "@id": "https://iquitostech.com/#website"
+  },
+  "publisher": {
+    "@id": "https://iquitostech.com/#organization"
+  },
+  "inLanguage": "es-PE"
+} : null;
+
 // FAQ Page schema for FAQ page
 const faqPageSchema = currentUrl.includes('/faqs') ? {
   "@context": "https://schema.org",
@@ -215,10 +254,13 @@ const contactPageSchema = currentUrl.includes('/contact') ? {
 } : null;
 ---
 
-<script type="application/ld+json" set:html={JSON.stringify({
-  ...organizationSchema,
-  "@id": "https://iquitostech.com/#organization"
-})} />
+<!-- Enhanced Organization Schema (only if Yoast doesn't provide it) -->
+{organizationSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify({
+    ...organizationSchema,
+    "@id": "https://iquitostech.com/#organization"
+  })} />
+)}
 
 {type === 'website' && websiteSchema && (
   <script type="application/ld+json" set:html={JSON.stringify({
@@ -233,6 +275,11 @@ const contactPageSchema = currentUrl.includes('/contact') ? {
 
 {webPageSchema && type !== 'website' && type !== 'article' && (
   <script type="application/ld+json" set:html={JSON.stringify(webPageSchema)} />
+)}
+
+<!-- Homepage WebPage Override (if WordPress has wrong URL) -->
+{homepageWebPageOverride && (
+  <script type="application/ld+json" set:html={JSON.stringify(homepageWebPageOverride)} />
 )}
 
 {faqPageSchema && (
