@@ -9,6 +9,10 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   output: 'server',
   adapter: vercel(),
+  redirects: {
+    '/home': '/',
+    '/home/': '/',
+  },
   vite: {
     plugins: [tailwindcss()],
     resolve: {
