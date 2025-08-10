@@ -186,7 +186,7 @@ export const getMostViewedPosts = async () => {
     }
 
     // Get post data from WordPress for posts
-    const postPromises = viewData.slice(0, 5).map(async (viewRecord) => {
+    const postPromises = viewData.slice(0, 5).map(async (viewRecord: any) => {
       try {
         const response = await fetchWithTimeout(
           `https://${domain}/wp-json/wp/v2/posts?slug=${viewRecord.slug}&_embed&_fields=id,title,slug,date,_embedded`,

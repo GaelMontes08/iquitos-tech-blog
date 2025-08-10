@@ -20,7 +20,21 @@ const seoProps = Astro.props as Props;
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         
+        <!-- ViewTransition Optimizations -->
         <style>
+          /* Faster ViewTransitions */
+          ::view-transition-old(root),
+          ::view-transition-new(root) {
+            animation-duration: 0.2s;
+          }
+          
+          /* Smooth transition for main content */
+          ::view-transition-old(main),
+          ::view-transition-new(main) {
+            animation-duration: 0.15s;
+          }
+          
+          /* Critical CSS - Above the fold styles */
           * {
             box-sizing: border-box;
           }
@@ -49,194 +63,169 @@ const seoProps = Astro.props as Props;
           .bg-gray-900 { background-color: rgb(17 24 39); }
         </style>        
         
-        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="//news.google.com" />
-        <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
-        <link rel="preconnect" href="https://news.google.com" crossorigin />
+        <!-- Preconnect for faster resource loading -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+        <link rel="preconnect" href="https://news.google.com" crossorigin>
+        <link rel="dns-prefetch" href="//iquitostech.wordpress.com">
         
-        <link rel="dns-prefetch" href="//iquitostech.wordpress.com" />
-        <link rel="preconnect" href="https://iquitostech.wordpress.com" crossorigin />
+        <!-- Optimized Onest Variable font loading -->
+        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap"></noscript>
         
+        <!-- SEO and Schema components -->
         <SEO {...seoProps} />
         <Schema {...seoProps} />
-        
-        <script is:inline>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-XXGSVHTJJL');
-          
-          // Performance monitoring
-          window.addEventListener('load', function() {
-            // Fix accessibility: Add titles to dynamically created iframes
-            function addIframeTitles() {
-              const iframes = document.querySelectorAll('iframe:not([title])');
-              iframes.forEach((iframe, index) => {
-                const src = iframe.src || '';
-                const className = iframe.className || '';
-                const parentElement = iframe.parentElement;
-                let title = 'Contenido embebido';
-                
-                // Identify iframe source and assign appropriate title
-                if (src.includes('googletagmanager') || src.includes('google-analytics')) {
-                  title = 'Google Analytics - Seguimiento web';
-                } else if (src.includes('google.com/recaptcha')) {
-                  title = 'Google reCAPTCHA - Verificación de seguridad';
-                } else if (src.includes('youtube.com') || src.includes('youtu.be')) {
-                  title = 'Video de YouTube embebido';
-                } else if (src.includes('twitter.com') || src.includes('x.com')) {
-                  title = 'Tweet embebido de Twitter/X';
-                } else if (src.includes('facebook.com')) {
-                  title = 'Publicación embebida de Facebook';
-                } else if (src.includes('instagram.com')) {
-                  title = 'Publicación embebida de Instagram';
-                } else if (src.includes('tiktok.com')) {
-                  title = 'Video embebido de TikTok';
-                } else if (src.includes('linkedin.com')) {
-                  title = 'Publicación embebida de LinkedIn';
-                } else if (src.includes('news.google.com') || src.includes('swg')) {
-                  title = 'Google News - Gestor de suscripciones';
-                } else if (src.includes('vimeo.com')) {
-                  title = 'Video embebido de Vimeo';
-                } else if (src.includes('spotify.com')) {
-                  title = 'Reproductor embebido de Spotify';
-                } else if (src.includes('soundcloud.com')) {
-                  title = 'Reproductor embebido de SoundCloud';
-                } else if (className.includes('wp-embedded-content')) {
-                  title = 'Contenido embebido de WordPress';
-                } else if (parentElement && parentElement.classList.contains('wp-block-embed')) {
-                  title = 'Contenido multimedia embebido';
-                } else if (iframe.style.display === 'none' || iframe.hidden || iframe.width === '0' || iframe.height === '0') {
-                  title = 'Marco de seguimiento - Oculto para análisis web';
-                } else if (src.includes('ads') || src.includes('doubleclick') || src.includes('googlesyndication')) {
-                  title = 'Marco publicitario';
-                } else {
-                  title = `Contenido embebido ${index + 1}`;
-                }
-                
-                iframe.setAttribute('title', title);
-                iframe.setAttribute('aria-label', title);
-                
-                // Add role for better accessibility
-                if (iframe.style.display === 'none' || iframe.hidden) {
-                  iframe.setAttribute('aria-hidden', 'true');
-                } else {
-                  iframe.setAttribute('role', 'application');
-                }
-              });
-            }
-            
-            // Run immediately and set up observer for dynamically added iframes
-            addIframeTitles();
-            
-            // Also run after a short delay to catch WordPress embeds
-            setTimeout(addIframeTitles, 1000);
-            setTimeout(addIframeTitles, 3000);
-            
-            // Watch for new iframes being added
-            const observer = new MutationObserver(function(mutations) {
-              mutations.forEach(function(mutation) {
-                if (mutation.type === 'childList') {
-                  mutation.addedNodes.forEach(function(node) {
-                    if (node.nodeType === 1) { // Element node
-                      // Check if the added node is an iframe or contains iframes
-                      if (node.tagName === 'IFRAME' || node.querySelector && node.querySelector('iframe')) {
-                        setTimeout(addIframeTitles, 100);
-                      }
-                    }
-                  });
-                }
-              });
-            });
-            
-            observer.observe(document.body, {
-              childList: true,
-              subtree: true
-            });
-            
-            // Send Core Web Vitals to Google Analytics
-            if (typeof gtag === 'function') {
-              // LCP
-              new PerformanceObserver((entryList) => {
-                for (const entry of entryList.getEntries()) {
-                  gtag('event', 'LCP', {
-                    custom_map: {metric_value: entry.startTime}
-                  });
-                }
-              }).observe({entryTypes: ['largest-contentful-paint']});
-              
-              // FID
-              new PerformanceObserver((entryList) => {
-                for (const entry of entryList.getEntries()) {
-                  gtag('event', 'FID', {
-                    custom_map: {metric_value: entry.processingStart - entry.startTime}
-                  });
-                }
-              }).observe({entryTypes: ['first-input']});
-              
-              // CLS
-              let clsValue = 0;
-              new PerformanceObserver((entryList) => {
-                for (const entry of entryList.getEntries()) {
-                  if (!entry.hadRecentInput) {
-                    clsValue += entry.value;
-                  }
-                }
-                gtag('event', 'CLS', {
-                  custom_map: {metric_value: clsValue}
-                });
-              }).observe({entryTypes: ['layout-shift']});
-            }
-            
-            // Load GA script after page load to improve performance
-            var script = document.createElement('script');
-            script.async = true;
-            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXGSVHTJJL';
-            document.head.appendChild(script);
-          });
-        </script>
-        
-        <script is:inline>
-          window.addEventListener('load', function() {
-            // Register Service Worker for caching
-            if ('serviceWorker' in navigator) {
-              navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                  console.log('SW registered:', registration);
-                })
-                .catch(error => {
-                  console.log('SW registration failed:', error);
-                });
-            }
-            
-            // Load Google News script
-            var swgScript = document.createElement('script');
-            swgScript.async = true;
-            swgScript.type = 'application/javascript';
-            swgScript.src = 'https://news.google.com/swg/js/v1/swg-basic.js';
-            document.head.appendChild(swgScript);
-            
-            swgScript.onload = function() {
-              (self.SWG_BASIC = self.SWG_BASIC || []).push( function(basicSubscriptions) {
-                basicSubscriptions.init({
-                  type: "NewsArticle",
-                  isPartOfType: ["Product"],
-                  isPartOfProductId: "CAowoPTcCw:openaccess",
-                  clientOptions: { theme: "light", lang: "es" },
-                });
-              });
-            };
-          });
-        </script>
     </head>
     <body>
         <ViewTransitions />
+        
+        <!-- ViewTransition optimization script -->
+        <script is:inline>
+          document.addEventListener('astro:before-preparation', (e) => {
+            // Preload critical resources for next page
+            const nextUrl = e.to.pathname;
+            if (nextUrl !== window.location.pathname) {
+              // Prefetch next page's critical CSS
+              const link = document.createElement('link');
+              link.rel = 'prefetch';
+              link.href = nextUrl;
+              document.head.appendChild(link);
+            }
+          });
+          
+          document.addEventListener('astro:before-swap', () => {
+            // Clean up any heavy observers before transition
+            if (window.iframeObserver) {
+              window.iframeObserver.disconnect();
+            }
+          });
+          
+          document.addEventListener('astro:after-swap', () => {
+            // Re-initialize critical scripts after transition
+            if (typeof window.addIframeTitles === 'function') {
+              window.addIframeTitles();
+            }
+          });
+        </script>
+        
         <Header />
         <main class="pt-16 sm:pt-20 lg:pt-24">
             <slot />
         </main>
         <Footer />
         <Analytics />
+        
+        <!-- Optimized scripts at end of body for better ViewTransitions -->
+        
+        <!-- Google Analytics - Deferred Loading -->
+        <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-XXGSVHTJJL"></script>
+        <script is:inline>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-XXGSVHTJJL');
+        </script>
+        
+        <!-- Optimized Iframe Accessibility Handler -->
+        <script is:inline>
+          // Global iframe accessibility handler
+          let iframeTimeout;
+          
+          window.addIframeTitles = function() {
+            clearTimeout(iframeTimeout);
+            iframeTimeout = setTimeout(() => {
+              const iframes = document.querySelectorAll('iframe:not([title])');
+              iframes.forEach((iframe, index) => {
+                const src = iframe.src || '';
+                let title = 'Contenido embebido';
+                
+                if (src.includes('youtube')) title = 'Video de YouTube embebido';
+                else if (src.includes('twitter') || src.includes('x.com')) title = 'Tweet embebido';
+                else if (src.includes('facebook')) title = 'Publicación de Facebook';
+                else if (src.includes('instagram')) title = 'Publicación de Instagram';
+                else if (src.includes('tiktok')) title = 'Video de TikTok';
+                else if (src.includes('google')) title = 'Servicio de Google';
+                else if (src.includes('ads') || src.includes('doubleclick')) title = 'Marco publicitario';
+                else title = `Contenido embebido ${index + 1}`;
+                
+                iframe.setAttribute('title', title);
+                iframe.setAttribute('aria-label', title);
+              });
+            }, 100);
+          };
+          
+          // Initial check when DOM is ready
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', window.addIframeTitles);
+          } else {
+            window.addIframeTitles();
+          }
+          
+          // Optimized mutation observer for dynamic content
+          window.iframeObserver = new MutationObserver((mutations) => {
+            let hasNewIframes = false;
+            mutations.forEach((mutation) => {
+              if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach((node) => {
+                  if (node.nodeType === 1 && (node.tagName === 'IFRAME' || node.querySelector?.('iframe'))) {
+                    hasNewIframes = true;
+                  }
+                });
+              }
+            });
+            if (hasNewIframes) window.addIframeTitles();
+          });
+          
+          window.iframeObserver.observe(document.body, { childList: true, subtree: true });
+        </script>
+        
+        <!-- Service Worker Registration - Cached -->
+        <script is:inline>
+          if ('serviceWorker' in navigator && !navigator.serviceWorker.controller) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+          }
+        </script>
+        
+        <!-- Performance monitoring - Lightweight -->
+        <script is:inline>
+          if (typeof PerformanceObserver !== 'undefined' && typeof gtag !== 'undefined') {
+            const observer = new PerformanceObserver((list) => {
+              list.getEntries().forEach((entry) => {
+                if (entry.entryType === 'largest-contentful-paint' && entry.startTime > 0) {
+                  gtag('event', 'LCP', { value: Math.round(entry.startTime) });
+                }
+              });
+            });
+            try {
+              observer.observe({ entryTypes: ['largest-contentful-paint'] });
+            } catch (e) {}
+          }
+        </script>
+        
+        <!-- Google News Script - Deferred -->
+        <script is:inline>
+          // Load Google News script after other critical scripts
+          setTimeout(() => {
+            const swgScript = document.createElement('script');
+            swgScript.async = true;
+            swgScript.src = 'https://news.google.com/swg/js/v1/swg-basic.js';
+            swgScript.onload = function() {
+              try {
+                (self.SWG_BASIC = self.SWG_BASIC || []).push(function(basicSubscriptions) {
+                  basicSubscriptions.init({
+                    type: "NewsArticle",
+                    isPartOfType: ["Product"],
+                    isPartOfProductId: "CAowoPTcCw:openaccess",
+                    clientOptions: { theme: "light", lang: "es" },
+                  });
+                });
+              } catch (e) {}
+            };
+            document.head.appendChild(swgScript);
+          }, 500);
+        </script>
     </body>
 </html>
 
