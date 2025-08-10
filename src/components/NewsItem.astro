@@ -1,5 +1,4 @@
 ---
-// filepath: f:\Código\Iquitos-Tech\iquitos-tech\src\components\NewsItem.astro
 import { getFeaturedPosts } from '@/lib/wp';
 
 // Fetch featured posts from WordPress category 25
@@ -47,17 +46,17 @@ const featuredPosts = await getFeaturedPosts({ perPage: 2, categoryId: 25 });
         </picture>
       )}
 
-      <div class="relative z-20 flex h-full select-none flex-col justify-end gap-1 p-4 text-lg md:p-6">
+      <div class="relative z-20 flex h-full select-none flex-col justify-end p-2 text-lg pl-4 md:pl-6">
         <h2 class={`
           ${index === 0 ? 'text-3xl lg:text-4xl' : 'text-2xl lg:text-3xl'} 
-          font-bold text-balance mb-2 lg:mb-4 text-white
+          font-bold text-balance mb-2 lg:mb-2 text-white
         `}>
           {post.title}
         </h2>
         
-        {/* Show excerpt only on first post (larger) */}
+        {/* Show excerpt only on first post (larger) - Desktop only */}
         {index === 0 && post.excerpt && (
-          <p class="text-gray-300 text-base line-clamp-3 mb-4" set:html={post.excerpt} />
+          <p class="excerpt-mobile-hidden text-gray-300 text-base line-clamp-3 mb-2" set:html={post.excerpt} />
         )}
       </div>
     </a>
@@ -70,5 +69,17 @@ const featuredPosts = await getFeaturedPosts({ perPage: 2, categoryId: 25 });
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+  
+  /* Force hide excerpt on mobile devices */
+  .excerpt-mobile-hidden {
+    display: none !important;
+  }
+  
+  /* Show only on desktop (1024px and up) */
+  @media (min-width: 1024px) {
+    .excerpt-mobile-hidden {
+      display: block !important;
+    }
   }
 </style>

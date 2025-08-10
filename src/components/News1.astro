@@ -200,7 +200,7 @@ const secondSection = newsItems.slice(5, 10);
               {firstSection[0].title}
             </h3>
             {firstSection[0].description && (
-              <div class="text-gray-400 text-sm mb-4 line-clamp-3" set:html={firstSection[0].description} />
+              <div class="hidden lg:block text-gray-400 text-sm mb-4 line-clamp-3" set:html={firstSection[0].description} />
             )}
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-2">
@@ -301,7 +301,7 @@ const secondSection = newsItems.slice(5, 10);
               {secondSection[0].title}
             </h3>
             {secondSection[0].description && (
-              <div class="text-gray-400 text-sm mb-4 line-clamp-3" set:html={secondSection[0].description} />
+              <div class="hidden lg:block text-gray-400 text-sm mb-4 line-clamp-3" set:html={secondSection[0].description} />
             )}
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-2">
