@@ -5,6 +5,8 @@ import Schema from "@/components/Schema.astro";
 import "@/styles/global.css";
 // Remove blocking font import - we'll load it optimally
 import Footer from "@/components/Footer.astro";
+import { ViewTransitions } from 'astro:transitions';
+import Analytics from '@vercel/analytics/astro';
 import type { SEOProps } from '@/lib/seo';
 
 export interface Props extends SEOProps {}
@@ -152,11 +154,13 @@ const seoProps = Astro.props as Props;
         </script>
     </head>
     <body>
+        <ViewTransitions />
         <Header />
         <main class="pt-16 sm:pt-20 lg:pt-24">
             <slot />
         </main>
         <Footer />
+        <Analytics />
     </body>
 </html>
 
