@@ -1,0 +1,244 @@
+---
+import type { SEOProps } from '../lib/seo';
+
+export interface Props extends SEOProps {
+  // Additional schema-specific props
+  author?: string;
+  datePublished?: string;
+  dateModified?: string;
+  articleContent?: string;
+  category?: string;
+  tags?: string[];
+}
+
+const {
+  type = 'website',
+  title = 'Iquitos Tech - Tecnología y Gaming',
+  description = 'Tu fuente confiable de noticias sobre tecnología, videojuegos y cultura digital desde la Amazonía.',
+  canonical = 'https://iquitostech.com',
+  image = 'https://iquitostech.com/logo.svg',
+  author = 'Iquitos Tech',
+  publishedTime,
+  modifiedTime,
+  datePublished = publishedTime,
+  dateModified = modifiedTime,
+  category,
+  tags = [],
+  seo
+} = Astro.props;
+
+// Extract current URL for schema
+const currentUrl = canonical || 'https://iquitostech.com';
+
+// Base organization schema - always include this
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Iquitos Tech",
+  "alternateName": "IquitosTech",
+  "description": "Revista digital de tecnología, gaming y cultura digital desde la Amazonía peruana",
+  "url": "https://iquitostech.com",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://iquitostech.com/logo.svg",
+    "width": 400,
+    "height": 400
+  },
+  "image": "https://iquitostech.com/logo.svg",
+  "sameAs": [
+    "https://facebook.com/iquitostech",
+    "https://youtube.com/@iquitostech",
+    "https://x.com/iquitostech",
+    "https://tiktok.com/@iquitostech"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer service",
+    "email": "contact@iquitostech.com",
+    "url": "https://iquitostech.com/contact",
+    "availableLanguage": "Spanish"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "PE",
+    "addressRegion": "Loreto",
+    "addressLocality": "Iquitos"
+  },
+  "foundingDate": "2024",
+  "keywords": "tecnología, gaming, videojuegos, inteligencia artificial, Perú, Amazonía, noticias tech",
+  "knowsAbout": [
+    "Tecnología",
+    "Gaming", 
+    "Videojuegos",
+    "Inteligencia Artificial",
+    "SEO",
+    "SEM",
+    "Desarrollo Web"
+  ]
+};
+
+// Website schema for homepage and general pages
+const websiteSchema = type === 'website' ? {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Iquitos Tech",
+  "alternateName": "IquitosTech",
+  "description": description,
+  "url": "https://iquitostech.com",
+  "inLanguage": "es-PE",
+  "isAccessibleForFree": true,
+  "publisher": {
+    "@id": "https://iquitostech.com/#organization"
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://iquitostech.com/search?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  },
+  "about": {
+    "@type": "Thing",
+    "name": "Tecnología y Gaming",
+    "description": "Noticias, análisis y tendencias sobre tecnología, videojuegos y cultura digital"
+  }
+} : null;
+
+// Article schema for blog posts
+const articleSchema = type === 'article' ? {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "description": description,
+  "url": currentUrl,
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": currentUrl
+  },
+  "image": image ? {
+    "@type": "ImageObject",
+    "url": image,
+    "width": 1200,
+    "height": 630
+  } : undefined,
+  "datePublished": datePublished,
+  "dateModified": dateModified || datePublished,
+  "author": {
+    "@type": "Person",
+    "name": author || "Redacción Iquitos Tech",
+    "url": "https://iquitostech.com/about"
+  },
+  "publisher": {
+    "@id": "https://iquitostech.com/#organization"
+  },
+  "articleSection": category || "Tecnología",
+  "keywords": tags.length > 0 ? tags.join(', ') : "tecnología, gaming, noticias tech",
+  "inLanguage": "es-PE",
+  "isAccessibleForFree": true,
+  "about": {
+    "@type": "Thing",
+    "name": category || "Tecnología"
+  }
+} : null;
+
+// WebPage schema for static pages (not homepage or articles)
+const webPageSchema = type !== 'website' && type !== 'article' ? {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": title,
+  "description": description,
+  "url": currentUrl,
+  "mainEntity": {
+    "@type": "Thing",
+    "name": title,
+    "description": description
+  },
+  "image": image,
+  "inLanguage": "es-PE",
+  "isPartOf": {
+    "@id": "https://iquitostech.com/#website"
+  },
+  "publisher": {
+    "@id": "https://iquitostech.com/#organization"
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Inicio",
+        "item": "https://iquitostech.com"
+      }
+    ]
+  }
+} : null;
+
+// FAQ Page schema for FAQ page
+const faqPageSchema = currentUrl.includes('/faqs') ? {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "name": "Preguntas Frecuentes - Iquitos Tech",
+  "description": "Respuestas a las preguntas más comunes sobre nuestros servicios de SEO, SEM, desarrollo web y contenido digital",
+  "url": currentUrl,
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Qué servicios ofrece Iquitos Tech?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ofrecemos servicios de SEO, SEM, desarrollo web, creación de contenido y marketing digital especializados para empresas de la región amazónica."
+      }
+    },
+    {
+      "@type": "Question", 
+      "name": "¿Dónde está ubicado Iquitos Tech?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Estamos ubicados en Iquitos, Perú, en la región de Loreto, sirviendo principalmente a empresas de la Amazonía peruana."
+      }
+    }
+  ]
+} : null;
+
+// Contact Page schema
+const contactPageSchema = currentUrl.includes('/contact') ? {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Contacto - Iquitos Tech",
+  "description": "Ponte en contacto con Iquitos Tech para servicios de SEO, SEM, desarrollo web y marketing digital",
+  "url": currentUrl,
+  "mainEntity": {
+    "@id": "https://iquitostech.com/#organization"
+  }
+} : null;
+---
+
+<script type="application/ld+json" set:html={JSON.stringify({
+  ...organizationSchema,
+  "@id": "https://iquitostech.com/#organization"
+})} />
+
+{type === 'website' && websiteSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify({
+    ...websiteSchema,
+    "@id": "https://iquitostech.com/#website"
+  })} />
+)}
+
+{type === 'article' && articleSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+)}
+
+{webPageSchema && type !== 'website' && type !== 'article' && (
+  <script type="application/ld+json" set:html={JSON.stringify(webPageSchema)} />
+)}
+
+{faqPageSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify(faqPageSchema)} />
+)}
+
+{contactPageSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify(contactPageSchema)} />
+)}

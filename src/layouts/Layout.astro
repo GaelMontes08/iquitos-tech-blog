@@ -1,6 +1,7 @@
 ---
 import Header from "../components/Header.astro";
 import SEO from "../components/SEO.astro";
+import Schema from "../components/Schema.astro";
 import "../styles/global.css";
 import '@fontsource-variable/onest';
 import Footer from "../components/Footer.astro";
@@ -16,8 +17,8 @@ const seoProps = Astro.props as Props;
     <head>
         <meta charset="UTF-8" />
         <SEO {...seoProps} />
+        <Schema {...seoProps} />
         
-        <!-- Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXGSVHTJJL"></script>
         <script is:inline>
           window.dataLayer = window.dataLayer || [];
