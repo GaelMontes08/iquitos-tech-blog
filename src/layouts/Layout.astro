@@ -71,6 +71,92 @@ const seoProps = Astro.props as Props;
           
           // Performance monitoring
           window.addEventListener('load', function() {
+            // Fix accessibility: Add titles to dynamically created iframes
+            function addIframeTitles() {
+              const iframes = document.querySelectorAll('iframe:not([title])');
+              iframes.forEach((iframe, index) => {
+                const src = iframe.src || '';
+                const className = iframe.className || '';
+                const parentElement = iframe.parentElement;
+                let title = 'Contenido embebido';
+                
+                // Identify iframe source and assign appropriate title
+                if (src.includes('googletagmanager') || src.includes('google-analytics')) {
+                  title = 'Google Analytics - Seguimiento web';
+                } else if (src.includes('google.com/recaptcha')) {
+                  title = 'Google reCAPTCHA - Verificación de seguridad';
+                } else if (src.includes('youtube.com') || src.includes('youtu.be')) {
+                  title = 'Video de YouTube embebido';
+                } else if (src.includes('twitter.com') || src.includes('x.com')) {
+                  title = 'Tweet embebido de Twitter/X';
+                } else if (src.includes('facebook.com')) {
+                  title = 'Publicación embebida de Facebook';
+                } else if (src.includes('instagram.com')) {
+                  title = 'Publicación embebida de Instagram';
+                } else if (src.includes('tiktok.com')) {
+                  title = 'Video embebido de TikTok';
+                } else if (src.includes('linkedin.com')) {
+                  title = 'Publicación embebida de LinkedIn';
+                } else if (src.includes('news.google.com') || src.includes('swg')) {
+                  title = 'Google News - Gestor de suscripciones';
+                } else if (src.includes('vimeo.com')) {
+                  title = 'Video embebido de Vimeo';
+                } else if (src.includes('spotify.com')) {
+                  title = 'Reproductor embebido de Spotify';
+                } else if (src.includes('soundcloud.com')) {
+                  title = 'Reproductor embebido de SoundCloud';
+                } else if (className.includes('wp-embedded-content')) {
+                  title = 'Contenido embebido de WordPress';
+                } else if (parentElement && parentElement.classList.contains('wp-block-embed')) {
+                  title = 'Contenido multimedia embebido';
+                } else if (iframe.style.display === 'none' || iframe.hidden || iframe.width === '0' || iframe.height === '0') {
+                  title = 'Marco de seguimiento - Oculto para análisis web';
+                } else if (src.includes('ads') || src.includes('doubleclick') || src.includes('googlesyndication')) {
+                  title = 'Marco publicitario';
+                } else {
+                  title = `Contenido embebido ${index + 1}`;
+                }
+                
+                iframe.setAttribute('title', title);
+                iframe.setAttribute('aria-label', title);
+                
+                // Add role for better accessibility
+                if (iframe.style.display === 'none' || iframe.hidden) {
+                  iframe.setAttribute('aria-hidden', 'true');
+                } else {
+                  iframe.setAttribute('role', 'application');
+                }
+              });
+            }
+            
+            // Run immediately and set up observer for dynamically added iframes
+            addIframeTitles();
+            
+            // Also run after a short delay to catch WordPress embeds
+            setTimeout(addIframeTitles, 1000);
+            setTimeout(addIframeTitles, 3000);
+            
+            // Watch for new iframes being added
+            const observer = new MutationObserver(function(mutations) {
+              mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                  mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1) { // Element node
+                      // Check if the added node is an iframe or contains iframes
+                      if (node.tagName === 'IFRAME' || node.querySelector && node.querySelector('iframe')) {
+                        setTimeout(addIframeTitles, 100);
+                      }
+                    }
+                  });
+                }
+              });
+            });
+            
+            observer.observe(document.body, {
+              childList: true,
+              subtree: true
+            });
+            
             // Send Core Web Vitals to Google Analytics
             if (typeof gtag === 'function') {
               // LCP
