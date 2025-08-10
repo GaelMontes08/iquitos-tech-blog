@@ -1,0 +1,51 @@
+---
+import Skeleton from './Skeleton.astro';
+
+export interface Props {
+  variant?: 'grid' | 'list' | 'featured';
+  class?: string;
+}
+
+const { variant = 'grid', class: className = '' } = Astro.props;
+---
+
+<article class={`bg-gray-900 rounded-lg overflow-hidden ${className}`}>
+  {variant === 'featured' ? (
+    <!-- Featured post skeleton - larger format -->
+    <div class="relative">
+      <Skeleton width="w-full" height="h-48 sm:h-64" rounded="none" />
+      <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+        <Skeleton width="w-3/4" height="h-8" class="mb-3" />
+        <Skeleton width="w-full" height="h-4" class="mb-2" />
+        <Skeleton width="w-2/3" height="h-4" />
+      </div>
+    </div>
+  ) : variant === 'list' ? (
+    <!-- List view skeleton -->
+    <div class="flex gap-4 p-4">
+      <Skeleton width="w-24" height="h-16 sm:w-32 sm:h-20" />
+      <div class="flex-1 space-y-2">
+        <Skeleton width="w-full" height="h-5" />
+        <Skeleton width="w-4/5" height="h-4" />
+        <div class="flex items-center gap-4 mt-3">
+          <Skeleton width="w-16" height="h-3" />
+          <Skeleton width="w-20" height="h-3" />
+        </div>
+      </div>
+    </div>
+  ) : (
+    <!-- Grid view skeleton (default) -->
+    <div class="space-y-4">
+      <Skeleton width="w-full" height="h-32 sm:h-40" rounded="lg" />
+      <div class="p-4 space-y-3">
+        <Skeleton width="w-full" height="h-5" />
+        <Skeleton width="w-5/6" height="h-4" />
+        <Skeleton width="w-3/4" height="h-4" />
+        <div class="flex items-center justify-between pt-2">
+          <Skeleton width="w-20" height="h-3" />
+          <Skeleton width="w-16" height="h-3" />
+        </div>
+      </div>
+    </div>
+  )}
+</article>

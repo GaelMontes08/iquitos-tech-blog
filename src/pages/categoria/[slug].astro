@@ -2,6 +2,7 @@
 // filepath: f:\Código\Iquitos-Tech\iquitos-tech\src\pages\categoria\[slug].astro
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
+import CategoryPageSkeleton from '../../components/skeletons/CategoryPageSkeleton.astro';
 import { fetchWithTimeout } from '../../lib/wp';
 import type { YoastSEO } from '../../lib/seo';
 
@@ -99,7 +100,14 @@ export const prerender = false;
   type="website"
   urlType="category"
 >
-  <main class="min-h-screen">
+  <!-- Loading skeleton that will be replaced by actual content -->
+  <div id="content-skeleton" class="animate-pulse">
+    <CategoryPageSkeleton />
+  </div>
+  
+  <!-- Actual content that loads progressively -->
+  <div id="actual-content" style="display: none;">
+    <main class="min-h-screen">
 
     <section class="w-full py-12 lg:py-16 border-b border-[#313131]">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -242,6 +250,7 @@ export const prerender = false;
     </section>
 
   </main>
+  </div> <!-- Close actual-content -->
 </Layout>
 
 <style>

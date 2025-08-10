@@ -1,0 +1,51 @@
+---
+import Skeleton from './Skeleton.astro';
+import PostCardSkeleton from './PostCardSkeleton.astro';
+---
+
+<section class="space-y-8 py-8">
+  <!-- Hero/Featured Article Skeleton -->
+  <div class="relative">
+    <PostCardSkeleton variant="featured" class="mb-8" />
+  </div>
+  
+  <!-- Important News Grid Skeleton -->
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <Skeleton width="w-48" height="h-8" />
+      <Skeleton width="w-24" height="h-6" />
+    </div>
+    
+    <!-- News Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 6 }).map(() => (
+        <PostCardSkeleton variant="grid" />
+      ))}
+    </div>
+  </div>
+  
+  <!-- Categories Navigation Skeleton -->
+  <div class="space-y-4">
+    <Skeleton width="w-32" height="h-6" />
+    <div class="flex flex-wrap gap-3">
+      {Array.from({ length: 8 }).map(() => (
+        <Skeleton width="w-20" height="h-8" rounded="full" />
+      ))}
+    </div>
+  </div>
+  
+  <!-- Trends Section Skeleton -->
+  <div class="space-y-6">
+    <div class="flex items-center justify-between">
+      <Skeleton width="w-40" height="h-8" />
+      <Skeleton width="w-24" height="h-6" />
+    </div>
+    
+    <!-- Trends Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 5 }).map(() => (
+        <PostCardSkeleton variant="grid" />
+      ))}
+    </div>
+  </div>
+</section>

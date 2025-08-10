@@ -1,0 +1,67 @@
+---
+export interface Props {
+  class?: string;
+  width?: string;
+  height?: string;
+  rounded?: 'none' | 'sm' | 'md' | 'lg' | 'full';
+  animate?: boolean;
+}
+
+const { 
+  class: className = '', 
+  width = 'w-full', 
+  height = 'h-4', 
+  rounded = 'md',
+  animate = true 
+} = Astro.props;
+
+const roundedClasses = {
+  none: '',
+  sm: 'rounded-sm',
+  md: 'rounded-md', 
+  lg: 'rounded-lg',
+  full: 'rounded-full'
+};
+---
+
+<div 
+  class={`
+    bg-gray-800 
+    ${width} 
+    ${height} 
+    ${roundedClasses[rounded]}
+    ${animate ? 'animate-pulse' : ''}
+    ${className}
+  `}
+  aria-hidden="true"
+>
+</div>
+
+<style>
+  @keyframes shimmer {
+    0% {
+      background-position: -200px 0;
+    }
+    100% {
+      background-position: calc(200px + 100%) 0;
+    }
+  }
+  
+  .animate-pulse {
+    background: linear-gradient(
+      90deg,
+      #374151 25%,
+      #4b5563 37%,
+      #374151 63%
+    );
+    background-size: 400px 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .animate-pulse {
+      animation: none;
+      background: #374151;
+    }
+  }
+</style>

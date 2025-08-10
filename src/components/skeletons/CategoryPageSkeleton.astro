@@ -1,0 +1,43 @@
+---
+import Skeleton from './Skeleton.astro';
+import PostCardSkeleton from './PostCardSkeleton.astro';
+---
+
+<div class="space-y-8">
+  <!-- Category Header Skeleton -->
+  <header class="text-center space-y-4">
+    <Skeleton width="w-64" height="h-12" class="mx-auto" />
+    <Skeleton width="w-96" height="h-4" class="mx-auto" />
+    <Skeleton width="w-32" height="h-6" class="mx-auto" />
+  </header>
+  
+  <!-- Filter/Sort Options Skeleton -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div class="flex flex-wrap gap-2">
+      <Skeleton width="w-16" height="h-6" />
+      {Array.from({ length: 5 }).map(() => (
+        <Skeleton width="w-20" height="h-8" rounded="full" />
+      ))}
+    </div>
+    <div class="flex items-center gap-3">
+      <Skeleton width="w-16" height="h-4" />
+      <Skeleton width="w-32" height="h-8" />
+    </div>
+  </div>
+  
+  <!-- Posts Grid Skeleton -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {Array.from({ length: 12 }).map(() => (
+      <PostCardSkeleton variant="grid" />
+    ))}
+  </div>
+  
+  <!-- Pagination Skeleton -->
+  <div class="flex justify-center items-center space-x-2 pt-8">
+    <Skeleton width="w-8" height="h-8" />
+    {Array.from({ length: 5 }).map(() => (
+      <Skeleton width="w-8" height="h-8" />
+    ))}
+    <Skeleton width="w-8" height="h-8" />
+  </div>
+</div>

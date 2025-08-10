@@ -5,7 +5,6 @@ import Schema from "@/components/Schema.astro";
 import "@/styles/global.css";
 import '@fontsource-variable/onest';
 import Footer from "@/components/Footer.astro";
-import { ViewTransitions } from 'astro:transitions';
 import Analytics from '@vercel/analytics/astro';
 import type { SEOProps } from '@/lib/seo';
 
@@ -22,16 +21,16 @@ const seoProps = Astro.props as Props;
         
         <!-- ViewTransition Optimizations -->
         <style>
-          /* Faster ViewTransitions */
-          ::view-transition-old(root),
-          ::view-transition-new(root) {
-            animation-duration: 0.2s;
-          }
-          
-          /* Smooth transition for main content */
-          ::view-transition-old(main),
-          ::view-transition-new(main) {
-            animation-duration: 0.15s;
+          /* Smooth content transitions without ViewTransitions */
+          @keyframes fadeIn {
+            from { 
+              opacity: 0; 
+              transform: translateY(10px);
+            }
+            to { 
+              opacity: 1; 
+              transform: translateY(0);
+            }
           }
           
           /* Critical CSS - Above the fold styles */
@@ -79,33 +78,25 @@ const seoProps = Astro.props as Props;
         <Schema {...seoProps} />
     </head>
     <body>
-        <ViewTransitions />
         
-        <!-- ViewTransition optimization script -->
+        <!-- Simplified skeleton loading script -->
         <script is:inline>
-          document.addEventListener('astro:before-preparation', (e) => {
-            // Preload critical resources for next page
-            const nextUrl = e.to.pathname;
-            if (nextUrl !== window.location.pathname) {
-              // Prefetch next page's critical CSS
-              const link = document.createElement('link');
-              link.rel = 'prefetch';
-              link.href = nextUrl;
-              document.head.appendChild(link);
-            }
-          });
-          
-          document.addEventListener('astro:before-swap', () => {
-            // Clean up any heavy observers before transition
-            if (window.iframeObserver) {
-              window.iframeObserver.disconnect();
-            }
-          });
-          
-          document.addEventListener('astro:after-swap', () => {
-            // Re-initialize critical scripts after transition
-            if (typeof window.addIframeTitles === 'function') {
-              window.addIframeTitles();
+          // Simple skeleton content loading without ViewTransitions
+          document.addEventListener('DOMContentLoaded', () => {
+            const skeleton = document.getElementById('content-skeleton');
+            const actualContent = document.getElementById('actual-content');
+            
+            if (skeleton && actualContent) {
+              // Start with skeleton visible
+              skeleton.style.display = 'block';
+              actualContent.style.display = 'none';
+              
+              // Progressive content loading - natural page load timing
+              setTimeout(() => {
+                skeleton.style.display = 'none';
+                actualContent.style.display = 'block';
+                actualContent.style.animation = 'fadeIn 0.4s ease-in-out';
+              }, 400); // Slightly longer for natural loading feel
             }
           });
         </script>

@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import PostCard from "../../components/PostCard.astro";
+import PostPageSkeleton from "../../components/skeletons/PostPageSkeleton.astro";
 import { fetchWithTimeout } from '@/lib/wp';
 import { getPostViewCount, getMostViewedPosts } from '../../lib/views';
 import { getPostInfo } from '../../lib/wordpress';
@@ -83,8 +84,15 @@ export const prerender = false;
   type="article"
   urlType="post"
 >
-  <div class="min-h-screen">
-    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <!-- Loading skeleton that will be replaced by actual content -->
+  <div id="content-skeleton" class="animate-pulse">
+    <PostPageSkeleton />
+  </div>
+  
+  <!-- Actual content that loads progressively -->
+  <div id="actual-content" style="display: none;">
+    <div class="min-h-screen">
+      <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
       <div class="lg:grid lg:grid-cols-12 lg:gap-8">
         
@@ -179,37 +187,6 @@ export const prerender = false;
 
           <section class="content-area">
             <div class="max-w-none mb-8" set:html={content} />
-            
-            <!-- Enhanced Author Byline -->
-            <div class="border-t border-gray-800 pt-6 mt-8">
-              <div class="flex items-start space-x-4 bg-gray-900/50 rounded-lg p-6">
-                <img 
-                  src={authorAvatar} 
-                  alt={`Foto de perfil de ${author}`}
-                  class="w-16 h-16 rounded-full ring-2 ring-[#2847d7]/30"
-                />
-                <div class="flex-1">
-                  <h3 class="text-lg font-semibold text-white mb-1">
-                    Escrito por {author}
-                  </h3>
-                  <p class="text-sm text-gray-400 mb-2">
-                    Editor en Iquitos Tech | Especialista en tecnología y gaming
-                  </p>
-                  <p class="text-gray-300 text-sm leading-relaxed">
-                    Reportando desde Iquitos, Perú, cubrimos las últimas noticias en tecnología, 
-                    gaming e innovación con enfoque en la región amazónica.
-                  </p>
-                  <div class="flex items-center space-x-4 mt-3">
-                    <span class="text-xs text-gray-500">
-                      📍 Iquitos, Loreto, Perú
-                    </span>
-                    <span class="text-xs text-gray-500">
-                      📧 editorial@iquitostech.com
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </section>
 
           {faqPairs.length > 0 && (
@@ -310,6 +287,7 @@ export const prerender = false;
 
     </div>
   </div>
+  </div> <!-- Close actual-content -->
 
   <script define:vars={{ slug }}>
     // Post slug for view tracking

@@ -1,0 +1,21 @@
+---
+import Skeleton from './Skeleton.astro';
+---
+
+<nav class="flex items-center justify-between py-4">
+  <!-- Logo Skeleton -->
+  <Skeleton width="w-32" height="h-8" />
+  
+  <!-- Desktop Navigation Skeleton -->
+  <div class="hidden md:flex items-center space-x-6">
+    {Array.from({ length: 5 }).map(() => (
+      <Skeleton width="w-16" height="h-4" />
+    ))}
+  </div>
+  
+  <!-- Search & Menu Skeleton -->
+  <div class="flex items-center space-x-4">
+    <Skeleton width="w-8" height="h-8" rounded="full" />
+    <Skeleton width="w-8" height="h-8" rounded="full" class="md:hidden" />
+  </div>
+</nav>

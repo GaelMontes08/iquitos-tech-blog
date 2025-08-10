@@ -4,6 +4,7 @@ import ImportantNews from '@/components/ImportantNews.astro';
 import News1 from '@/components/News1.astro';
 import Trends from '@/sections/Trends.astro';
 import PreFooter from '@/components/PreFooter.astro';
+import HomepageSkeleton from '@/components/skeletons/HomepageSkeleton.astro';
 import { getPageInfo } from '@/lib/wp';
 import type { YoastSEO } from '@/lib/seo';
 
@@ -18,8 +19,41 @@ const { title, content, date, seo } = await getPageInfo('home');
   type="website"
   urlType="page"
 >
-    <ImportantNews />   
-    <News1 />
-    <Trends />
-    <PreFooter />
+    <!-- Loading skeleton that will be replaced by actual content -->
+    <div id="content-skeleton" class="animate-pulse">
+      <HomepageSkeleton />
+    </div>
+    
+    <!-- Actual content that loads progressively -->
+    <div id="actual-content" style="display: none;">
+      <ImportantNews />   
+      <News1 />
+      <Trends />
+      <PreFooter />
+    </div>
+    
+    <script>
+      // Simple progressive content loading
+      document.addEventListener('DOMContentLoaded', () => {
+        const skeleton = document.getElementById('content-skeleton');
+        const actualContent = document.getElementById('actual-content');
+        
+        if (skeleton && actualContent) {
+          skeleton.style.display = 'block';
+          actualContent.style.display = 'none';
+          
+          // Simulate progressive loading - adjust based on your actual loading time
+          setTimeout(() => {
+            skeleton.style.display = 'none';
+            actualContent.style.display = 'block';
+            actualContent.style.animation = 'fadeIn 0.4s ease-in-out';
+          }, 500); // Adjust based on your actual loading time
+        }
+      });
+    </script>    <style>
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+    </style>
 </Layout>

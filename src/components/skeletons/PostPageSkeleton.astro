@@ -1,0 +1,95 @@
+---
+import Skeleton from './Skeleton.astro';
+import PostCardSkeleton from './PostCardSkeleton.astro';
+---
+
+<article class="max-w-4xl mx-auto">
+  <!-- Post Header Skeleton -->
+  <header class="space-y-6 mb-8">
+    <!-- Category badge -->
+    <Skeleton width="w-24" height="h-6" rounded="full" />
+    
+    <!-- Title -->
+    <div class="space-y-3">
+      <Skeleton width="w-full" height="h-10" />
+      <Skeleton width="w-4/5" height="h-10" />
+    </div>
+    
+    <!-- Meta information -->
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-3">
+        <Skeleton width="w-10" height="h-10" rounded="full" />
+        <div class="space-y-1">
+          <Skeleton width="w-24" height="h-4" />
+          <Skeleton width="w-20" height="h-3" />
+        </div>
+      </div>
+      <Skeleton width="w-28" height="h-4" />
+      <Skeleton width="w-16" height="h-4" />
+    </div>
+    
+    <!-- Featured Image -->
+    <Skeleton width="w-full" height="h-64 sm:h-80 lg:h-96" rounded="lg" />
+  </header>
+  
+  <!-- Post Content Skeleton -->
+  <div class="prose prose-invert max-w-none space-y-6">
+    <!-- Paragraphs -->
+    {Array.from({ length: 12 }).map((_, index) => (
+      <div class="space-y-3">
+        <Skeleton width="w-full" height="h-4" />
+        <Skeleton width="w-full" height="h-4" />
+        <Skeleton width={index % 3 === 0 ? "w-3/4" : "w-full"} height="h-4" />
+      </div>
+    ))}
+    
+    <!-- Subheading -->
+    <Skeleton width="w-2/3" height="h-8" class="mt-8 mb-4" />
+    
+    <!-- More paragraphs -->
+    {Array.from({ length: 6 }).map((_, index) => (
+      <div class="space-y-3">
+        <Skeleton width="w-full" height="h-4" />
+        <Skeleton width="w-full" height="h-4" />
+        <Skeleton width={index % 2 === 0 ? "w-4/5" : "w-full"} height="h-4" />
+      </div>
+    ))}
+    
+    <!-- Quote block -->
+    <div class="border-l-4 border-blue-500 pl-6 my-8">
+      <Skeleton width="w-full" height="h-6" class="mb-2" />
+      <Skeleton width="w-4/5" height="h-6" />
+    </div>
+    
+    <!-- Final paragraphs -->
+    {Array.from({ length: 4 }).map(() => (
+      <div class="space-y-3">
+        <Skeleton width="w-full" height="h-4" />
+        <Skeleton width="w-full" height="h-4" />
+        <Skeleton width="w-5/6" height="h-4" />
+      </div>
+    ))}
+  </div>
+  
+  <!-- Social Share Skeleton -->
+  <div class="mt-12 pt-8 border-t border-gray-800">
+    <div class="flex items-center justify-between">
+      <Skeleton width="w-32" height="h-6" />
+      <div class="flex gap-3">
+        {Array.from({ length: 4 }).map(() => (
+          <Skeleton width="w-10" height="h-10" rounded="full" />
+        ))}
+      </div>
+    </div>
+  </div>
+  
+  <!-- Related Posts Skeleton -->
+  <section class="mt-16">
+    <Skeleton width="w-48" height="h-8" class="mb-8" />
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 3 }).map(() => (
+        <PostCardSkeleton variant="grid" />
+      ))}
+    </div>
+  </section>
+</article>
