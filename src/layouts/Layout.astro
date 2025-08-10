@@ -16,6 +16,15 @@ const seoProps = Astro.props as Props;
     <head>
         <meta charset="UTF-8" />
         <SEO {...seoProps} />
+        
+        <!-- Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXGSVHTJJL"></script>
+        <script is:inline>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-XXGSVHTJJL');
+        </script>
     </head>
     <body>
         <Header />
