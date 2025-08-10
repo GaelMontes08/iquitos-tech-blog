@@ -1,11 +1,11 @@
 ---
-import Header from "../components/Header.astro";
-import SEO from "../components/SEO.astro";
-import Schema from "../components/Schema.astro";
-import "../styles/global.css";
+import Header from "@/components/Header.astro";
+import SEO from "@/components/SEO.astro";
+import Schema from "@/components/Schema.astro";
+import "@/styles/global.css";
 import '@fontsource-variable/onest';
-import Footer from "../components/Footer.astro";
-import type { SEOProps } from '../lib/seo';
+import Footer from "@/components/Footer.astro";
+import type { SEOProps } from '@/lib/seo';
 
 export interface Props extends SEOProps {}
 
@@ -25,6 +25,20 @@ const seoProps = Astro.props as Props;
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
           gtag('config', 'G-XXGSVHTJJL');
+        </script>
+        
+        <!-- Google News Reader Revenue Manager -->
+        <script async type="application/javascript"
+                src="https://news.google.com/swg/js/v1/swg-basic.js"></script>
+        <script is:inline>
+          (self.SWG_BASIC = self.SWG_BASIC || []).push( basicSubscriptions => {
+            basicSubscriptions.init({
+              type: "NewsArticle",
+              isPartOfType: ["Product"],
+              isPartOfProductId: "CAowoPTcCw:openaccess",
+              clientOptions: { theme: "light", lang: "es" },
+            });
+          });
         </script>
     </head>
     <body>

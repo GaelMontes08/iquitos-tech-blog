@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getAllPosts, getAllCategories } from '../lib/wp';
+import { getAllPosts, getAllCategories } from '@/lib/wp';
 
 interface WordPressPost {
   id: number;

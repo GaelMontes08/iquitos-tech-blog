@@ -1,7 +1,7 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import SEO from '../components/SEO.astro';
-import Schema from '../components/Schema.astro';
+import Layout from '@/layouts/Layout.astro';
+import SEO from '@/components/SEO.astro';
+import Schema from '@/components/Schema.astro';
 
 const seoData = {
   title: 'Política de Correcciones | Iquitos Tech',
@@ -16,10 +16,9 @@ const seoData = {
     <Schema {...seoData} />
   </head>
 
-  <main class="min-h-screen bg-gradient-to-br from-gray-50 to-red-50 dark:from-gray-900 dark:to-red-900">
+  <main class="min-h-screen">
     <div class="container mx-auto px-4 py-16 max-w-4xl">
       
-      <!-- Header -->
       <div class="text-center mb-12">
         <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
           Política de Correcciones
@@ -29,10 +28,8 @@ const seoData = {
         </p>
       </div>
 
-      <!-- Content -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 space-y-8">
         
-        <!-- Commitment -->
         <section>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Nuestro Compromiso
@@ -44,7 +41,6 @@ const seoData = {
           </p>
         </section>
 
-        <!-- Types of Corrections -->
         <section>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Tipos de Correcciones
@@ -107,7 +103,6 @@ const seoData = {
           </div>
         </section>
 
-        <!-- Process -->
         <section>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Proceso de Corrección
@@ -152,7 +147,6 @@ const seoData = {
           </div>
         </section>
 
-        <!-- Transparency -->
         <section>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Transparencia en Correcciones
@@ -180,7 +174,6 @@ const seoData = {
           </div>
         </section>
 
-        <!-- How to Report -->
         <section>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Cómo Reportar Errores
@@ -207,7 +200,6 @@ const seoData = {
           </div>
         </section>
 
-        <!-- Recent Corrections -->
         <section>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Correcciones Recientes
@@ -222,7 +214,6 @@ const seoData = {
           </div>
         </section>
 
-        <!-- Footer -->
         <div class="text-center pt-8 border-t border-gray-200 dark:border-gray-700">
           <p class="text-sm text-gray-600 dark:text-gray-400">
             Última actualización: Enero 2025 | 

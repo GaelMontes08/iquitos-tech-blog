@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getAllPosts } from '../lib/wp';
+import { getAllPosts } from '@/lib/wp';
 
 interface NewsPost {
   id: number;

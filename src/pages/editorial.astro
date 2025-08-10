@@ -1,7 +1,7 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import SEO from '../components/SEO.astro';
-import Schema from '../components/Schema.astro';
+import Layout from '@/layouts/Layout.astro';
+import SEO from '@/components/SEO.astro';
+import Schema from '@/components/Schema.astro';
 
 const seoData = {
   title: 'Estándares Editoriales | Iquitos Tech',
@@ -16,10 +16,9 @@ const seoData = {
     <Schema {...seoData} />
   </head>
 
-  <main class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-900 dark:to-blue-900">
+  <main class="min-h-screen">
     <div class="container mx-auto px-4 py-16 max-w-4xl">
       
-      <!-- Header -->
       <div class="text-center mb-12">
         <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
           Estándares Editoriales
@@ -29,10 +28,8 @@ const seoData = {
         </p>
       </div>
 
-      <!-- Content -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 space-y-8">
         
-        <!-- Mission -->
         <section>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Nuestra Misión Editorial
@@ -43,7 +40,6 @@ const seoData = {
           </p>
         </section>
 
-        <!-- Standards -->
         <section>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Estándares de Calidad
@@ -70,7 +66,6 @@ const seoData = {
           </div>
         </section>
 
-        <!-- Editorial Process -->
         <section>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Proceso Editorial
@@ -85,7 +80,6 @@ const seoData = {
           </ol>
         </section>
 
-        <!-- Ethics -->
         <section>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Principios Éticos
@@ -118,7 +112,6 @@ const seoData = {
           </div>
         </section>
 
-        <!-- Sources -->
         <section>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Fuentes Confiables
@@ -135,7 +128,6 @@ const seoData = {
           </ul>
         </section>
 
-        <!-- Contact -->
         <section class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Contacto Editorial
@@ -153,7 +145,6 @@ const seoData = {
           </div>
         </section>
 
-        <!-- Last Updated -->
         <div class="text-center pt-8 border-t border-gray-200 dark:border-gray-700">
           <p class="text-sm text-gray-600 dark:text-gray-400">
             Última actualización: Enero 2025 | 
