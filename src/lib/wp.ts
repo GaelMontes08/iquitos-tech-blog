@@ -268,8 +268,8 @@ export const getLatestsPosts = async ({ perPage = 10 }: { perPage?: number } = {
   }
 }
 
-// Get all posts for sitemap generation (supports pagination)
-export const getAllPosts = async (maxPosts = 1000) => {
+// Get all posts for sitemap generation (optimized for high-volume sites)
+export const getAllPosts = async (maxPosts = 500) => {
   try {
     if (!domain) {
       console.warn('WP_DOMAIN not configured');
@@ -282,7 +282,7 @@ export const getAllPosts = async (maxPosts = 1000) => {
 
     while (posts.length < maxPosts) {
       const response = await fetchWithTimeout(
-        `${apiUrl}/posts?per_page=${perPage}&page=${page}&_fields=id,slug,date,modified,status`
+        `${apiUrl}/posts?per_page=${perPage}&page=${page}&_fields=id,slug,date,modified,status&orderby=modified&order=desc`
       );
       
       if (!response.ok) {
@@ -308,7 +308,7 @@ export const getAllPosts = async (maxPosts = 1000) => {
       page++;
     }
 
-    return posts.slice(0, maxPosts); // Ensure we don't exceed maxPosts
+    return posts.slice(0, maxPosts); // Limit to most recent posts for performance
   } catch (error) {
     console.error('Error in getAllPosts:', error);
     return [];

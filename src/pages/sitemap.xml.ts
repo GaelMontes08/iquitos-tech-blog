@@ -79,18 +79,28 @@ export const GET: APIRoute = async () => {
     const posts: WordPressPost[] = await getAllPosts();
     
     if (posts && posts.length > 0) {
-      posts.forEach((post: WordPressPost) => {
+      posts.forEach((post: WordPressPost, index: number) => {
         // Skip posts that are not published
         if (post.status !== 'publish') return;
         
         const postDate = formatDate(post.date);
         const modifiedDate = formatDate(post.modified || post.date);
         
+        // Higher priority for recent posts (for high-volume sites)
+        let priority = 0.7;
+        if (index < 10) priority = 0.9; // Last 10 posts get higher priority
+        else if (index < 50) priority = 0.8; // Last 50 posts get medium-high priority
+        
+        // Recent posts change more frequently
+        let changefreq: SitemapURL['changefreq'] = 'monthly';
+        if (index < 7) changefreq = 'daily'; // This week's posts
+        else if (index < 30) changefreq = 'weekly'; // This month's posts
+        
         urls.push({
           url: `${baseURL}/posts/${post.slug}`,
           lastmod: modifiedDate,
-          changefreq: 'monthly', // Blog posts change less frequently
-          priority: 0.7
+          changefreq,
+          priority
         });
       });
       
@@ -128,7 +138,7 @@ export const GET: APIRoute = async () => {
       status: 200,
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600', // Cache for 1 hour
+        'Cache-Control': 'public, max-age=900', // Cache for 15 minutes (faster updates for daily posts)
       }
     });
 
