@@ -35,13 +35,14 @@ const featuredPosts = await getFeaturedPosts({ perPage: 2, categoryId: 25 });
           <img 
             src={post.featuredImage} 
             alt={post.title}
-            class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+            class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 will-change-transform"
             loading={index === 0 ? "eager" : "lazy"}
             fetchpriority={index === 0 ? "high" : "auto"}
             decoding="async"
             sizes={index === 0 ? "(min-width: 1024px) 700px, 100vw" : "(min-width: 1024px) 300px, 100vw"}
             width={index === 0 ? "700" : "300"}
             height={index === 0 ? "500" : "500"}
+            style="transform: scale(1);"
           />
         </picture>
       )}

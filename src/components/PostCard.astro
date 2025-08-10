@@ -75,8 +75,14 @@ const gradientClass = getCategoryGradient(category);
       <img 
         src={image} 
         alt={title}
-        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-        loading="lazy"
+        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 will-change-transform"
+        loading={featured ? "eager" : "lazy"}
+        fetchpriority={featured ? "high" : "auto"}
+        decoding="async"
+        style="transform: scale(1);"
+        sizes={featured ? "(min-width: 1024px) 600px, 100vw" : "(min-width: 1024px) 300px, 100vw"}
+        width={featured ? "600" : "300"}
+        height={featured ? "400" : "200"}
       />
       
       <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/20 to-transparent opacity-60"></div>

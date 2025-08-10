@@ -60,6 +60,22 @@ const seoProps = Astro.props as Props;
           .pt-16 { padding-top: 4rem; }
           .text-white { color: rgb(255 255 255); }
           .bg-gray-900 { background-color: rgb(17 24 39); }
+          
+          /* Performance optimizations */
+          img, picture {
+            contain: layout;
+          }
+          
+          .group:hover .group-hover\\:scale-105,
+          .group:hover .group-hover\\:scale-110 {
+            transform: scale(1.05);
+            will-change: transform;
+          }
+          
+          /* Prevent layout shifts */
+          [loading="lazy"] {
+            content-visibility: auto;
+          }
         </style>        
         
         <!-- Preconnect for faster resource loading -->
@@ -67,11 +83,21 @@ const seoProps = Astro.props as Props;
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
         <link rel="preconnect" href="https://news.google.com" crossorigin>
+        <link rel="preconnect" href="https://cms-iquitostech.com" crossorigin>
         <link rel="dns-prefetch" href="//iquitostech.wordpress.com">
+        <link rel="dns-prefetch" href="//wp-content.com">
+        
+        <!-- Preload critical resources -->
+        <link rel="preload" href="/_astro/onest-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/_astro/onest-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
         
         <!-- Optimized Onest Variable font loading -->
         <link rel="preload" href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
         <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap"></noscript>
+        
+        <!-- Load CSS asynchronously to prevent render blocking -->
+        <link rel="preload" href="/_astro/about.DDFEh7yW.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="/_astro/about.DDFEh7yW.css"></noscript>
         
         <!-- SEO and Schema components -->
         <SEO {...seoProps} />
