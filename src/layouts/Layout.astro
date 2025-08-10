@@ -76,6 +76,14 @@ const seoProps = Astro.props as Props;
           [loading="lazy"] {
             content-visibility: auto;
           }
+          
+          /* Mobile LCP optimization */
+          @media (max-width: 1023px) {
+            img[fetchpriority="high"] {
+              transform: translateZ(0);
+              will-change: auto;
+            }
+          }
         </style>        
         
         <!-- Preconnect for faster resource loading -->
