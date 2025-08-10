@@ -20,7 +20,6 @@ const seoProps = Astro.props as Props;
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         
-        <!-- Critical CSS - Above the fold styles -->
         <style>
           * {
             box-sizing: border-box;
@@ -50,13 +49,11 @@ const seoProps = Astro.props as Props;
           .bg-gray-900 { background-color: rgb(17 24 39); }
         </style>        
         
-        <!-- DNS prefetch and preconnect for external resources -->
         <link rel="dns-prefetch" href="//www.googletagmanager.com" />
         <link rel="dns-prefetch" href="//news.google.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
         <link rel="preconnect" href="https://news.google.com" crossorigin />
         
-        <!-- Resource hints for WordPress API -->
         <link rel="dns-prefetch" href="//iquitostech.wordpress.com" />
         <link rel="preconnect" href="https://iquitostech.wordpress.com" crossorigin />
         
