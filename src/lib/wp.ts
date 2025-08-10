@@ -268,6 +268,77 @@ export const getLatestsPosts = async ({ perPage = 10 }: { perPage?: number } = {
   }
 }
 
+// Get all posts for sitemap generation (supports pagination)
+export const getAllPosts = async (maxPosts = 1000) => {
+  try {
+    if (!domain) {
+      console.warn('WP_DOMAIN not configured');
+      return [];
+    }
+
+    const posts = [];
+    let page = 1;
+    const perPage = 100; // WordPress API max per page is 100
+
+    while (posts.length < maxPosts) {
+      const response = await fetchWithTimeout(
+        `${apiUrl}/posts?per_page=${perPage}&page=${page}&_fields=id,slug,date,modified,status`
+      );
+      
+      if (!response.ok) {
+        if (response.status === 400 && page > 1) {
+          // No more pages
+          break;
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const pagePosts = await response.json();
+      if (!pagePosts || !Array.isArray(pagePosts) || pagePosts.length === 0) {
+        break;
+      }
+
+      posts.push(...pagePosts);
+      
+      // If we got less than perPage posts, we've reached the end
+      if (pagePosts.length < perPage) {
+        break;
+      }
+
+      page++;
+    }
+
+    return posts.slice(0, maxPosts); // Ensure we don't exceed maxPosts
+  } catch (error) {
+    console.error('Error in getAllPosts:', error);
+    return [];
+  }
+};
+
+// Get all categories for sitemap generation
+export const getAllCategories = async () => {
+  try {
+    if (!domain) {
+      console.warn('WP_DOMAIN not configured');
+      return [];
+    }
+
+    const response = await fetchWithTimeout(
+      `${apiUrl}/categories?per_page=100&_fields=id,slug,count`
+    );
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const categories = await response.json();
+    return categories || [];
+  } catch (error) {
+    console.error('Error in getAllCategories:', error);
+    return [];
+  }
+};
+
 // Fallback posts for when WordPress is unavailable
 const getFallbackPosts = () => {
   return [
