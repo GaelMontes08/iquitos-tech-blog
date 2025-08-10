@@ -18,25 +18,18 @@ const seoProps = Astro.props as Props;
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         
-        <link rel="preload" href="/_astro/onest-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
-        <link rel="preload" href="/_astro/onest-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin />
+        <!-- Optimized font loading with system fonts fallback -->
+        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" /></noscript>
         
+        <!-- Critical CSS - Above the fold styles -->
         <style>
-          @font-face {
-            font-family: 'Onest Variable';
-            src: url('/_astro/onest-latin-400-normal.woff2') format('woff2');
-            font-weight: 100 900;
-            font-style: normal;
-            font-display: swap;
-          }
-          
-          /* Critical CSS - Above the fold styles */
           * {
             box-sizing: border-box;
           }
           
           :root {
-            font-family: 'Onest Variable', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color-scheme: dark;
           }
           
@@ -57,13 +50,18 @@ const seoProps = Astro.props as Props;
           .pt-16 { padding-top: 4rem; }
           .text-white { color: rgb(255 255 255); }
           .bg-gray-900 { background-color: rgb(17 24 39); }
-        </style>
+        </style>        
         
+        <!-- DNS prefetch and preconnect for external resources -->
         <link rel="dns-prefetch" href="//www.googletagmanager.com" />
         <link rel="dns-prefetch" href="//news.google.com" />
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
         <link rel="preconnect" href="https://news.google.com" crossorigin />
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         
+        <!-- Resource hints for WordPress API -->
         <link rel="dns-prefetch" href="//iquitostech.wordpress.com" />
         <link rel="preconnect" href="https://iquitostech.wordpress.com" crossorigin />
         
