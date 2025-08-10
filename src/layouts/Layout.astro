@@ -86,26 +86,23 @@ const seoProps = Astro.props as Props;
           }
         </style>        
         
-        <!-- Preconnect for faster resource loading -->
+        <!-- Preconnect for faster resource loading (max 4 critical connections) -->
+        <link rel="preconnect" href="https://cms-iquitostech.com" crossorigin>
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
-        <link rel="preconnect" href="https://news.google.com" crossorigin>
-        <link rel="preconnect" href="https://cms-iquitostech.com" crossorigin>
+        
+        <!-- DNS prefetch for less critical connections -->
+        <link rel="dns-prefetch" href="//news.google.com">
         <link rel="dns-prefetch" href="//iquitostech.wordpress.com">
         <link rel="dns-prefetch" href="//wp-content.com">
         
-        <!-- Preload critical resources -->
-        <link rel="preload" href="/_astro/onest-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-        <link rel="preload" href="/_astro/onest-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+        <!-- Optimized font loading - Let @fontsource-variable/onest handle font loading -->
+        <!-- No manual preload needed as fonts are bundled with the app -->
         
-        <!-- Optimized Onest Variable font loading -->
-        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <!-- Fallback Google Fonts loaded with low priority -->
+        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" media="print">
         <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap"></noscript>
-        
-        <!-- Load CSS asynchronously to prevent render blocking -->
-        <link rel="preload" href="/_astro/about.DDFEh7yW.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-        <noscript><link rel="stylesheet" href="/_astro/about.DDFEh7yW.css"></noscript>
         
         <!-- SEO and Schema components -->
         <SEO {...seoProps} />
@@ -144,112 +141,130 @@ const seoProps = Astro.props as Props;
         
         <!-- Optimized scripts at end of body for better ViewTransitions -->
         
-        <!-- Google Analytics - Deferred Loading -->
-        <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-XXGSVHTJJL"></script>
+        <!-- Google Analytics - Deferred Loading for better critical path -->
         <script is:inline>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-XXGSVHTJJL');
-        </script>
-        
-        <!-- Optimized Iframe Accessibility Handler -->
-        <script is:inline>
-          // Global iframe accessibility handler
-          let iframeTimeout;
-          
-          window.addIframeTitles = function() {
-            clearTimeout(iframeTimeout);
-            iframeTimeout = setTimeout(() => {
-              const iframes = document.querySelectorAll('iframe:not([title])');
-              iframes.forEach((iframe, index) => {
-                const src = iframe.src || '';
-                let title = 'Contenido embebido';
-                
-                if (src.includes('youtube')) title = 'Video de YouTube embebido';
-                else if (src.includes('twitter') || src.includes('x.com')) title = 'Tweet embebido';
-                else if (src.includes('facebook')) title = 'Publicación de Facebook';
-                else if (src.includes('instagram')) title = 'Publicación de Instagram';
-                else if (src.includes('tiktok')) title = 'Video de TikTok';
-                else if (src.includes('google')) title = 'Servicio de Google';
-                else if (src.includes('ads') || src.includes('doubleclick')) title = 'Marco publicitario';
-                else title = `Contenido embebido ${index + 1}`;
-                
-                iframe.setAttribute('title', title);
-                iframe.setAttribute('aria-label', title);
-              });
+          // Load Google Analytics after critical resources
+          window.addEventListener('load', function() {
+            setTimeout(function() {
+              const gaScript = document.createElement('script');
+              gaScript.async = true;
+              gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXGSVHTJJL';
+              document.head.appendChild(gaScript);
+              
+              gaScript.onload = function() {
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'G-XXGSVHTJJL');
+                window.gtag = gtag;
+              };
             }, 100);
-          };
-          
-          // Initial check when DOM is ready
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', window.addIframeTitles);
-          } else {
-            window.addIframeTitles();
-          }
-          
-          // Optimized mutation observer for dynamic content
-          window.iframeObserver = new MutationObserver((mutations) => {
-            let hasNewIframes = false;
-            mutations.forEach((mutation) => {
-              if (mutation.type === 'childList') {
-                mutation.addedNodes.forEach((node) => {
-                  if (node.nodeType === 1 && (node.tagName === 'IFRAME' || node.querySelector?.('iframe'))) {
-                    hasNewIframes = true;
-                  }
-                });
-              }
-            });
-            if (hasNewIframes) window.addIframeTitles();
           });
-          
-          window.iframeObserver.observe(document.body, { childList: true, subtree: true });
         </script>
         
-        <!-- Service Worker Registration - Cached -->
+        <!-- Optimized Iframe Accessibility Handler - Deferred -->
         <script is:inline>
-          if ('serviceWorker' in navigator && !navigator.serviceWorker.controller) {
-            navigator.serviceWorker.register('/sw.js').catch(() => {});
-          }
-        </script>
-        
-        <!-- Performance monitoring - Lightweight -->
-        <script is:inline>
-          if (typeof PerformanceObserver !== 'undefined' && typeof gtag !== 'undefined') {
-            const observer = new PerformanceObserver((list) => {
-              list.getEntries().forEach((entry) => {
-                if (entry.entryType === 'largest-contentful-paint' && entry.startTime > 0) {
-                  gtag('event', 'LCP', { value: Math.round(entry.startTime) });
+          window.addEventListener('load', function() {
+            // Global iframe accessibility handler
+            let iframeTimeout;
+            
+            window.addIframeTitles = function() {
+              clearTimeout(iframeTimeout);
+              iframeTimeout = setTimeout(() => {
+                const iframes = document.querySelectorAll('iframe:not([title])');
+                iframes.forEach((iframe, index) => {
+                  const src = iframe.src || '';
+                  let title = 'Contenido embebido';
+                  
+                  if (src.includes('youtube')) title = 'Video de YouTube embebido';
+                  else if (src.includes('twitter') || src.includes('x.com')) title = 'Tweet embebido';
+                  else if (src.includes('facebook')) title = 'Publicación de Facebook';
+                  else if (src.includes('instagram')) title = 'Publicación de Instagram';
+                  else if (src.includes('tiktok')) title = 'Video de TikTok';
+                  else if (src.includes('google')) title = 'Servicio de Google';
+                  else if (src.includes('ads') || src.includes('doubleclick')) title = 'Marco publicitario';
+                  else title = `Contenido embebido ${index + 1}`;
+                  
+                  iframe.setAttribute('title', title);
+                  iframe.setAttribute('aria-label', title);
+                });
+              }, 100);
+            };
+            
+            // Initial check when DOM is ready
+            window.addIframeTitles();
+            
+            // Optimized mutation observer for dynamic content
+            window.iframeObserver = new MutationObserver((mutations) => {
+              let hasNewIframes = false;
+              mutations.forEach((mutation) => {
+                if (mutation.type === 'childList') {
+                  mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1 && (node.tagName === 'IFRAME' || node.querySelector?.('iframe'))) {
+                      hasNewIframes = true;
+                    }
+                  });
                 }
               });
+              if (hasNewIframes) window.addIframeTitles();
             });
-            try {
-              observer.observe({ entryTypes: ['largest-contentful-paint'] });
-            } catch (e) {}
-          }
+            
+            window.iframeObserver.observe(document.body, { childList: true, subtree: true });
+          });
         </script>
         
-        <!-- Google News Script - Deferred -->
+        <!-- Service Worker Registration - Deferred -->
         <script is:inline>
-          // Load Google News script after other critical scripts
-          setTimeout(() => {
-            const swgScript = document.createElement('script');
-            swgScript.async = true;
-            swgScript.src = 'https://news.google.com/swg/js/v1/swg-basic.js';
-            swgScript.onload = function() {
-              try {
-                (self.SWG_BASIC = self.SWG_BASIC || []).push(function(basicSubscriptions) {
-                  basicSubscriptions.init({
-                    type: "NewsArticle",
-                    isPartOfType: ["Product"],
-                    isPartOfProductId: "CAowoPTcCw:openaccess",
-                    clientOptions: { theme: "light", lang: "es" },
+          window.addEventListener('load', function() {
+            if ('serviceWorker' in navigator && !navigator.serviceWorker.controller) {
+              navigator.serviceWorker.register('/sw.js').catch(() => {});
+            }
+          });
+        </script>
+        
+        <!-- Performance monitoring - Load after critical resources -->
+        <script is:inline>
+          window.addEventListener('load', function() {
+            setTimeout(function() {
+              if (typeof PerformanceObserver !== 'undefined' && window.gtag) {
+                const observer = new PerformanceObserver((list) => {
+                  list.getEntries().forEach((entry) => {
+                    if (entry.entryType === 'largest-contentful-paint' && entry.startTime > 0) {
+                      window.gtag('event', 'LCP', { value: Math.round(entry.startTime) });
+                    }
                   });
                 });
-              } catch (e) {}
-            };
-            document.head.appendChild(swgScript);
-          }, 500);
+                try {
+                  observer.observe({ entryTypes: ['largest-contentful-paint'] });
+                } catch (e) {}
+              }
+            }, 500);
+          });
+        </script>
+        
+        <!-- Google News Script - Load after critical resources -->
+        <script is:inline>
+          window.addEventListener('load', function() {
+            // Load Google News script after page is fully loaded
+            setTimeout(() => {
+              const swgScript = document.createElement('script');
+              swgScript.async = true;
+              swgScript.src = 'https://news.google.com/swg/js/v1/swg-basic.js';
+              swgScript.onload = function() {
+                try {
+                  (self.SWG_BASIC = self.SWG_BASIC || []).push(function(basicSubscriptions) {
+                    basicSubscriptions.init({
+                      type: "NewsArticle",
+                      isPartOfType: ["Product"],
+                      isPartOfProductId: "CAowoPTcCw:openaccess",
+                      clientOptions: { theme: "light", lang: "es" },
+                    });
+                  });
+                } catch (e) {}
+              };
+              document.head.appendChild(swgScript);
+            }, 1000); // Increased delay to prioritize critical rendering
+          });
         </script>
     </body>
 </html>

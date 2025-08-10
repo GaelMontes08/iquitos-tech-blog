@@ -9,8 +9,8 @@ const DYNAMIC_CACHE = 'dynamic-v1';
 const STATIC_ASSETS = [
   '/',
   '/offline.html',
-  '/_astro/onest-latin-400-normal.woff2',
-  '/_astro/onest-latin-700-normal.woff2',
+  // Font files are handled by @fontsource-variable/onest package
+  // No need to manually cache specific font files
 ];
 
 // Install event - cache static assets
