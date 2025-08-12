@@ -98,6 +98,8 @@ const seoProps = Astro.props as Props;
         <link rel="preload" href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" media="print">
         <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap"></noscript>
         
+        <meta name="google-adsense-account" content="ca-pub-7561415153058679">
+        
         <SEO {...seoProps} />
         <Schema {...seoProps} />
     </head>
@@ -126,7 +128,6 @@ const seoProps = Astro.props as Props;
         
         <Header />
         <main class="pt-16 sm:pt-20 lg:pt-24">
-            <!-- Top Banner Ad -->
             <div id="adsense-top-banner" class="w-full max-w-4xl mx-auto px-4 mb-8 hidden" style="display: none;">
               <div class="text-center">
                 <ins class="adsbygoogle"
@@ -140,7 +141,6 @@ const seoProps = Astro.props as Props;
             
             <slot />
             
-            <!-- Bottom Banner Ad -->
             <div id="adsense-bottom-banner" class="w-full max-w-4xl mx-auto px-4 mt-8 mb-8 hidden" style="display: none;">
               <div class="text-center">
                 <ins class="adsbygoogle"
@@ -201,133 +201,6 @@ const seoProps = Astro.props as Props;
                 });
               };
             }, 100);
-          });
-        </script>
-        
-        <script is:inline>
-          // Google AdSense with cookie consent integration
-          window.addEventListener('load', function() {
-            // Function to show/hide ads based on consent
-            function toggleAds(show) {
-              const topBanner = document.getElementById('adsense-top-banner');
-              const bottomBanner = document.getElementById('adsense-bottom-banner');
-              
-              if (topBanner) {
-                topBanner.style.display = show ? 'block' : 'none';
-                topBanner.classList.toggle('hidden', !show);
-              }
-              if (bottomBanner) {
-                bottomBanner.style.display = show ? 'block' : 'none';
-                bottomBanner.classList.toggle('hidden', !show);
-              }
-            }
-            
-            // Function to initialize AdSense ads
-            function initializeAds() {
-              if (window.adsbygoogle && window.adsbygoogle.loaded) {
-                try {
-                  // Push all ad units to AdSense
-                  const adElements = document.querySelectorAll('.adsbygoogle');
-                  adElements.forEach(ad => {
-                    if (!ad.hasAttribute('data-adsbygoogle-status')) {
-                      (window.adsbygoogle = window.adsbygoogle || []).push({});
-                    }
-                  });
-                  console.log('✅ AdSense ads initialized');
-                } catch (error) {
-                  console.warn('⚠️ Error initializing AdSense ads:', error);
-                }
-              }
-            }
-            
-            // Function to load AdSense
-            function loadAdSense() {
-              if (window.adsbygoogle) return; // Already loaded
-              
-              const adsenseScript = document.createElement('script');
-              adsenseScript.async = true;
-              adsenseScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7561415153058679';
-              adsenseScript.crossOrigin = 'anonymous';
-              
-              adsenseScript.onload = function() {
-                console.log('✅ Google AdSense script loaded');
-                
-                // Initialize AdSense ads after script loads
-                setTimeout(initializeAds, 100);
-                
-                // Configure AdSense for consent mode
-                if (window.gtag) {
-                  gtag('config', 'ca-pub-7561415153058679', {
-                    allow_ad_personalization_signals: false // Will be updated based on consent
-                  });
-                }
-              };
-              
-              adsenseScript.onerror = function() {
-                console.warn('⚠️ Failed to load Google AdSense');
-              };
-              
-              document.head.appendChild(adsenseScript);
-            }
-            
-            // Check for existing marketing consent
-            function checkMarketingConsent() {
-              const cookieConsent = getCookie('cookie-consent');
-              if (cookieConsent) {
-                try {
-                  const consent = JSON.parse(cookieConsent);
-                  return consent.marketing === true;
-                } catch (e) {
-                  return false;
-                }
-              }
-              return false;
-            }
-            
-            // Helper function to get cookie
-            function getCookie(name) {
-              const nameEQ = name + "=";
-              const ca = document.cookie.split(';');
-              for (let i = 0; i < ca.length; i++) {
-                let c = ca[i];
-                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-              }
-              return null;
-            }
-            
-            // Load AdSense if marketing consent is already given
-            if (checkMarketingConsent()) {
-              toggleAds(true);
-              setTimeout(loadAdSense, 200);
-            } else {
-              toggleAds(false);
-            }
-            
-            // Listen for consent changes
-            window.addEventListener('cookieConsentUpdated', function(event) {
-              const consent = event.detail;
-              
-              if (consent.marketing) {
-                toggleAds(true);
-                if (!window.adsbygoogle) {
-                  // Load AdSense when marketing consent is granted
-                  setTimeout(loadAdSense, 100);
-                } else {
-                  // Re-initialize ads if script already loaded
-                  setTimeout(initializeAds, 100);
-                }
-              } else {
-                toggleAds(false);
-              }
-              
-              // Update AdSense consent if already loaded
-              if (window.gtag && window.adsbygoogle) {
-                gtag('config', 'ca-pub-7561415153058679', {
-                  allow_ad_personalization_signals: consent.marketing
-                });
-              }
-            });
           });
         </script>
         
