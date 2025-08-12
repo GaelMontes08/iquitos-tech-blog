@@ -2,6 +2,7 @@
 import Header from "@/components/Header.astro";
 import SEO from "@/components/SEO.astro";
 import Schema from "@/components/Schema.astro";
+import CookieConsent from "@/components/CookieConsent.astro";
 import "@/styles/global.css";
 import '@fontsource-variable/onest';
 import Footer from "@/components/Footer.astro";
@@ -128,11 +129,27 @@ const seoProps = Astro.props as Props;
             <slot />
         </main>
         <Footer />
+        <CookieConsent />
         <Analytics />
         
         <script is:inline>
-          // Load Google Analytics after critical resources
+          // Load Google Analytics with cookie consent support
           window.addEventListener('load', function() {
+            // Initialize gtag with default consent denied (compliant with Chrome's policies)
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
+            
+            // Set default consent to denied (Chrome compliance)
+            gtag('consent', 'default', {
+              analytics_storage: 'denied',
+              ad_storage: 'denied',
+              ad_user_data: 'denied',
+              ad_personalization: 'denied',
+              wait_for_update: 500
+            });
+            
+            // Load GA script after consent setup
             setTimeout(function() {
               const gaScript = document.createElement('script');
               gaScript.async = true;
@@ -140,11 +157,24 @@ const seoProps = Astro.props as Props;
               document.head.appendChild(gaScript);
               
               gaScript.onload = function() {
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', 'G-XXGSVHTJJL');
-                window.gtag = gtag;
+                gtag('config', 'G-XXGSVHTJJL', {
+                  anonymize_ip: true,
+                  allow_google_signals: false,
+                  allow_ad_personalization_signals: false
+                });
+                
+                // Listen for cookie consent changes
+                window.addEventListener('cookieConsentUpdated', function(event) {
+                  const consent = event.detail;
+                  
+                  gtag('consent', 'update', {
+                    analytics_storage: consent.analytics ? 'granted' : 'denied',
+                    ad_storage: consent.marketing ? 'granted' : 'denied',
+                    ad_user_data: consent.marketing ? 'granted' : 'denied',
+                    ad_personalization: consent.marketing ? 'granted' : 'denied'
+                  });
+                });
               };
             }, 100);
           });
