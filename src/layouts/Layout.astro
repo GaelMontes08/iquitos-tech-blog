@@ -126,7 +126,31 @@ const seoProps = Astro.props as Props;
         
         <Header />
         <main class="pt-16 sm:pt-20 lg:pt-24">
+            <!-- Top Banner Ad -->
+            <div id="adsense-top-banner" class="w-full max-w-4xl mx-auto px-4 mb-8 hidden" style="display: none;">
+              <div class="text-center">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-7561415153058679"
+                     data-ad-slot="1234567890"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+              </div>
+            </div>
+            
             <slot />
+            
+            <!-- Bottom Banner Ad -->
+            <div id="adsense-bottom-banner" class="w-full max-w-4xl mx-auto px-4 mt-8 mb-8 hidden" style="display: none;">
+              <div class="text-center">
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-7561415153058679"
+                     data-ad-slot="0987654321"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+              </div>
+            </div>
         </main>
         <Footer />
         <CookieConsent />
@@ -183,6 +207,39 @@ const seoProps = Astro.props as Props;
         <script is:inline>
           // Google AdSense with cookie consent integration
           window.addEventListener('load', function() {
+            // Function to show/hide ads based on consent
+            function toggleAds(show) {
+              const topBanner = document.getElementById('adsense-top-banner');
+              const bottomBanner = document.getElementById('adsense-bottom-banner');
+              
+              if (topBanner) {
+                topBanner.style.display = show ? 'block' : 'none';
+                topBanner.classList.toggle('hidden', !show);
+              }
+              if (bottomBanner) {
+                bottomBanner.style.display = show ? 'block' : 'none';
+                bottomBanner.classList.toggle('hidden', !show);
+              }
+            }
+            
+            // Function to initialize AdSense ads
+            function initializeAds() {
+              if (window.adsbygoogle && window.adsbygoogle.loaded) {
+                try {
+                  // Push all ad units to AdSense
+                  const adElements = document.querySelectorAll('.adsbygoogle');
+                  adElements.forEach(ad => {
+                    if (!ad.hasAttribute('data-adsbygoogle-status')) {
+                      (window.adsbygoogle = window.adsbygoogle || []).push({});
+                    }
+                  });
+                  console.log('✅ AdSense ads initialized');
+                } catch (error) {
+                  console.warn('⚠️ Error initializing AdSense ads:', error);
+                }
+              }
+            }
+            
             // Function to load AdSense
             function loadAdSense() {
               if (window.adsbygoogle) return; // Already loaded
@@ -193,7 +250,10 @@ const seoProps = Astro.props as Props;
               adsenseScript.crossOrigin = 'anonymous';
               
               adsenseScript.onload = function() {
-                console.log('✅ Google AdSense loaded');
+                console.log('✅ Google AdSense script loaded');
+                
+                // Initialize AdSense ads after script loads
+                setTimeout(initializeAds, 100);
                 
                 // Configure AdSense for consent mode
                 if (window.gtag) {
@@ -238,16 +298,27 @@ const seoProps = Astro.props as Props;
             
             // Load AdSense if marketing consent is already given
             if (checkMarketingConsent()) {
+              toggleAds(true);
               setTimeout(loadAdSense, 200);
+            } else {
+              toggleAds(false);
             }
             
             // Listen for consent changes
             window.addEventListener('cookieConsentUpdated', function(event) {
               const consent = event.detail;
               
-              if (consent.marketing && !window.adsbygoogle) {
-                // Load AdSense when marketing consent is granted
-                setTimeout(loadAdSense, 100);
+              if (consent.marketing) {
+                toggleAds(true);
+                if (!window.adsbygoogle) {
+                  // Load AdSense when marketing consent is granted
+                  setTimeout(loadAdSense, 100);
+                } else {
+                  // Re-initialize ads if script already loaded
+                  setTimeout(initializeAds, 100);
+                }
+              } else {
+                toggleAds(false);
               }
               
               // Update AdSense consent if already loaded
