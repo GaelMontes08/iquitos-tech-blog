@@ -119,20 +119,76 @@ interface ValidationResult {
 }
 
 /**
- * Secure Environment Manager
+ * Secure Environment Manager - Optimized for Performance
  */
 export class EnvironmentSecurity {
   private static instance: EnvironmentSecurity;
   private validationCache = new Map<string, ValidationResult>();
+  private envCache = new Map<string, string | undefined>();
   private loadTime = Date.now();
+  private isInitialized = false;
 
-  private constructor() {}
+  private constructor() {
+    // Pre-load and validate critical environment variables at startup
+    this.initializeCriticalEnvVars();
+  }
 
   static getInstance(): EnvironmentSecurity {
     if (!EnvironmentSecurity.instance) {
       EnvironmentSecurity.instance = new EnvironmentSecurity();
     }
     return EnvironmentSecurity.instance;
+  }
+
+  /**
+   * Pre-load critical environment variables for fast access
+   */
+  private initializeCriticalEnvVars(): void {
+    const criticalVars = [
+      'RESEND_API_KEY',
+      'RECAPTCHA_SECRET_KEY', 
+      'GOOGLE_CLIENT_ID',
+      'GOOGLE_CLIENT_SECRET',
+      'PUBLIC_SUPABASE_URL',
+      'PUBLIC_SUPABASE_ANON_KEY',
+      'RESEND_AUDIENCE_ID',
+      'WORDPRESS_API_URL'
+    ];
+
+    // Pre-validate and cache all critical environment variables
+    for (const key of criticalVars) {
+      const value = this.getEnvironmentValue(key);
+      const config = ENV_CONFIG[key];
+      
+      if (config && config.required && !value) {
+        console.error(`🔒 CRITICAL: Required environment variable ${key} is missing`);
+      } else if (value && config?.pattern && !config.pattern.test(value)) {
+        console.warn(`🔒 WARNING: Environment variable ${key} format may be invalid`);
+      }
+      
+      // Cache for fast access
+      this.envCache.set(key, value);
+    }
+
+    // Pre-validate startup configuration
+    this.validateStartupConfiguration();
+    this.isInitialized = true;
+  }
+
+  /**
+   * One-time startup validation to catch issues early
+   */
+  private validateStartupConfiguration(): void {
+    const hasResend = this.envCache.get('RESEND_API_KEY');
+    const hasRecaptcha = this.envCache.get('RECAPTCHA_SECRET_KEY');
+    const hasSupabase = this.envCache.get('PUBLIC_SUPABASE_URL') && this.envCache.get('PUBLIC_SUPABASE_ANON_KEY');
+    const hasGoogle = this.envCache.get('GOOGLE_CLIENT_ID') && this.envCache.get('GOOGLE_CLIENT_SECRET');
+
+    console.log('🔒 Environment Security Status:');
+    console.log(`   Email Service: ${hasResend ? '✅' : '❌'}`);
+    console.log(`   Spam Protection: ${hasRecaptcha ? '✅' : '⚠️'}`);
+    console.log(`   Database: ${hasSupabase ? '✅' : '❌'}`);
+    console.log(`   OAuth: ${hasGoogle ? '✅' : '⚠️'}`);
   }
 
   /**
@@ -173,28 +229,40 @@ export class EnvironmentSecurity {
   }
 
   /**
-   * Validate a specific environment variable with provided value
+   * Fast access to validated environment variable with caching
+   * Performance optimized for frequent access
    */
   validateSecureEnv(key: string, value?: string): string | undefined {
+    // Use cached value if available (critical vars are pre-cached)
+    if (this.envCache.has(key)) {
+      const cachedValue = this.envCache.get(key);
+      return cachedValue;
+    }
+
     const config = ENV_CONFIG[key];
     
     if (!config) {
-      console.warn(`🔒 Unknown environment variable requested: ${key}`);
+      // Only warn once per unknown key
+      if (!this.validationCache.has(`unknown_${key}`)) {
+        console.warn(`🔒 Unknown environment variable requested: ${key}`);
+        this.validationCache.set(`unknown_${key}`, { isValid: false, errors: [], warnings: [], masked: {} });
+      }
       return undefined;
     }
 
-    const validation = this.validateVariable(key, value, config);
+    // For non-critical vars, do lightweight validation
+    const actualValue = value || this.getEnvironmentValue(key);
     
-    if (!validation.isValid) {
-      console.error(`🔒 Invalid environment variable ${key}:`, validation.errors);
+    // Quick validation for production performance
+    if (!actualValue && config.required) {
+      console.error(`🔒 Required environment variable ${key} is missing`);
       return undefined;
     }
 
-    if (validation.warnings.length > 0) {
-      console.warn(`🔒 Environment variable ${key} warnings:`, validation.warnings);
-    }
-
-    return value;
+    // Cache the result for future calls
+    this.envCache.set(key, actualValue);
+    
+    return actualValue;
   }
 
   /**
@@ -516,10 +584,40 @@ export class EnvironmentSecurity {
 export const envSecurity = EnvironmentSecurity.getInstance();
 
 /**
- * Utility functions for common environment variable access
+ * Performance-optimized utility functions for environment variable access
+ */
+
+/**
+ * Fast environment variable access with minimal validation overhead
+ * Use this for frequently accessed variables in API routes
  */
 export function getSecureEnv(key: string, envValue?: string): string | undefined {
+  // Fast path: return pre-cached critical vars immediately
+  const instance = EnvironmentSecurity.getInstance();
+  if (instance['envCache'].has(key)) {
+    return instance['envCache'].get(key);
+  }
+
+  // Fallback to validation for non-cached vars
   return envSecurity.validateSecureEnv(key, envValue);
+}
+
+/**
+ * Full validation version - use only when comprehensive validation is needed
+ */
+export function getSecureEnvWithValidation(key: string, envValue?: string): string | undefined {
+  const config = ENV_CONFIG[key];
+  if (!config) return undefined;
+  
+  const value = envValue || envSecurity['getEnvironmentValue'](key);
+  const validation = envSecurity['validateVariable'](key, value, config);
+  
+  if (!validation.isValid) {
+    console.error(`🔒 Invalid environment variable ${key}:`, validation.errors);
+    return undefined;
+  }
+  
+  return value;
 }
 
 export function validateEnvironmentVariables(envValues: Record<string, string | undefined>): ValidationResult {

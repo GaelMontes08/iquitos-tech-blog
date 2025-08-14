@@ -2,12 +2,12 @@ import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 import { supabase } from '../../lib/supabase.js';
 import { sanitizeUserInput, sanitizeEmail, sanitizeName } from '../../lib/content-transformer.js';
-import { checkAdvancedRateLimit, createRateLimitResponse, addRateLimitHeaders } from '../../lib/rate-limit.js';
+import { checkFastRateLimit, createFastRateLimitResponse, getClientId } from '../../lib/fast-rate-limit.js';
 import { getSecureEnv } from '../../lib/env-security.js';
 
-// Secure environment variable loading
-const RECAPTCHA_SECRET_KEY = getSecureEnv('RECAPTCHA_SECRET_KEY', import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY);
-const RESEND_API_KEY = getSecureEnv('RESEND_API_KEY', import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY);
+// Secure environment variable loading - cached at startup for performance
+const RECAPTCHA_SECRET_KEY = getSecureEnv('RECAPTCHA_SECRET_KEY');
+const RESEND_API_KEY = getSecureEnv('RESEND_API_KEY');
 const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
 // Validate critical API keys at startup
@@ -126,13 +126,14 @@ async function logContactAttempt(attempt: ContactAttempt): Promise<boolean> {
   }
 }
 
-export const POST: APIRoute = async ({ request }) => {
-  // Apply rate limiting first
-  const rateLimit = checkAdvancedRateLimit(request, 'api');
+export const POST: APIRoute = async ({ request, clientAddress }) => {
+  // Apply fast rate limiting first
+  const clientId = getClientId(request, clientAddress);
+  const rateLimit = checkFastRateLimit(clientId, 5, 60 * 1000); // 5 requests per minute
   
   if (!rateLimit.allowed) {
-    console.log(`🚫 Contact form rate limited: ${rateLimit.reason || 'Rate limit exceeded'}`);
-    return createRateLimitResponse(rateLimit.resetTime || Date.now() + 60000);
+    console.log(`🚫 Contact form rate limited for client: ${clientId}`);
+    return createFastRateLimitResponse();
   }
 
   const ipAddress = getClientIP(request);
@@ -517,13 +518,12 @@ Para responder, simplemente responde a este email.
       message: 'Mensaje enviado correctamente. Te responderemos pronto.'
     }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+        'X-RateLimit-Reset': Math.ceil(rateLimit.resetTime / 1000).toString()
+      }
     });
-
-    // Add rate limit headers if available
-    if (rateLimit.remaining !== undefined && rateLimit.resetTime) {
-      return addRateLimitHeaders(successResponse, rateLimit.remaining, rateLimit.resetTime);
-    }
 
     return successResponse;
 

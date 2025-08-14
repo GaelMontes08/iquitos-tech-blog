@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 import { getSecureEnv } from './env-security.js';
 
-// Secure environment variable loading for Supabase
-const supabaseUrl = getSecureEnv('PUBLIC_SUPABASE_URL', import.meta.env.PUBLIC_SUPABASE_URL);
-const supabaseKey = getSecureEnv('PUBLIC_SUPABASE_ANON_KEY', import.meta.env.PUBLIC_SUPABASE_ANON_KEY);
+// Secure environment variable loading for Supabase - cached at startup for performance
+const supabaseUrl = getSecureEnv('PUBLIC_SUPABASE_URL');
+const supabaseKey = getSecureEnv('PUBLIC_SUPABASE_ANON_KEY');
 
 // Validate Supabase configuration
 if (!supabaseUrl || !supabaseKey) {
