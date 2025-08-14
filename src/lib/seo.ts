@@ -264,11 +264,26 @@ export function generateSEOTags(props: SEOProps) {
   const finalDescription = processedSEO?.description || description || 'Noticias de tecnología, gaming y tendencias digitales';
   
   // Check multiple possible keyword fields from Yoast
-  const finalKeywords = processedSEO?.keywords || 
-                       processedSEO?.focus_keyword || 
-                       processedSEO?.meta_keyword || 
-                       keywords || 
-                       'tecnología, gaming, videojuegos, noticias tech, iquitos tech, inteligencia artificial, programación';
+  let finalKeywords = processedSEO?.keywords || 
+                     processedSEO?.focus_keyword || 
+                     processedSEO?.meta_keyword || 
+                     keywords;
+  
+  // Try to extract keywords from schema if not found in direct fields
+  if (!finalKeywords && processedSEO?.schema?.['@graph']) {
+    const articleSchema = processedSEO.schema['@graph'].find((item: any) => item['@type'] === 'Article');
+    if (articleSchema && articleSchema.keywords) {
+      // Handle both string and array formats
+      if (Array.isArray(articleSchema.keywords)) {
+        finalKeywords = articleSchema.keywords.join(', ');
+      } else {
+        finalKeywords = articleSchema.keywords;
+      }
+    }
+  }
+  
+  // Use default keywords as final fallback
+  finalKeywords = finalKeywords || 'tecnología, gaming, videojuegos, noticias tech, iquitos tech, inteligencia artificial, programación';
   
   // Prioritize explicit canonical over SEO data canonical
   const finalCanonical = canonical 
