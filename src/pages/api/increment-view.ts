@@ -1,7 +1,15 @@
 import type { APIRoute } from 'astro';
 import { incrementPostViewCount } from '../../lib/views';
+import { checkAdvancedRateLimit, createRateLimitResponse, addRateLimitHeaders } from '../../lib/rate-limit.js';
 
 export const POST: APIRoute = async ({ request }) => {
+  // Apply rate limiting first  
+  const rateLimit = checkAdvancedRateLimit(request, 'views');
+  
+  if (!rateLimit.allowed) {
+    return createRateLimitResponse(rateLimit.resetTime || Date.now() + 60000);
+  }
+
   try {
     const body = await request.json();
     const { slug } = body;
@@ -48,7 +56,7 @@ export const POST: APIRoute = async ({ request }) => {
     const newViewCount = await incrementPostViewCount(slug);
     console.log(`📊 New view count for ${slug}: ${newViewCount}`);
 
-    return new Response(JSON.stringify({ 
+    const successResponse = new Response(JSON.stringify({ 
       success: true, 
       views: newViewCount 
     }), {
@@ -57,6 +65,13 @@ export const POST: APIRoute = async ({ request }) => {
         'Content-Type': 'application/json',
       },
     });
+
+    // Add rate limit headers if available
+    if (rateLimit.remaining !== undefined && rateLimit.resetTime) {
+      return addRateLimitHeaders(successResponse, rateLimit.remaining, rateLimit.resetTime);
+    }
+
+    return successResponse;
 
   } catch (error) {
     console.error('Error incrementing view count:', error);

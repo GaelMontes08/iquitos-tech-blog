@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 import { supabase } from '../../lib/supabase.js';
 import { sanitizeUserInput, sanitizeEmail, sanitizeName } from '../../lib/content-transformer.js';
+import { checkAdvancedRateLimit, createRateLimitResponse, addRateLimitHeaders } from '../../lib/rate-limit.js';
 
 // Configuration from environment variables
 const RECAPTCHA_SECRET_KEY = import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY;
@@ -116,6 +117,14 @@ async function logContactAttempt(attempt: ContactAttempt): Promise<boolean> {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  // Apply rate limiting first
+  const rateLimit = checkAdvancedRateLimit(request, 'api');
+  
+  if (!rateLimit.allowed) {
+    console.log(`🚫 Contact form rate limited: ${rateLimit.reason || 'Rate limit exceeded'}`);
+    return createRateLimitResponse(rateLimit.resetTime || Date.now() + 60000);
+  }
+
   const ipAddress = getClientIP(request);
   const userAgent = getUserAgent(request);
   
@@ -492,14 +501,21 @@ Para responder, simplemente responde a este email.
       userAgent
     });
 
-    // Return success response
-    return new Response(JSON.stringify({
+    // Return success response with rate limit headers
+    const successResponse = new Response(JSON.stringify({
       success: true,
       message: 'Mensaje enviado correctamente. Te responderemos pronto.'
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
+
+    // Add rate limit headers if available
+    if (rateLimit.remaining !== undefined && rateLimit.resetTime) {
+      return addRateLimitHeaders(successResponse, rateLimit.remaining, rateLimit.resetTime);
+    }
+
+    return successResponse;
 
   } catch (error) {
     console.error('Contact form error:', error);

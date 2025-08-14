@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAllPosts, getAllCategories } from '@/lib/wp';
+import { checkAdvancedRateLimit, createRateLimitResponse, addRateLimitHeaders } from '@/lib/rate-limit';
 
 interface WordPressPost {
   id: number;
@@ -56,7 +57,15 @@ function generateSitemapXML(urls: SitemapURL[]): string {
 </urlset>`.trim();
 }
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ request }) => {
+  // Apply rate limiting for sitemap requests
+  const rateLimit = checkAdvancedRateLimit(request, 'sitemap');
+  
+  if (!rateLimit.allowed) {
+    console.log(`🚫 Sitemap request rate limited: ${rateLimit.reason || 'Rate limit exceeded'}`);
+    return createRateLimitResponse(rateLimit.resetTime || Date.now() + 60000);
+  }
+
   try {
     const baseURL = 'https://iquitostech.com';
     const currentDate = formatDate(new Date());
@@ -136,13 +145,20 @@ export const GET: APIRoute = async () => {
     
     console.log(`📄 Generated sitemap with ${urls.length} URLs`);
 
-    return new Response(sitemapXML, {
+    const sitemapResponse = new Response(sitemapXML, {
       status: 200,
       headers: {
         'Content-Type': 'application/xml',
         'Cache-Control': 'public, max-age=900', // Cache for 15 minutes (faster updates for daily posts)
       }
     });
+
+    // Add rate limit headers if available
+    if (rateLimit.remaining !== undefined && rateLimit.resetTime) {
+      return addRateLimitHeaders(sitemapResponse, rateLimit.remaining, rateLimit.resetTime);
+    }
+
+    return sitemapResponse;
 
   } catch (error) {
     console.error('❌ Error generating sitemap:', error);

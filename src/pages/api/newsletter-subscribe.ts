@@ -3,6 +3,7 @@ import { Resend } from 'resend';
 import { NewsletterDB } from '../../lib/newsletter-db.js';
 import type { NewsletterSubscriber } from '../../lib/newsletter-db.js';
 import { sanitizeEmail, sanitizeName } from '../../lib/content-transformer.js';
+import { checkAdvancedRateLimit, createRateLimitResponse, addRateLimitHeaders } from '../../lib/rate-limit.js';
 
 // Configuration from environment variables
 const RESEND_API_KEY = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
@@ -40,6 +41,14 @@ function getUserAgent(request: Request): string {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  // Apply rate limiting first
+  const rateLimit = checkAdvancedRateLimit(request, 'api');
+  
+  if (!rateLimit.allowed) {
+    console.log(`🚫 Newsletter subscription rate limited: ${rateLimit.reason || 'Rate limit exceeded'}`);
+    return createRateLimitResponse(rateLimit.resetTime || Date.now() + 60000);
+  }
+
   const ipAddress = getClientIP(request);
   const userAgent = getUserAgent(request);
   
@@ -523,8 +532,8 @@ Para darte de baja: https://iquitostech.com/newsletter?unsubscribe=${encodeURICo
       console.warn('⚠️ Resend API key not configured, emails not sent');
     }
 
-    // Return success response
-    return new Response(JSON.stringify({
+    // Return success response with rate limit headers
+    const successResponse = new Response(JSON.stringify({
       success: true,
       message: 'Te has suscrito correctamente al newsletter.',
       email: email,
@@ -533,6 +542,13 @@ Para darte de baja: https://iquitostech.com/newsletter?unsubscribe=${encodeURICo
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     });
+
+    // Add rate limit headers if available
+    if (rateLimit.remaining !== undefined && rateLimit.resetTime) {
+      return addRateLimitHeaders(successResponse, rateLimit.remaining, rateLimit.resetTime);
+    }
+
+    return successResponse;
 
   } catch (error) {
     console.error('Newsletter subscription error:', error);

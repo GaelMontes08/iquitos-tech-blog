@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getAllPosts } from '@/lib/wp';
+import { checkAdvancedRateLimit, createRateLimitResponse, addRateLimitHeaders } from '@/lib/rate-limit';
 
 interface NewsPost {
   id: number;
@@ -58,7 +59,15 @@ function generateNewsSitemapXML(posts: NewsPost[]): string {
 </urlset>`.trim();
 }
 
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ request }) => {
+  // Apply rate limiting for news sitemap requests
+  const rateLimit = checkAdvancedRateLimit(request, 'sitemap');
+  
+  if (!rateLimit.allowed) {
+    console.log(`🚫 News sitemap request rate limited: ${rateLimit.reason || 'Rate limit exceeded'}`);
+    return createRateLimitResponse(rateLimit.resetTime || Date.now() + 60000);
+  }
+
   try {
     console.log('🗞️ Generating news sitemap...');
     
@@ -99,13 +108,20 @@ export const GET: APIRoute = async () => {
     
     console.log(`✅ Generated news sitemap with ${recentPosts.length} articles`);
 
-    return new Response(newsSitemapXML, {
+    const newsSitemapResponse = new Response(newsSitemapXML, {
       status: 200,
       headers: {
         'Content-Type': 'application/xml',
         'Cache-Control': 'public, max-age=300', // 5 minutes cache for news sitemap
       }
     });
+
+    // Add rate limit headers if available
+    if (rateLimit.remaining !== undefined && rateLimit.resetTime) {
+      return addRateLimitHeaders(newsSitemapResponse, rateLimit.remaining, rateLimit.resetTime);
+    }
+
+    return newsSitemapResponse;
 
   } catch (error) {
     console.error('❌ Error generating news sitemap:', error);
