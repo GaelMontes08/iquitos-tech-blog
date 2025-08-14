@@ -1,13 +1,18 @@
 import { createClient } from '@supabase/supabase-js'
+import { getSecureEnv } from './env-security.js';
 
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL
-const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+// Secure environment variable loading for Supabase
+const supabaseUrl = getSecureEnv('PUBLIC_SUPABASE_URL', import.meta.env.PUBLIC_SUPABASE_URL);
+const supabaseKey = getSecureEnv('PUBLIC_SUPABASE_ANON_KEY', import.meta.env.PUBLIC_SUPABASE_ANON_KEY);
 
+// Validate Supabase configuration
 if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Missing Supabase environment variables')
+  console.error('🔒 CRITICAL: Supabase configuration missing or invalid');
+  throw new Error('Missing or invalid Supabase environment variables');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+// Create Supabase client with validated configuration
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 10000) => {
   const controller = new AbortController();

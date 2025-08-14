@@ -1,8 +1,14 @@
 import type { APIRoute } from 'astro';
+import { getSecureEnv } from '../../lib/env-security.js';
 
-// Google OAuth configuration from environment variables
-const GOOGLE_CLIENT_ID = import.meta.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = import.meta.env.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET;
+// Secure environment variable loading
+const GOOGLE_CLIENT_ID = getSecureEnv('GOOGLE_CLIENT_ID', import.meta.env.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID);
+const GOOGLE_CLIENT_SECRET = getSecureEnv('GOOGLE_CLIENT_SECRET', import.meta.env.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET);
+
+// Validate critical configuration at startup
+if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+  console.error('🔒 CRITICAL: Google OAuth credentials not configured properly');
+}
 
 interface GoogleTokenResponse {
   access_token: string;

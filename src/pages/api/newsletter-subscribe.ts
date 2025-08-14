@@ -4,16 +4,26 @@ import { NewsletterDB } from '../../lib/newsletter-db.js';
 import type { NewsletterSubscriber } from '../../lib/newsletter-db.js';
 import { sanitizeEmail, sanitizeName } from '../../lib/content-transformer.js';
 import { checkAdvancedRateLimit, createRateLimitResponse, addRateLimitHeaders } from '../../lib/rate-limit.js';
+import { getSecureEnv } from '../../lib/env-security.js';
 
-// Configuration from environment variables
-const RESEND_API_KEY = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
-const RECAPTCHA_SECRET_KEY = import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY;
+// Secure environment variable loading
+const RESEND_API_KEY = getSecureEnv('RESEND_API_KEY', import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY);
+const RECAPTCHA_SECRET_KEY = getSecureEnv('RECAPTCHA_SECRET_KEY', import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY);
 const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
 // Resend audience ID for newsletter subscribers
-const RESEND_AUDIENCE_ID = import.meta.env.RESEND_AUDIENCE_ID || process.env.RESEND_AUDIENCE_ID;
+const RESEND_AUDIENCE_ID = getSecureEnv('RESEND_AUDIENCE_ID', import.meta.env.RESEND_AUDIENCE_ID || process.env.RESEND_AUDIENCE_ID);
 
-// Initialize Resend
+// Validate critical API keys at startup
+if (!RESEND_API_KEY) {
+  console.error('🔒 CRITICAL: RESEND_API_KEY not configured or invalid');
+}
+
+if (!RECAPTCHA_SECRET_KEY) {
+  console.warn('🔒 WARNING: RECAPTCHA_SECRET_KEY not configured - spam protection disabled');
+}
+
+// Initialize Resend securely
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 // Rate limiting configuration

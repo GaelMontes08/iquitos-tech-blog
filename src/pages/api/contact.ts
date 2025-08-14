@@ -3,13 +3,23 @@ import { Resend } from 'resend';
 import { supabase } from '../../lib/supabase.js';
 import { sanitizeUserInput, sanitizeEmail, sanitizeName } from '../../lib/content-transformer.js';
 import { checkAdvancedRateLimit, createRateLimitResponse, addRateLimitHeaders } from '../../lib/rate-limit.js';
+import { getSecureEnv } from '../../lib/env-security.js';
 
-// Configuration from environment variables
-const RECAPTCHA_SECRET_KEY = import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY;
-const RESEND_API_KEY = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
+// Secure environment variable loading
+const RECAPTCHA_SECRET_KEY = getSecureEnv('RECAPTCHA_SECRET_KEY', import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY);
+const RESEND_API_KEY = getSecureEnv('RESEND_API_KEY', import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY);
 const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
-// Initialize Resend
+// Validate critical API keys at startup
+if (!RECAPTCHA_SECRET_KEY) {
+  console.error('🔒 CRITICAL: RECAPTCHA_SECRET_KEY not configured or invalid');
+}
+
+if (!RESEND_API_KEY) {
+  console.error('🔒 CRITICAL: RESEND_API_KEY not configured or invalid');
+}
+
+// Initialize Resend securely
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 // Rate limiting configuration - 1 contact per day
