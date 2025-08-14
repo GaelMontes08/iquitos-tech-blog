@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 import { NewsletterDB } from '../../lib/newsletter-db.js';
 import type { NewsletterSubscriber } from '../../lib/newsletter-db.js';
+import { sanitizeEmail, sanitizeName } from '../../lib/content-transformer.js';
 
 // Configuration from environment variables
 const RESEND_API_KEY = import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY;
@@ -44,7 +45,12 @@ export const POST: APIRoute = async ({ request }) => {
   
   try {
     const body = await request.json();
-    const { email, firstName, lastName, source = 'manual', googleId, recaptchaToken }: NewsletterSubscribeRequest = body;
+    const { email: rawEmail, firstName: rawFirstName, lastName: rawLastName, source = 'manual', googleId, recaptchaToken }: NewsletterSubscribeRequest = body;
+
+    // Sanitize inputs
+    const email = sanitizeEmail(rawEmail || '');
+    const firstName = sanitizeName(rawFirstName || '', 50);
+    const lastName = sanitizeName(rawLastName || '', 50);
 
     // Validate required fields
     if (!email) {

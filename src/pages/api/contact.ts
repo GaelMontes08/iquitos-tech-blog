@@ -1,6 +1,7 @@
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 import { supabase } from '../../lib/supabase.js';
+import { sanitizeUserInput, sanitizeEmail, sanitizeName } from '../../lib/content-transformer.js';
 
 // Configuration from environment variables
 const RECAPTCHA_SECRET_KEY = import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY;
@@ -135,11 +136,19 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     // Parse form data
     const formData = await request.formData();
-    const name = formData.get('name') as string;
-    const email = formData.get('email') as string;
-    const subject = formData.get('subject') as string;
-    const message = formData.get('message') as string;
+    
+    // Extract and sanitize form data
+    const rawName = formData.get('name') as string;
+    const rawEmail = formData.get('email') as string;
+    const rawSubject = formData.get('subject') as string;
+    const rawMessage = formData.get('message') as string;
     const recaptchaResponse = formData.get('g-recaptcha-response') as string;
+
+    // Sanitize inputs
+    const name = sanitizeName(rawName, 100);
+    const email = sanitizeEmail(rawEmail);
+    const subject = sanitizeUserInput(rawSubject, { maxLength: 200, allowHtml: false, allowNewlines: false });
+    const message = sanitizeUserInput(rawMessage, { maxLength: 5000, allowHtml: false, allowNewlines: true });
 
     // Validate required fields
     if (!name || !email || !subject || !message) {
@@ -162,7 +171,48 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Validate email format
+    // Validate field lengths after sanitization
+    if (name.length < 2) {
+      await logContactAttempt({
+        email,
+        ipAddress,
+        name,
+        messagePreview: message.substring(0, 100),
+        success: false,
+        errorMessage: 'Nombre muy corto',
+        userAgent
+      });
+
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'El nombre debe tener al menos 2 caracteres.'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (message.length < 10) {
+      await logContactAttempt({
+        email,
+        ipAddress,
+        name,
+        messagePreview: message.substring(0, 100),
+        success: false,
+        errorMessage: 'Mensaje muy corto',
+        userAgent
+      });
+
+      return new Response(JSON.stringify({
+        success: false,
+        message: 'El mensaje debe tener al menos 10 caracteres.'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Validate email format (sanitizeEmail already validates, but double-check)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       await logContactAttempt({
