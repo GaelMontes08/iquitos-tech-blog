@@ -5,6 +5,12 @@ import type { NewsletterSubscriber } from '../../lib/newsletter-db.js';
 import { sanitizeEmail, sanitizeName } from '../../lib/content-transformer.js';
 import { checkFastRateLimit, createFastRateLimitResponse, getClientId } from '../../lib/fast-rate-limit.js';
 import { getSecureEnv } from '../../lib/env-security.js';
+import { 
+  secureErrorHandler, 
+  handleDatabaseError, 
+  handleValidationError, 
+  handleExternalServiceError
+} from '../../lib/secure-error-handler.js';
 
 // Secure environment variable loading - cached at startup for performance
 const RESEND_API_KEY = getSecureEnv('RESEND_API_KEY');

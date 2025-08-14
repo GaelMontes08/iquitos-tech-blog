@@ -4,6 +4,13 @@ import { supabase } from '../../lib/supabase.js';
 import { sanitizeUserInput, sanitizeEmail, sanitizeName } from '../../lib/content-transformer.js';
 import { checkFastRateLimit, createFastRateLimitResponse, getClientId } from '../../lib/fast-rate-limit.js';
 import { getSecureEnv } from '../../lib/env-security.js';
+import { 
+  secureErrorHandler, 
+  handleDatabaseError, 
+  handleValidationError, 
+  handleAuthError,
+  handleExternalServiceError
+} from '../../lib/secure-error-handler.js';
 
 // Secure environment variable loading - cached at startup for performance
 const RECAPTCHA_SECRET_KEY = getSecureEnv('RECAPTCHA_SECRET_KEY');
@@ -143,14 +150,17 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   
   // Check if Supabase is configured
   if (!supabase) {
-    console.error('❌ Supabase client not configured');
-    return new Response(JSON.stringify({
-      success: false,
-      message: 'Error de configuración del servidor. Inténtalo de nuevo más tarde.'
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    const errorContext = {
+      endpoint: '/api/contact',
+      ip: clientId,
+      userAgent: getUserAgent(request)
+    };
+    return secureErrorHandler.handleError(
+      new Error('Database configuration missing'), 
+      'CONFIGURATION_ERROR', 
+      errorContext, 
+      503
+    );
   }
   
   try {
@@ -172,23 +182,23 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
     // Validate required fields
     if (!name || !email || !subject || !message) {
+      const errorContext = {
+        endpoint: '/api/contact',
+        ip: clientId,
+        userAgent: getUserAgent(request)
+      };
+
       await logContactAttempt({
         email: email || 'missing',
-        ipAddress,
+        ipAddress: clientId,
         name,
         messagePreview: message?.substring(0, 100),
         success: false,
         errorMessage: 'Campos obligatorios faltantes',
-        userAgent
+        userAgent: getUserAgent(request)
       });
 
-      return new Response(JSON.stringify({
-        success: false,
-        message: 'Todos los campos son obligatorios.'
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return handleValidationError('Todos los campos son obligatorios.', errorContext);
     }
 
     // Validate field lengths after sanitization
@@ -528,27 +538,46 @@ Para responder, simplemente responde a este email.
     return successResponse;
 
   } catch (error) {
-    console.error('Contact form error:', error);
-    
-    // Log error attempt
+    // Create error context for secure logging
+    const errorContext = {
+      endpoint: '/api/contact',
+      ip: clientId,
+      userAgent: getUserAgent(request),
+      requestId: `contact_${Date.now()}`
+    };
+
+    // Log error attempt securely (without sensitive data)
     try {
       await logContactAttempt({
-        email: 'unknown',
-        ipAddress,
+        email: 'error_occurred',
+        ipAddress: clientId,
         success: false,
-        errorMessage: error instanceof Error ? error.message : 'Unknown error',
-        userAgent
+        errorMessage: 'Contact form submission failed',
+        userAgent: getUserAgent(request)
       });
     } catch (logError) {
-      console.error('Error logging failed contact attempt:', logError);
+      // Log the logging error securely
+      console.error('🚨 Failed to log contact attempt:', {
+        requestId: errorContext.requestId,
+        timestamp: new Date().toISOString()
+      });
     }
     
-    return new Response(JSON.stringify({
-      success: false,
-      message: 'Error interno del servidor. Inténtalo de nuevo más tarde.'
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    // Return secure error response
+    if (error instanceof Error && error.message.includes('duplicate')) {
+      return handleValidationError('Duplicate submission detected', errorContext);
+    }
+    
+    if (error instanceof Error && error.message.includes('connect')) {
+      return handleDatabaseError(error, errorContext);
+    }
+    
+    if (error instanceof Error && error.message.includes('timeout')) {
+      return secureErrorHandler.handleError(error, 'TIMEOUT_ERROR', errorContext, 408);
+    }
+
+    // Default secure error response
+    const errorToHandle = error instanceof Error ? error : new Error(String(error));
+    return secureErrorHandler.handleError(errorToHandle, 'INTERNAL_SERVER_ERROR', errorContext, 500);
   }
 };
