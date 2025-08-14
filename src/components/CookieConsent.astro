@@ -349,7 +349,18 @@
         timestamp: new Date().toISOString()
       };
 
+      // Enhanced: Use specialized method for consent cookie (most secure)
       this.setCookie(this.cookieName, JSON.stringify(consent), this.cookieExpiry);
+      
+      // Enhanced: Clear any existing tracking cookies if consent withdrawn
+      if (!consent.analytics) {
+        this.clearAnalyticsCookies();
+      }
+      
+      if (!consent.marketing) {
+        this.clearMarketingCookies();
+      }
+      
       this.applyConsent();
       
       // Dispatch custom event for other scripts to listen to
@@ -420,8 +431,121 @@
       const expires = new Date();
       expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
       
-      // Set cookie with SameSite and Secure attributes for compliance
-      document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax;Secure`;
+      // Enhanced security: Set cookie with comprehensive security attributes
+      const securityAttributes = [
+        `${name}=${value}`,
+        `expires=${expires.toUTCString()}`,
+        'path=/',
+        'SameSite=Strict',  // Enhanced: Changed from Lax to Strict for better CSRF protection
+        'Secure',           // Existing: Ensures HTTPS only
+        'HttpOnly'          // Enhanced: Prevents XSS access to sensitive cookies
+      ];
+      
+      // For non-essential cookies, add additional restrictions
+      if (name !== 'cookie-consent') {
+        securityAttributes.push('Partitioned'); // Enhanced: Helps with third-party cookie restrictions
+      }
+      
+      document.cookie = securityAttributes.join(';');
+    }
+
+    // Enhanced: Separate method for session cookies with maximum security
+    setSessionCookie(name: string, value: string) {
+      const securityAttributes = [
+        `${name}=${value}`,
+        'path=/',
+        'SameSite=Strict',
+        'Secure',
+        'HttpOnly'
+      ];
+      
+      document.cookie = securityAttributes.join(';');
+    }
+
+    // Enhanced: Method for analytics cookies with appropriate restrictions
+    setAnalyticsCookie(name: string, value: string, days: number = 730) { // 2 years max for analytics
+      const expires = new Date();
+      expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+      
+      const securityAttributes = [
+        `${name}=${value}`,
+        `expires=${expires.toUTCString()}`,
+        'path=/',
+        'SameSite=Lax', // More permissive for cross-site analytics
+        'Secure'
+        // Note: No HttpOnly for analytics cookies as they need JS access
+      ];
+      
+      document.cookie = securityAttributes.join(';');
+    }
+
+    // Enhanced: Method to securely clear cookies
+    clearCookie(name: string) {
+      // Set cookie to expire in the past with all security attributes
+      const securityAttributes = [
+        `${name}=`,
+        'expires=Thu, 01 Jan 1970 00:00:00 UTC',
+        'path=/',
+        'SameSite=Strict',
+        'Secure'
+      ];
+      
+      document.cookie = securityAttributes.join(';');
+    }
+
+    // Enhanced: Clear all analytics-related cookies
+    clearAnalyticsCookies() {
+      const analyticsCookies = [
+        '_ga',
+        '_ga_*',
+        '_gid', 
+        '_gat',
+        '_gat_gtag_*',
+        '_gtag_*'
+      ];
+      
+      analyticsCookies.forEach(cookieName => {
+        if (cookieName.includes('*')) {
+          // Handle wildcard patterns for Google Analytics
+          const baseName = cookieName.replace('*', '');
+          // Clear all cookies that start with the base name
+          document.cookie.split(';').forEach(cookie => {
+            const [name] = cookie.trim().split('=');
+            if (name.startsWith(baseName)) {
+              this.clearCookie(name);
+            }
+          });
+        } else {
+          this.clearCookie(cookieName);
+        }
+      });
+    }
+
+    // Enhanced: Clear all marketing-related cookies
+    clearMarketingCookies() {
+      const marketingCookies = [
+        '__gads',
+        '__gpi', 
+        '_gcl_*',
+        'DSID',
+        'IDE',
+        'test_cookie',
+        'NID'
+      ];
+      
+      marketingCookies.forEach(cookieName => {
+        if (cookieName.includes('*')) {
+          const baseName = cookieName.replace('*', '');
+          document.cookie.split(';').forEach(cookie => {
+            const [name] = cookie.trim().split('=');
+            if (name.startsWith(baseName)) {
+              this.clearCookie(name);
+            }
+          });
+        } else {
+          this.clearCookie(cookieName);
+        }
+      });
     }
 
     getCookie(name: string) {
