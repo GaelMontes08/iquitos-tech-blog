@@ -1,0 +1,133 @@
+# Iquitos Tech - llms.txt
+
+## Site Information
+- **Name**: Iquitos Tech
+- **URL**: https://iquitostech.com
+- **Domain**: iquitostech.com
+- **Language**: Spanish (es-ES)
+- **Region**: Peru, Latin America
+- **Launch Date**: 2025
+- **Last Updated**: August 14, 2025
+
+## Site Description
+Iquitos Tech is a technology and gaming news website focused on providing the latest updates in technology, video games, artificial intelligence, programming, and digital trends. The site serves Spanish-speaking audiences, particularly in Peru and Latin America, with comprehensive coverage of the tech industry.
+
+## Content Categories
+- **Technology News**: Latest developments in tech industry
+- **Gaming**: Video game news, reviews, and industry updates
+- **Movies**: Movies news, reviews
+- **Programming**: Development tutorials and industry insights
+- **Digital Trends**: Emerging technologies and digital culture
+- **Hardware Reviews**: Tech product reviews and comparisons
+- **Mobile Technology**: Smartphone and mobile app coverage
+
+## Technical Stack
+- **Framework**: Astro v5.11.2 (Static Site Generator)
+- **Language**: TypeScript, JavaScript
+- **Content Management**: WordPress CMS (headless)
+- **Deployment**: Vercel
+- **Analytics**: Google Analytics with consent mode
+- **Monetization**: Google AdSense (ca-pub-7561415153058679)
+- **Database**: Supabase (for view counts and analytics)
+- **Styling**: Tailwind CSS
+
+## Key Features
+- **SEO Optimized**: Yoast SEO integration with automatic meta tag generation
+- **Performance Focused**: Static site generation for fast loading
+- **Mobile Responsive**: Optimized for all device sizes
+- **Cookie Compliance**: GDPR-compliant cookie consent system
+- **Social Media Integration**: Facebook, Twitter, Instagram, YouTube, TikTok, WhatsApp
+- **Real-time Analytics**: Post view tracking and trending content
+- **Schema Markup**: Structured data for better search visibility
+
+## Content Structure
+- **Homepage**: Latest news and trending posts
+- **Posts**: Individual articles with full content
+- **Categories**: Organized by topic (Technology, Gaming, etc.)
+- **Author Pages**: Content by specific authors
+- **About Page**: Site information and mission
+- **Contact**: Communication channels
+- **Privacy Policy**: Data protection and privacy information
+- **Terms of Service**: Usage terms and conditions
+
+## Authors and Team
+- **Primary Author**: Gael Montes
+- **Editorial Team**: Technology journalists and gaming experts
+- **Content Focus**: Spanish-language tech journalism
+- **Editorial Standards**: Accurate, timely, and relevant technology coverage
+
+## Social Media Presence
+- **Twitter**: @IquitosTech
+- **Facebook**: Verified business page
+- **YouTube**: Video content and tech reviews
+- **TikTok**: Short-form tech content
+
+## Verification and Authority
+- **Google AdSense**: Verified publisher (ca-pub-7561415153058679)
+- **Facebook**: Domain verified (6quprs4p5kl4znnw4enaohuvdntjgv)
+- **Pinterest**: Domain verified (5e3af78a2f00212446ef99663a96f07c)
+- **Search Console**: Google verified
+- **Analytics**: Google Analytics 4 integrated
+- **Sitemap**: Available at /sitemap.xml
+
+## Target Audience
+- **Primary**: Spanish-speaking tech enthusiasts
+- **Geographic**: Peru, Latin America, global Spanish speakers
+- **Demographics**: Tech professionals, gamers, students, IT professionals, movie lovers
+- **Interests**: Technology trends, gaming, programming, AI, digital innovationgit
+
+## Content Guidelines
+- **Language**: Spanish (Peruvian variant)
+- **Tone**: Professional yet accessible
+- **Update Frequency**: Daily news updates
+- **Content Types**: News articles, reviews, tutorials, analysis
+- **Word Count**: Typically 800-1500 words per article
+
+## Technical SEO
+- **Canonical URLs**: Properly implemented
+- **Meta Tags**: Dynamic generation from Yoast SEO
+- **Open Graph**: Complete social media optimization
+- **Twitter Cards**: Large image cards for social sharing
+- **Schema.org**: Article and organization markup
+- **Robots.txt**: Optimized for search engine crawling
+
+## Performance Metrics
+- **Page Speed**: Optimized for Core Web Vitals
+- **Mobile Score**: 90+ on PageSpeed Insights
+- **SEO Score**: Fully optimized with Yoast SEO
+- **Accessibility**: WCAG compliant
+- **Security**: HTTPS with modern security headers
+
+## Contact Information
+- **Website**: https://iquitostech.com
+- **Contact Page**: https://iquitostech.com/contact
+- **Editorial Inquiries**: Through contact form
+- **Business Inquiries**: Available via website
+
+## Copyright and Legal
+- **Copyright**: © 2025 Iquitos Tech
+- **Content License**: All rights reserved unless otherwise stated
+- **Privacy Policy**: GDPR and local privacy law compliant
+- **Terms of Service**: Standard website usage terms
+- **Cookie Policy**: Comprehensive cookie management system
+
+## Site Architecture
+```
+/                    # Homepage with latest news
+/posts/[slug]        # Individual blog posts
+/categoria/[slug]    # Category pages
+/about              # About page
+/contact            # Contact information
+/privacy            # Privacy policy
+/terms              # Terms of service
+/corrections        # Editorial corrections
+/newsletter         # Newsletter subscription
+/sitemap.xml        # XML sitemap
+/robots.txt         # Robots file
+```
+
+## Last Updated
+This llms.txt file was last updated on August 14, 2025. For the most current information about Iquitos Tech, please visit https://iquitostech.com.
+
+---
+This file follows the llms.txt standard for providing AI systems with accurate, structured information about websites.
