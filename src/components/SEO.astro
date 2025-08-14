@@ -12,6 +12,7 @@ const schemaScript = generateSchemaScript(seoTags.schema);
 ---
 {seoTags.title && <title>{seoTags.title}</title>}
 {seoTags.description && <meta name="description" content={seoTags.description} />}
+{seoTags.keywords && <meta name="keywords" content={seoTags.keywords} />}
 {seoTags.canonical && <link rel="canonical" href={seoTags.canonical} />}
 
 <meta name="robots" content={robotsContent} />

@@ -130,6 +130,11 @@ export function processSEOData(seo: YoastSEO | undefined, urlType: 'post' | 'cat
     title: cleanTitle(seo.title),
     og_title: cleanTitle(seo.og_title),
     
+    // Preserve keywords from various possible fields
+    keywords: seo.keywords,
+    focus_keyword: seo.focus_keyword,
+    meta_keyword: seo.meta_keyword,
+    
     // Ensure indexing is enabled (override Yoast if needed)
     robots: {
       ...seo.robots,
@@ -192,6 +197,9 @@ function processSchemaURLs(schema: any, urlType: 'post' | 'category' | 'page' = 
 export interface YoastSEO {
   title?: string;
   description?: string;
+  keywords?: string; // Standard keywords field
+  focus_keyword?: string; // Yoast focus keyword
+  meta_keyword?: string; // Alternative keyword field
   robots?: {
     index?: string;
     follow?: string;
@@ -231,6 +239,7 @@ export interface YoastSEO {
 export interface SEOProps {
   title?: string;
   description?: string;
+  keywords?: string; // Added keywords support
   canonical?: string;
   seo?: YoastSEO;
   image?: string;
@@ -245,7 +254,7 @@ export interface SEOProps {
  * Generates meta tags from Yoast SEO data
  */
 export function generateSEOTags(props: SEOProps) {
-  const { title, description, canonical, seo, image, publishedTime, modifiedTime, author, type = 'website', urlType = 'page' } = props;
+  const { title, description, keywords, canonical, seo, image, publishedTime, modifiedTime, author, type = 'website', urlType = 'page' } = props;
 
   // Process SEO data to replace domains and ensure indexing
   const processedSEO = processSEOData(seo, urlType);
@@ -253,6 +262,13 @@ export function generateSEOTags(props: SEOProps) {
   // Fallback values with title cleaning
   const finalTitle = cleanTitle(processedSEO?.title || title) || 'Iquitos Tech';
   const finalDescription = processedSEO?.description || description || 'Noticias de tecnología, gaming y tendencias digitales';
+  
+  // Check multiple possible keyword fields from Yoast
+  const finalKeywords = processedSEO?.keywords || 
+                       processedSEO?.focus_keyword || 
+                       processedSEO?.meta_keyword || 
+                       keywords || 
+                       'tecnología, gaming, videojuegos, noticias tech, iquitos tech, inteligencia artificial, programación';
   
   // Prioritize explicit canonical over SEO data canonical
   const finalCanonical = canonical 
@@ -285,6 +301,7 @@ export function generateSEOTags(props: SEOProps) {
     // Basic meta tags
     title: finalTitle,
     description: finalDescription,
+    keywords: finalKeywords,
     canonical: finalCanonical,
     robots: processedSEO?.robots || { index: 'index', follow: 'follow' },
     
