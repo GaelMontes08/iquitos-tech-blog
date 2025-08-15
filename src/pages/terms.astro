@@ -362,7 +362,6 @@ export const prerender = true;
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Mobile TOC toggle
       const tocToggle = document.getElementById('toc-toggle');
       const tocContent = document.getElementById('toc-content');
       const tocIcon = document.getElementById('toc-icon');
@@ -374,7 +373,6 @@ export const prerender = true;
         });
       }
 
-      // Intersection Observer for active section highlighting
       const sections = document.querySelectorAll('section[id]');
       const tocLinks = document.querySelectorAll('.toc-link');
       
@@ -386,13 +384,11 @@ export const prerender = true;
       const observer = new IntersectionObserver(function(entries) {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            // Remove active class from all links
             tocLinks.forEach(link => {
               link.classList.remove('active');
               link.removeAttribute('aria-current');
             });
             
-            // Add active class to current link
             const activeLink = document.querySelector(`a[href="#${entry.target.id}"]`);
             if (activeLink) {
               activeLink.classList.add('active');
@@ -406,7 +402,6 @@ export const prerender = true;
         observer.observe(section);
       });
 
-      // Smooth scroll for TOC links
       for (let i = 0; i < tocLinks.length; i++) {
         const link = tocLinks[i];
         link.addEventListener('click', (e) => {
@@ -416,13 +411,12 @@ export const prerender = true;
           const targetElement = document.getElementById(targetId);
           
           if (targetElement) {
-            const offsetTop = targetElement.offsetTop - 100; // Account for header
+            const offsetTop = targetElement.offsetTop - 100;
             window.scrollTo({
               top: offsetTop,
               behavior: 'smooth'
             });
             
-            // Close mobile TOC after clicking
             if (window.innerWidth < 1024 && tocContent && tocIcon) {
               tocContent.classList.add('hidden');
               tocIcon.classList.remove('rotate-180');

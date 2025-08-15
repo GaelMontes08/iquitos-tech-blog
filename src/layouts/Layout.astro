@@ -21,7 +21,6 @@ const seoProps = Astro.props as Props;
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         
         <style>
-          /* Smooth content transitions without ViewTransitions */
           @keyframes fadeIn {
             from { 
               opacity: 0; 
@@ -33,7 +32,6 @@ const seoProps = Astro.props as Props;
             }
           }
           
-          /* Critical CSS - Above the fold styles */
           * {
             box-sizing: border-box;
           }
@@ -56,12 +54,10 @@ const seoProps = Astro.props as Props;
             line-height: 1.6;
           }
           
-          /* Critical layout styles */
           .pt-16 { padding-top: 4rem; }
           .text-white { color: rgb(255 255 255); }
           .bg-gray-900 { background-color: rgb(17 24 39); }
           
-          /* Performance optimizations */
           img, picture {
             contain: layout;
           }
@@ -72,12 +68,10 @@ const seoProps = Astro.props as Props;
             will-change: transform;
           }
           
-          /* Prevent layout shifts */
           [loading="lazy"] {
             content-visibility: auto;
           }
           
-          /* Mobile LCP optimization */
           @media (max-width: 1023px) {
             img[fetchpriority="high"] {
               transform: translateZ(0);
@@ -106,22 +100,19 @@ const seoProps = Astro.props as Props;
     <body>
         
         <script is:inline>
-          // Simple skeleton content loading without ViewTransitions
           document.addEventListener('DOMContentLoaded', () => {
             const skeleton = document.getElementById('content-skeleton');
             const actualContent = document.getElementById('actual-content');
             
             if (skeleton && actualContent) {
-              // Start with skeleton visible
               skeleton.style.display = 'block';
               actualContent.style.display = 'none';
               
-              // Progressive content loading - natural page load timing
               setTimeout(() => {
                 skeleton.style.display = 'none';
                 actualContent.style.display = 'block';
                 actualContent.style.animation = 'fadeIn 0.4s ease-in-out';
-              }, 400); // Slightly longer for natural loading feel
+              }, 400);
             }
           });
         </script>
@@ -157,14 +148,11 @@ const seoProps = Astro.props as Props;
         <Analytics />
         
         <script is:inline>
-          // Load Google Analytics with cookie consent support
           window.addEventListener('load', function() {
-            // Initialize gtag with default consent denied (compliant with Chrome's policies)
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             window.gtag = gtag;
             
-            // Set default consent to denied (Chrome compliance)
             gtag('consent', 'default', {
               analytics_storage: 'denied',
               ad_storage: 'denied',
@@ -173,7 +161,6 @@ const seoProps = Astro.props as Props;
               wait_for_update: 500
             });
             
-            // Load GA script after consent setup
             setTimeout(function() {
               const gaScript = document.createElement('script');
               gaScript.async = true;
@@ -188,7 +175,6 @@ const seoProps = Astro.props as Props;
                   allow_ad_personalization_signals: false
                 });
                 
-                // Listen for cookie consent changes
                 window.addEventListener('cookieConsentUpdated', function(event) {
                   const consent = event.detail;
                   
@@ -206,7 +192,6 @@ const seoProps = Astro.props as Props;
         
         <script is:inline>
           window.addEventListener('load', function() {
-            // Global iframe accessibility handler
             let iframeTimeout;
             
             window.addIframeTitles = function() {
@@ -232,10 +217,8 @@ const seoProps = Astro.props as Props;
               }, 100);
             };
             
-            // Initial check when DOM is ready
             window.addIframeTitles();
             
-            // Optimized mutation observer for dynamic content
             window.iframeObserver = new MutationObserver((mutations) => {
               let hasNewIframes = false;
               mutations.forEach((mutation) => {
@@ -282,7 +265,6 @@ const seoProps = Astro.props as Props;
         
         <script is:inline>
           window.addEventListener('load', function() {
-            // Load Google News script after page is fully loaded
             setTimeout(() => {
               const swgScript = document.createElement('script');
               swgScript.async = true;
@@ -300,7 +282,7 @@ const seoProps = Astro.props as Props;
                 } catch (e) {}
               };
               document.head.appendChild(swgScript);
-            }, 1000); // Increased delay to prioritize critical rendering
+            }, 1000);
           });
         </script>
     </body>
@@ -362,7 +344,6 @@ const seoProps = Astro.props as Props;
         background: rgba(255, 255, 255, 0.5);
     }
     
-    /* Base paragraph styles - only apply outside of prose containers */
     body > *:not(.prose-container) p,
     main > *:not(.prose-container) p,
     section:not(.prose-container) p,
@@ -394,7 +375,6 @@ const seoProps = Astro.props as Props;
         }
     }
     
-    /* Strong text styling - apply everywhere */
     p strong {
         color: white;
         font-weight: 700;

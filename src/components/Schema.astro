@@ -2,7 +2,6 @@
 import type { SEOProps } from '@/lib/seo';
 
 export interface Props extends SEOProps {
-  // Additional schema-specific props
   author?: string;
   datePublished?: string;
   dateModified?: string;
@@ -27,29 +26,23 @@ const {
   seo
 } = Astro.props;
 
-// Extract current URL for schema and fix homepage URL
 let currentUrl = canonical || 'https://iquitostech.com';
 
-// Fix homepage URL - if it ends with /home/ or /home, make it the root
 if (currentUrl.endsWith('/home/') || currentUrl.endsWith('/home')) {
   currentUrl = 'https://iquitostech.com';
 }
 
-// Also check if SEO data has a different canonical and fix it too
 let seoCanonical = seo?.canonical;
 if (seoCanonical?.endsWith('/home/') || seoCanonical?.endsWith('/home')) {
   seoCanonical = 'https://iquitostech.com';
 }
 
-// Use the explicitly passed canonical over SEO canonical for homepage
 if (type === 'website' && canonical) {
   currentUrl = canonical;
 }
 
-// Check if WordPress Yoast already provides organization schema
 const hasYoastOrganizationSchema = seo?.schema?.['@graph']?.some((item: any) => item['@type'] === 'Organization');
 
-// Enhanced organization schema - only add if Yoast doesn't provide it, or enhance the existing one
 const organizationSchema = !hasYoastOrganizationSchema ? {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -99,14 +92,13 @@ const organizationSchema = !hasYoastOrganizationSchema ? {
   ]
 } : null;
 
-// Website schema for homepage and general pages
 const websiteSchema = type === 'website' ? {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "Iquitos Tech",
   "alternateName": "IquitosTech", 
   "description": description,
-  "url": "https://iquitostech.com", // Always use root URL for website
+  "url": "https://iquitostech.com",
   "inLanguage": "es-PE",
   "isAccessibleForFree": true,
   "publisher": {
@@ -127,10 +119,9 @@ const websiteSchema = type === 'website' ? {
   }
 } : null;
 
-// Article schema for blog posts (Enhanced for Google News)
 const articleSchema = type === 'article' ? {
   "@context": "https://schema.org",
-  "@type": "NewsArticle", // Changed from "Article" to "NewsArticle" for Google News
+  "@type": "NewsArticle",
   "headline": title,
   "description": description,
   "url": currentUrl,
@@ -162,7 +153,6 @@ const articleSchema = type === 'article' ? {
     "@type": "Thing",
     "name": category || "Tecnología"
   },
-  // Google News specific fields
   "speakable": {
     "@type": "SpeakableSpecification",
     "cssSelector": ["h1", ".article-content p"]
@@ -187,7 +177,6 @@ const articleSchema = type === 'article' ? {
   }
 } : null;
 
-// WebPage schema for static pages (not homepage or articles)
 const webPageSchema = type !== 'website' && type !== 'article' ? {
   "@context": "https://schema.org",
   "@type": "WebPage",
@@ -220,7 +209,6 @@ const webPageSchema = type !== 'website' && type !== 'article' ? {
   }
 } : null;
 
-// Override WordPress WebPage schema for homepage if it has wrong URL
 const homepageWebPageOverride = type === 'website' && (seo?.canonical?.includes('/home') || currentUrl.includes('/home')) ? {
   "@context": "https://schema.org",
   "@type": "WebPage",
@@ -237,7 +225,6 @@ const homepageWebPageOverride = type === 'website' && (seo?.canonical?.includes(
   "inLanguage": "es-PE"
 } : null;
 
-// FAQ Page schema for FAQ page
 const faqPageSchema = currentUrl.includes('/faqs') ? {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -264,7 +251,6 @@ const faqPageSchema = currentUrl.includes('/faqs') ? {
   ]
 } : null;
 
-// Contact Page schema
 const contactPageSchema = currentUrl.includes('/contact') ? {
   "@context": "https://schema.org",
   "@type": "ContactPage",
@@ -277,7 +263,6 @@ const contactPageSchema = currentUrl.includes('/contact') ? {
 } : null;
 ---
 
-<!-- Enhanced Organization Schema (only if Yoast doesn't provide it) -->
 {organizationSchema && (
   <script type="application/ld+json" set:html={JSON.stringify({
     ...organizationSchema,
@@ -300,7 +285,6 @@ const contactPageSchema = currentUrl.includes('/contact') ? {
   <script type="application/ld+json" set:html={JSON.stringify(webPageSchema)} />
 )}
 
-<!-- Homepage WebPage Override (if WordPress has wrong URL) -->
 {homepageWebPageOverride && (
   <script type="application/ld+json" set:html={JSON.stringify(homepageWebPageOverride)} />
 )}

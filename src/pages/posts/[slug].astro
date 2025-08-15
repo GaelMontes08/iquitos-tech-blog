@@ -12,14 +12,11 @@ if (!slug) return Astro.redirect('/404');
 const domain = import.meta.env.WP_DOMAIN;
 const apiUrl = `https://${domain}/wp-json/wp/v2`;
 
-// Get post data using the new function
 const postInfo = await getPostInfo(slug);
 if (!postInfo) return Astro.redirect('/404');
 
-// Destructure the post info as requested
 const { title, date, seo, puntosClave, content, faqPairs, featuredImage, author, authorAvatar, excerpt, categories, id } = postInfo;
 
-// Fetch related posts from same category
 const getRelatedPosts = async (categoryIds: number[], currentPostId: number) => {
   try {
     if (!categoryIds.length) return [];
@@ -47,15 +44,11 @@ const getRelatedPosts = async (categoryIds: number[], currentPostId: number) => 
   }
 };
 
-// Get post data
-// Get related posts
 const relatedPosts = categories.length > 0 ? 
   await getRelatedPosts(categories, id) : [];
 
-// Get trending posts for sidebar
 const trendingPosts = await getMostViewedPosts();
 
-// Clean excerpt for TL;DR
 const getTldr = (excerpt: string) => {
   if (!excerpt) return 'Resumen no disponible para este artículo.';
   
@@ -84,12 +77,10 @@ export const prerender = false;
   type="article"
   urlType="post"
 >
-  <!-- Loading skeleton that will be replaced by actual content -->
   <div id="content-skeleton" class="animate-pulse">
     <PostPageSkeleton />
   </div>
   
-  <!-- Actual content that loads progressively -->
   <div id="actual-content" style="display: none;">
     <div class="min-h-screen">
       <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -265,7 +256,6 @@ export const prerender = false;
           
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {relatedPosts.slice(0, 4).map((post: any) => {
-              // Get category name for the post
               const categoryName = post.categories?.[0]?.name || 'Sin categoría';
               
               return (
@@ -287,13 +277,11 @@ export const prerender = false;
 
     </div>
   </div>
-  </div> <!-- Close actual-content -->
+  </div>
 
   <script define:vars={{ slug }}>
-    // Post slug for view tracking
     const POST_SLUG = slug;
     
-    // Function to check if user is likely a bot
     function isLikelyBot() {
       const userAgent = navigator.userAgent.toLowerCase();
       const botPatterns = [
@@ -305,15 +293,12 @@ export const prerender = false;
       return botPatterns.some(pattern => userAgent.includes(pattern));
     }
 
-    // Function to increment view count with real user validation
     async function trackRealView() {
-      // Don't track if it's likely a bot
       if (isLikelyBot()) {
         console.log('🤖 Bot detected, skipping view tracking');
         return;
       }
 
-      // Check if this view was already counted in this session
       const sessionKey = `viewed_post_${POST_SLUG}`;
       const alreadyViewed = sessionStorage.getItem(sessionKey);
       
@@ -323,10 +308,8 @@ export const prerender = false;
       }
 
       try {
-        // Mark as viewed in this session
         sessionStorage.setItem(sessionKey, 'true');
         
-        // Send the view increment request
         const response = await fetch('/api/increment-view', {
           method: 'POST',
           headers: {
@@ -339,7 +322,6 @@ export const prerender = false;
           const data = await response.json();
           console.log(`📊 View tracked for ${POST_SLUG}. New count: ${data.views}`);
           
-          // Update the view count display
           const viewCountElement = document.getElementById('view-count');
           if (viewCountElement) {
             viewCountElement.textContent = `${data.views} vista${data.views === 1 ? '' : 's'}`;
@@ -352,7 +334,6 @@ export const prerender = false;
       }
     }
 
-    // Calculate reading time
     function calculateReadingTime() {
       const article = document.querySelector('.prose');
       if (article) {
@@ -368,20 +349,17 @@ export const prerender = false;
       }
     }
 
-    // Initialize when DOM is loaded
     document.addEventListener('DOMContentLoaded', () => {
       calculateReadingTime();
       
-      // Track view after a small delay to ensure user engagement
       setTimeout(() => {
         trackRealView();
-      }, 2000); // 2 second delay to ensure real engagement
+      }, 2000);
     });
   </script>
 </Layout>
 
 <style>
-  /* Line clamp utility for trending posts */
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -389,17 +367,14 @@ export const prerender = false;
     overflow: hidden;
   }
 
-  /* CSS-only FAQ accordion animation fix */
   .peer-checked\:max-h-screen:checked ~ * {
     max-height: 1000px;
   }
 
-  /* Smooth scroll for anchor links */
   html {
     scroll-behavior: smooth;
   }
 
-  /* Enhanced focus states without blue ring */
   label:focus {
     outline: none;
   }
@@ -409,14 +384,12 @@ export const prerender = false;
     outline-offset: 2px;
   }
 
-  /* Responsive design */
   @media (max-width: 1024px) {
     .lg\:sticky {
       position: relative !important;
     }
   }
 
-  /* Ensure content styling doesn't get overridden */
   .content-area h1,
   .content-area h2,
   .content-area h3,
@@ -490,7 +463,6 @@ export const prerender = false;
     padding: inherit !important;
   }
 
-  /* FAQ Accordion Styles */
   .faq-checkbox:checked + label .faq-icon {
     transform: rotate(180deg);
   }

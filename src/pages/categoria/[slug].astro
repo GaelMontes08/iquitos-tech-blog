@@ -18,7 +18,6 @@ if (!slug) {
   return Astro.redirect('/404');
 }
 
-// Function to fetch all categories
 const fetchCategories = async () => {
   try {
     const response = await fetchWithTimeout(
@@ -38,7 +37,6 @@ const fetchCategories = async () => {
   }
 };
 
-// Function to fetch posts by category ID
 const fetchPostsByCategory = async (categoryId: number) => {
   try {
     const response = await fetchWithTimeout(
@@ -63,17 +61,14 @@ let posts = [];
 let error = null;
 
 try {
-  // Fetch all categories
   const categories = await fetchCategories();
   
-  // Find the category that matches the slug
   category = categories.find((cat: any) => cat.slug === slug);
   
   if (!category) {
     return Astro.redirect('/404');
   }
 
-  // Fetch posts for this category
   posts = await fetchPostsByCategory(category.id);
 
 } catch (err) {
@@ -81,13 +76,11 @@ try {
   error = typeof err === 'object' && err !== null && 'message' in err ? (err as { message: string }).message : String(err);
 }
 
-// Page metadata and SEO
 const pageTitle = category ? `${category.name} | Iquitos Tech` : 'Categoría | Iquitos Tech';
 const pageDescription = category 
   ? category.description || `Últimos artículos de ${category.name} en Iquitos Tech`
   : 'Explora nuestros artículos por categoría';
 
-// Extract Yoast SEO data if available
 const seo: YoastSEO | undefined = category?.yoast_head_json;
 
 export const prerender = false;
@@ -252,7 +245,6 @@ export const prerender = false;
 </Layout>
 
 <style>
-  /* Custom styles for better text rendering */
   .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
     color: white;
     font-weight: bold;

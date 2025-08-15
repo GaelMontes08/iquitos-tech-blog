@@ -203,24 +203,21 @@
 </button>
 
 <script>
-  // Declare gtag as global to avoid TypeScript errors
   declare global {
     function gtag(...args: any[]): void;
   }
 
-  // Cookie Consent Management
   class CookieConsent {
     private cookieName: string;
     private cookieExpiry: number;
     
     constructor() {
       this.cookieName = 'cookie-consent';
-      this.cookieExpiry = 365; // days
+      this.cookieExpiry = 365;
       this.init();
     }
 
     init() {
-      // Check if consent has already been given
       if (!this.hasConsent()) {
         this.showBanner();
       }
@@ -230,7 +227,6 @@
     }
 
     setupEventListeners() {
-      // Banner buttons
       document.getElementById('cookie-accept-btn')?.addEventListener('click', () => {
         this.setConsent({ essential: true, analytics: true, marketing: true });
         this.hideBanner();
@@ -245,7 +241,6 @@
         this.showModal();
       });
 
-      // Modal controls
       document.getElementById('cookie-settings-trigger')?.addEventListener('click', () => {
         this.showModal();
       });
@@ -271,7 +266,6 @@
         this.hideModal();
       });
 
-      // Escape key to close modal
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           this.hideModal();
@@ -282,7 +276,6 @@
     showBanner() {
       const banner = document.getElementById('cookie-consent-banner');
       if (banner) {
-        // Small delay to ensure DOM is ready
         setTimeout(() => {
           banner.classList.remove('translate-y-full');
         }, 100);
@@ -299,7 +292,6 @@
     showModal() {
       const modal = document.getElementById('cookie-settings-modal');
       if (modal) {
-        // Update toggles with current preferences
         const consent = this.getConsent();
         
         const analyticsToggle = document.getElementById('analytics-toggle') as HTMLInputElement;
@@ -311,7 +303,6 @@
         modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         
-        // Focus management
         const closeBtn = document.getElementById('close-modal-btn');
         closeBtn?.focus();
       }
@@ -343,16 +334,14 @@
 
     setConsent(preferences: { essential?: boolean; analytics: boolean; marketing: boolean }) {
       const consent = {
-        essential: true, // Always true
+        essential: true,
         analytics: preferences.analytics || false,
         marketing: preferences.marketing || false,
         timestamp: new Date().toISOString()
       };
 
-      // Enhanced: Use specialized method for consent cookie (most secure)
       this.setCookie(this.cookieName, JSON.stringify(consent), this.cookieExpiry);
       
-      // Enhanced: Clear any existing tracking cookies if consent withdrawn
       if (!consent.analytics) {
         this.clearAnalyticsCookies();
       }
@@ -363,7 +352,6 @@
       
       this.applyConsent();
       
-      // Dispatch custom event for other scripts to listen to
       window.dispatchEvent(new CustomEvent('cookieConsentUpdated', { 
         detail: consent 
       }));
@@ -372,14 +360,12 @@
     applyConsent() {
       const consent = this.getConsent();
       
-      // Apply analytics consent
       if (consent.analytics) {
         this.enableAnalytics();
       } else {
         this.disableAnalytics();
       }
       
-      // Apply marketing consent
       if (consent.marketing) {
         this.enableMarketing();
       } else {
@@ -388,7 +374,6 @@
     }
 
     enableAnalytics() {
-      // Enable Google Analytics if consent given
       if (typeof gtag !== 'undefined') {
         gtag('consent', 'update', {
           analytics_storage: 'granted'
@@ -397,7 +382,6 @@
     }
 
     disableAnalytics() {
-      // Disable Google Analytics
       if (typeof gtag !== 'undefined') {
         gtag('consent', 'update', {
           analytics_storage: 'denied'
@@ -406,7 +390,6 @@
     }
 
     enableMarketing() {
-      // Enable marketing cookies if needed
       if (typeof gtag !== 'undefined') {
         gtag('consent', 'update', {
           ad_storage: 'granted',
@@ -417,7 +400,6 @@
     }
 
     disableMarketing() {
-      // Disable marketing cookies
       if (typeof gtag !== 'undefined') {
         gtag('consent', 'update', {
           ad_storage: 'denied',
@@ -431,25 +413,22 @@
       const expires = new Date();
       expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
       
-      // Enhanced security: Set cookie with comprehensive security attributes
       const securityAttributes = [
         `${name}=${value}`,
         `expires=${expires.toUTCString()}`,
         'path=/',
-        'SameSite=Strict',  // Enhanced: Changed from Lax to Strict for better CSRF protection
-        'Secure',           // Existing: Ensures HTTPS only
-        'HttpOnly'          // Enhanced: Prevents XSS access to sensitive cookies
+        'SameSite=Strict',
+        'Secure',
+        'HttpOnly'
       ];
       
-      // For non-essential cookies, add additional restrictions
       if (name !== 'cookie-consent') {
-        securityAttributes.push('Partitioned'); // Enhanced: Helps with third-party cookie restrictions
+        securityAttributes.push('Partitioned');
       }
       
       document.cookie = securityAttributes.join(';');
     }
 
-    // Enhanced: Separate method for session cookies with maximum security
     setSessionCookie(name: string, value: string) {
       const securityAttributes = [
         `${name}=${value}`,
@@ -462,8 +441,7 @@
       document.cookie = securityAttributes.join(';');
     }
 
-    // Enhanced: Method for analytics cookies with appropriate restrictions
-    setAnalyticsCookie(name: string, value: string, days: number = 730) { // 2 years max for analytics
+    setAnalyticsCookie(name: string, value: string, days: number = 730) {
       const expires = new Date();
       expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
       
@@ -471,17 +449,14 @@
         `${name}=${value}`,
         `expires=${expires.toUTCString()}`,
         'path=/',
-        'SameSite=Lax', // More permissive for cross-site analytics
+        'SameSite=Lax',
         'Secure'
-        // Note: No HttpOnly for analytics cookies as they need JS access
       ];
       
       document.cookie = securityAttributes.join(';');
     }
 
-    // Enhanced: Method to securely clear cookies
     clearCookie(name: string) {
-      // Set cookie to expire in the past with all security attributes
       const securityAttributes = [
         `${name}=`,
         'expires=Thu, 01 Jan 1970 00:00:00 UTC',
@@ -493,7 +468,6 @@
       document.cookie = securityAttributes.join(';');
     }
 
-    // Enhanced: Clear all analytics-related cookies
     clearAnalyticsCookies() {
       const analyticsCookies = [
         '_ga',
@@ -506,9 +480,7 @@
       
       analyticsCookies.forEach(cookieName => {
         if (cookieName.includes('*')) {
-          // Handle wildcard patterns for Google Analytics
           const baseName = cookieName.replace('*', '');
-          // Clear all cookies that start with the base name
           document.cookie.split(';').forEach(cookie => {
             const [name] = cookie.trim().split('=');
             if (name.startsWith(baseName)) {
@@ -521,7 +493,6 @@
       });
     }
 
-    // Enhanced: Clear all marketing-related cookies
     clearMarketingCookies() {
       const marketingCookies = [
         '__gads',
@@ -561,14 +532,12 @@
     }
   }
 
-  // Initialize cookie consent when DOM is ready
   document.addEventListener('DOMContentLoaded', () => {
     new CookieConsent();
   });
 </script>
 
 <style>
-  /* Smooth modal animations */
   #cookie-settings-modal {
     animation: fadeIn 0.2s ease-out;
   }
@@ -587,7 +556,6 @@
     to { opacity: 0; }
   }
   
-  /* Ensure modal appears above everything */
   #cookie-consent-banner {
     z-index: 1000;
   }

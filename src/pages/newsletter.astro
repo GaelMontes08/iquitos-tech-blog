@@ -1,13 +1,11 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from '@/layouts/Layout.astro';
 
 const pageTitle = 'Suscríbete al Newsletter | Iquitos Tech';
 const pageDescription = 'Únete a nuestra newsletter semanal y recibe las mejores noticias de tecnología y gaming directamente en tu inbox.';
 
-// Get Google Client ID from environment variables
 const googleClientId = import.meta.env.PUBLIC_GOOGLE_CLIENT_ID;
 
-// Get reCAPTCHA site key from environment variables
 const recaptchaSiteKey = import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY;
 
 export const prerender = true;
@@ -22,10 +20,8 @@ export const prerender = true;
 >
   <div class="h-[750px] flex items-center justify-center p-4">
     
-    <!-- Newsletter Card -->
     <div id="newsletter-card" class="w-full max-w-md bg-transparent border border-white/10 rounded-2xl shadow-xl p-8 space-y-6">
       
-      <!-- Header -->
       <div class="text-center space-y-2">
         <h1 class="text-2xl font-bold text-white">
           Suscríbete a nuestra Newsletter
@@ -35,10 +31,8 @@ export const prerender = true;
         </p>
       </div>
 
-      <!-- Manual Form -->
       <form id="manual-form" class="space-y-4">
         
-        <!-- Name Input -->
         <div>
           <label for="fullname" class="sr-only">Nombre completo</label>
           <input
@@ -51,7 +45,6 @@ export const prerender = true;
           />
         </div>
 
-        <!-- Email Input -->
         <div>
           <label for="email" class="sr-only">Email</label>
           <input
@@ -64,7 +57,6 @@ export const prerender = true;
           />
         </div>
 
-        <!-- Subscribe Button -->
         <button
           type="submit"
           id="manual-submit"
@@ -76,20 +68,17 @@ export const prerender = true;
 
       </form>
 
-      <!-- Divider -->
       <div class="flex items-center space-x-4">
         <div class="flex-1 h-px bg-white/10"></div>
         <span class="text-xs text-gray-500 uppercase tracking-wider">o</span>
         <div class="flex-1 h-px bg-white/10"></div>
       </div>
 
-      <!-- Google Sign In Button -->
       <button
         type="button"
         id="google-signin-btn"
         class="w-full h-12 flex items-center justify-center space-x-3 rounded-lg border border-white/20 text-white hover:bg-white/5 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2847d7] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <!-- Google G Icon -->
         <svg aria-hidden="true" class="w-5 h-5" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
           <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -100,7 +89,6 @@ export const prerender = true;
         <span id="google-signin-loading" class="hidden font-medium">Autenticando...</span>
       </button>
 
-      <!-- Terms and Privacy -->
       <p class="text-xs text-gray-500 text-center leading-relaxed">
         Al continuar aceptas los 
         <a href="/privacy" class="text-[#2847d7] hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#2847d7] rounded">Términos</a> 
@@ -110,10 +98,8 @@ export const prerender = true;
 
     </div>
 
-    <!-- Success State (Hidden by default) -->
     <div id="success-card" class="hidden w-full max-w-md bg-transparent border border-white/10 rounded-2xl shadow-xl p-8 text-center space-y-6">
       
-      <!-- Success Icon -->
       <div class="flex justify-center">
         <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
           <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -122,7 +108,6 @@ export const prerender = true;
         </div>
       </div>
 
-      <!-- Success Message -->
       <div class="space-y-2">
         <h2 class="text-2xl font-bold text-white">
           ¡Gracias por suscribirte!
@@ -138,7 +123,6 @@ export const prerender = true;
         </p>
       </div>
 
-      <!-- Back to Site -->
       <a 
         href="/" 
         class="inline-flex items-center justify-center w-full h-12 bg-[#2847d7] hover:bg-[#2847d7]/90 text-white font-medium rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2847d7] focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
@@ -150,26 +134,20 @@ export const prerender = true;
 
   </div>
 
-  <!-- Google Sign-In SDK -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   
-  <!-- reCAPTCHA v3 SDK -->
   {recaptchaSiteKey && (
     <script src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`} async defer></script>
   )}
 
   <script define:vars={{ googleClientId, recaptchaSiteKey }}>
-    // Google OAuth configuration from environment variables
     const GOOGLE_CLIENT_ID = googleClientId;
     const RECAPTCHA_SITE_KEY = recaptchaSiteKey;
     const REDIRECT_URI = window.location.origin + '/newsletter';
 
-    // Global variables
     let googleClient;
 
-    // Initialize Google OAuth when SDK loads
     window.addEventListener('load', async () => {
-      // Wait for Google SDK to load
       while (!window.google) {
         await new Promise(resolve => setTimeout(resolve, 100));
       }
@@ -180,7 +158,6 @@ export const prerender = true;
 
     function initializeGoogleOAuth() {
       try {
-        // Check if Google Client ID is configured
         if (!GOOGLE_CLIENT_ID) {
           console.warn('⚠️ Google Client ID not configured');
           const googleBtn = document.getElementById('google-signin-btn');
@@ -191,7 +168,6 @@ export const prerender = true;
           return;
         }
 
-        // Initialize Google OAuth client
         googleClient = window.google.accounts.oauth2.initCodeClient({
           client_id: GOOGLE_CLIENT_ID,
           scope: 'email profile',
@@ -206,13 +182,11 @@ export const prerender = true;
     }
 
     function setupEventListeners() {
-      // Manual form submission
       const manualForm = document.getElementById('manual-form');
       if (manualForm) {
         manualForm.addEventListener('submit', handleManualSubmit);
       }
 
-      // Google sign-in button
       const googleBtn = document.getElementById('google-signin-btn');
       if (googleBtn) {
         googleBtn.addEventListener('click', handleGoogleSignIn);
@@ -228,11 +202,9 @@ export const prerender = true;
       const fullnameInput = document.getElementById('fullname');
       const emailInput = document.getElementById('email');
 
-      // Get form data
       const fullname = fullnameInput.value.trim();
       const email = emailInput.value.trim();
 
-      // Basic validation
       if (!fullname || !email) {
         alert('Por favor, completa todos los campos.');
         return;
@@ -243,13 +215,11 @@ export const prerender = true;
         return;
       }
 
-      // Show loading state
       submitBtn.disabled = true;
       submitText.classList.add('hidden');
       submitLoading.classList.remove('hidden');
 
       try {
-        // Get reCAPTCHA token if available
         let recaptchaToken = null;
         if (RECAPTCHA_SITE_KEY && window.grecaptcha) {
           try {
@@ -259,16 +229,13 @@ export const prerender = true;
             console.log('✅ reCAPTCHA token obtained');
           } catch (recaptchaError) {
             console.warn('⚠️ reCAPTCHA not available:', recaptchaError);
-            // Continue without reCAPTCHA - it's optional
           }
         }
 
-        // Split fullname into first and last name
         const nameParts = fullname.split(' ');
         const firstName = nameParts[0];
         const lastName = nameParts.slice(1).join(' ');
 
-        // Prepare request data
         const requestData = {
           email: email,
           firstName: firstName,
@@ -276,12 +243,10 @@ export const prerender = true;
           source: 'manual'
         };
 
-        // Add reCAPTCHA token if available
         if (recaptchaToken) {
           requestData.recaptchaToken = recaptchaToken;
         }
 
-        // Subscribe to newsletter
         const response = await fetch('/api/newsletter-subscribe', {
           method: 'POST',
           headers: {
@@ -302,7 +267,6 @@ export const prerender = true;
         console.error('Manual subscription error:', error);
         alert('Error de conexión. Inténtalo de nuevo más tarde.');
       } finally {
-        // Reset loading state
         submitBtn.disabled = false;
         submitText.classList.remove('hidden');
         submitLoading.classList.add('hidden');
@@ -319,19 +283,16 @@ export const prerender = true;
       const signInText = document.getElementById('google-signin-text');
       const signInLoading = document.getElementById('google-signin-loading');
 
-      // Show loading state
       signInBtn.disabled = true;
       signInText.classList.add('hidden');
       signInLoading.classList.remove('hidden');
 
       try {
-        // Request authorization code
         googleClient.requestCode();
       } catch (error) {
         console.error('Google sign-in error:', error);
         alert('Error al iniciar sesión con Google. Inténtalo de nuevo.');
         
-        // Reset loading state
         signInBtn.disabled = false;
         signInText.classList.remove('hidden');
         signInLoading.classList.add('hidden');
@@ -347,7 +308,6 @@ export const prerender = true;
         if (response.code) {
           console.log('✅ Authorization code received');
 
-          // Exchange code for user info and subscribe
           const apiResponse = await fetch('/api/google-oauth', {
             method: 'POST',
             headers: {
@@ -376,7 +336,6 @@ export const prerender = true;
         console.error('❌ Google callback error:', error);
         alert('Error de conexión con Google. Inténtalo de nuevo.');
       } finally {
-        // Reset loading state
         signInBtn.disabled = false;
         signInText.classList.remove('hidden');
         signInLoading.classList.add('hidden');
@@ -402,12 +361,10 @@ export const prerender = true;
   </script>
 
   <style>
-    /* Ensure proper focus styles */
     input:focus-visible {
       outline: none;
     }
     
-    /* Custom disabled state for readonly inputs */
     input[readonly] {
       cursor: not-allowed;
     }

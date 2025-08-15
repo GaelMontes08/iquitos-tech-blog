@@ -1,5 +1,4 @@
 ---
-// filepath: f:\Código\Iquitos-Tech\iquitos-tech\src\pages\posts.astro
 import Layout from '@/layouts/Layout.astro';
 import PostCard from '@/components/PostCard.astro';
 import { fetchWithTimeout } from '@/lib/wp';
@@ -10,14 +9,12 @@ if (!domain) {
   throw new Error('WP_DOMAIN environment variable is required');
 }
 
-// Get query parameters for filtering and pagination
 const url = Astro.url;
 const currentPage = parseInt(url.searchParams.get('page') || '1');
 const selectedCategory = url.searchParams.get('category') || '';
 const searchQuery = url.searchParams.get('search') || '';
 const postsPerPage = 12;
 
-// Function to fetch all categories for filter
 const fetchCategories = async () => {
   try {
     const response = await fetchWithTimeout(
@@ -38,12 +35,10 @@ const fetchCategories = async () => {
   }
 };
 
-// Function to fetch posts with filters
 const fetchPosts = async () => {
   try {
     let apiUrl = `https://${domain}/wp-json/wp/v2/posts?_embed&_fields=id,title,slug,excerpt,date,categories,_embedded&per_page=${postsPerPage}&page=${currentPage}`;
     
-    // Add category filter
     if (selectedCategory) {
       const categories = await fetchCategories();
       const category = categories.find(cat => cat.slug === selectedCategory);
@@ -52,7 +47,6 @@ const fetchPosts = async () => {
       }
     }
     
-    // Add search filter
     if (searchQuery) {
       apiUrl += `&search=${encodeURIComponent(searchQuery)}`;
     }
@@ -67,7 +61,6 @@ const fetchPosts = async () => {
     const totalPages = parseInt(response.headers.get('X-WP-TotalPages') || '1');
     const totalPosts = parseInt(response.headers.get('X-WP-Total') || '0');
 
-    // Fetch categories for each post
     const postsWithCategories = await Promise.all(
       posts.map(async (post: any) => {
         if (post.categories && post.categories.length > 0) {
@@ -96,12 +89,9 @@ const fetchPosts = async () => {
     return { posts: [], totalPages: 1, totalPosts: 0 };
   }
 };
-
-// Fetch data
 const categories = await fetchCategories();
 const { posts, totalPages, totalPosts } = await fetchPosts();
 
-// Page metadata
 const pageTitle = searchQuery 
   ? `Búsqueda: "${searchQuery}" | Iquitos Tech`
   : selectedCategory 
@@ -324,7 +314,6 @@ export const prerender = false;
           <div class="flex items-center justify-center">
             <nav class="flex items-center space-x-1 bg-gray-900 rounded-lg p-1 border border-gray-800">
               
-              <!-- Previous Button -->
               {currentPage > 1 && (
                 <a 
                   href={`/posts?page=${currentPage - 1}${selectedCategory ? `&category=${selectedCategory}` : ''}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
@@ -337,7 +326,6 @@ export const prerender = false;
                 </a>
               )}
 
-              <!-- Page Numbers -->
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                 const startPage = Math.max(1, currentPage - 2);
                 const pageNum = startPage + i;
@@ -358,7 +346,6 @@ export const prerender = false;
                 );
               })}
 
-              <!-- Next Button -->
               {currentPage < totalPages && (
                 <a 
                   href={`/posts?page=${currentPage + 1}${selectedCategory ? `&category=${selectedCategory}` : ''}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`}
@@ -381,7 +368,6 @@ export const prerender = false;
 </Layout>
 
 <style>
-  /* Enhanced responsive design */
   @media (max-width: 640px) {
     .grid {
       gap: 1rem;
@@ -400,12 +386,10 @@ export const prerender = false;
     }
   }
 
-  /* Better button styles */
   button, a[class*="bg-"] {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Improved search input */
   input[type="text"]:focus {
     box-shadow: 0 0 0 3px rgba(40, 71, 215, 0.1);
   }

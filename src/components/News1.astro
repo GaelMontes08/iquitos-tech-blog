@@ -1,10 +1,8 @@
 ---
 import { getLatestsPosts } from '@/lib/wp';
 
-// Fetch posts from WordPress
 const posts = await getLatestsPosts({ perPage: 10 });
 
-// Transform WordPress posts to match the expected structure
 const newsItems = posts.map((post: any, index: number) => ({
   id: post.id,
   slug: post.slug,
@@ -16,7 +14,7 @@ const newsItems = posts.map((post: any, index: number) => ({
     name: post.author || 'Redacción',
     avatar: post.authorAvatar || "/author.jpg"
   },
-  featured: index === 0 || index === 5 // First item of each section is featured
+  featured: index === 0 || index === 5
 }));
 
 const getCategoryColor = (category: string) => {
@@ -33,7 +31,6 @@ const getCategoryColor = (category: string) => {
   return colors[category] || 'bg-gray-600';
 };
 
-// Split news into two sections
 const firstSection = newsItems.slice(0, 5);
 const secondSection = newsItems.slice(5, 10);
 ---

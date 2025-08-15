@@ -21,11 +21,9 @@ const {
   featured = false 
 } = Astro.props;
 
-// Clean excerpt text (remove HTML tags)
 const cleanExcerpt = excerpt.replace(/<[^>]*>/g, '').trim();
 const truncatedExcerpt = cleanExcerpt.length > 120 ? cleanExcerpt.substring(0, 120) + '...' : cleanExcerpt;
 
-// Format date
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString('es-ES', {
     year: 'numeric',
@@ -34,7 +32,6 @@ const formatDate = (dateString: string) => {
   });
 };
 
-// Generate gradient based on category
 const getCategoryGradient = (cat: string) => {
   const gradients: Record<string, string> = {
     'Tecnología': 'from-blue-500 to-purple-600',
@@ -203,17 +200,14 @@ const gradientClass = getCategoryGradient(category);
     overflow: hidden;
   }
 
-  /* Ensure consistent card heights */
   article {
     min-height: 320px;
   }
 
-  /* Better hover effects */
   .group:hover .group-hover\:scale-110 {
     transform: scale(1.1);
   }
 
-  /* Smooth transitions */
   * {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }

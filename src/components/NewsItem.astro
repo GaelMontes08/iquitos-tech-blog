@@ -1,7 +1,6 @@
 ---
 import { getFeaturedPosts } from '@/lib/wp';
 
-// Fetch featured posts from WordPress category 25
 const featuredPosts = await getFeaturedPosts({ perPage: 2, categoryId: 25 });
 ---
 
@@ -23,7 +22,6 @@ const featuredPosts = await getFeaturedPosts({ perPage: 2, categoryId: 25 });
         bg-gradient-to-b from-transparent from-40% to-black/80
       "></div>
 
-      {/* Featured Image with LCP optimization and modern formats */}
       {post.featuredImage && (
         <picture>
           <source 
@@ -54,7 +52,6 @@ const featuredPosts = await getFeaturedPosts({ perPage: 2, categoryId: 25 });
           {post.title}
         </h2>
         
-        {/* Show excerpt only on first post (larger) - Desktop only */}
         {index === 0 && post.excerpt && (
           <p class="excerpt-mobile-hidden text-gray-300 text-base line-clamp-3 mb-2" set:html={post.excerpt} />
         )}
@@ -71,12 +68,10 @@ const featuredPosts = await getFeaturedPosts({ perPage: 2, categoryId: 25 });
     overflow: hidden;
   }
   
-  /* Force hide excerpt on mobile devices */
   .excerpt-mobile-hidden {
     display: none !important;
   }
   
-  /* Show only on desktop (1024px and up) */
   @media (min-width: 1024px) {
     .excerpt-mobile-hidden {
       display: block !important;

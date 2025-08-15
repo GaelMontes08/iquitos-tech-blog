@@ -15,7 +15,7 @@ interface NewsPost {
 
 function formatNewsDate(date: string | Date): string {
   const d = new Date(date);
-  return d.toISOString(); // Google News requires ISO 8601 format
+  return d.toISOString();
 }
 
 function generateNewsSitemapXML(posts: NewsPost[]): string {
@@ -60,7 +60,6 @@ function generateNewsSitemapXML(posts: NewsPost[]): string {
 }
 
 export const GET: APIRoute = async ({ request }) => {
-  // Apply rate limiting for news sitemap requests
   const rateLimit = checkAdvancedRateLimit(request, 'sitemap');
   
   if (!rateLimit.allowed) {
@@ -71,13 +70,11 @@ export const GET: APIRoute = async ({ request }) => {
   try {
     console.log('🗞️ Generating news sitemap...');
     
-    // Get posts from last 2 days only (Google News requirement)
     const twoDaysAgo = new Date();
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
     
-    const allPosts = await getAllPosts(100); // Get recent posts
+    const allPosts = await getAllPosts(100);
     
-    // Filter posts from last 2 days and published status
     const recentPosts = allPosts.filter((post: NewsPost) => {
       if (post.status !== 'publish') return false;
       
@@ -89,7 +86,6 @@ export const GET: APIRoute = async ({ request }) => {
 
     if (recentPosts.length === 0) {
       console.log('⚠️ No recent posts found for news sitemap');
-      // Return empty but valid news sitemap
       const emptySitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
@@ -99,7 +95,7 @@ export const GET: APIRoute = async ({ request }) => {
         status: 200,
         headers: {
           'Content-Type': 'application/xml',
-          'Cache-Control': 'public, max-age=300', // 5 minutes cache for news
+          'Cache-Control': 'public, max-age=300',
         }
       });
     }
@@ -112,11 +108,10 @@ export const GET: APIRoute = async ({ request }) => {
       status: 200,
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=300', // 5 minutes cache for news sitemap
+        'Cache-Control': 'public, max-age=300',
       }
     });
 
-    // Add rate limit headers if available
     if (rateLimit.remaining !== undefined && rateLimit.resetTime) {
       return addRateLimitHeaders(newsSitemapResponse, rateLimit.remaining, rateLimit.resetTime);
     }
@@ -126,7 +121,6 @@ export const GET: APIRoute = async ({ request }) => {
   } catch (error) {
     console.error('❌ Error generating news sitemap:', error);
     
-    // Return empty but valid news sitemap on error
     const fallbackSitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
@@ -136,7 +130,7 @@ export const GET: APIRoute = async ({ request }) => {
       status: 200,
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=60', // 1 minute cache on error
+        'Cache-Control': 'public, max-age=60',
       }
     });
   }

@@ -256,11 +256,9 @@ export const prerender = false;
     </div>
   </div>
 
-  <!-- reCAPTCHA v3 Script - Only loaded on contact page -->
   <script src={`https://www.google.com/recaptcha/api.js?render=${RECAPTCHA_SITE_KEY}`} async defer></script>
 
   <script define:vars={{ RECAPTCHA_SITE_KEY }}>
-    // Contact form handling with reCAPTCHA v3
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.getElementById('contact-form');
       const submitBtn = document.getElementById('submit-btn');
@@ -273,19 +271,15 @@ export const prerender = false;
       form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Show loading state
         setLoadingState(true);
 
         try {
-          // Debug: Log current domain and reCAPTCHA key
           console.log('Current domain:', window.location.hostname);
           console.log('reCAPTCHA site key:', RECAPTCHA_SITE_KEY);
           
-          // Execute reCAPTCHA v3
           const recaptchaToken = await grecaptcha.execute(RECAPTCHA_SITE_KEY, {action: 'contact_form'});
           console.log('reCAPTCHA token generated successfully');
           
-          // Get form data
           const formData = new FormData(form);
           formData.append('g-recaptcha-response', recaptchaToken);
 
@@ -332,7 +326,6 @@ export const prerender = false;
         }`;
         formMessage.classList.remove('hidden');
         
-        // Hide message after 5 seconds
         setTimeout(() => {
           formMessage?.classList.add('hidden');
         }, 5000);

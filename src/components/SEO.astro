@@ -5,7 +5,6 @@ export interface Props extends SEOProps {}
 
 const props = Astro.props as Props;
 
-// Generate all SEO tags
 const seoTags = generateSEOTags({ ...defaultSEO, ...props });
 const robotsContent = generateRobotsContent(seoTags.robots);
 const schemaScript = generateSchemaScript(seoTags.schema);
