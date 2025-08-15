@@ -1,12 +1,7 @@
-/**
- * Protected WordPress Categories API endpoint
- * Rate-limited access to WordPress categories data
- */
 import type { APIRoute } from 'astro';
 import { checkAdvancedRateLimit, createRateLimitResponse, addRateLimitHeaders } from '../../../lib/rate-limit.js';
 
 export const GET: APIRoute = async ({ request }) => {
-  // Apply rate limiting
   const rateLimit = checkAdvancedRateLimit(request, 'wordpress');
   
   if (!rateLimit.allowed) {
@@ -31,22 +26,20 @@ export const GET: APIRoute = async ({ request }) => {
     
     const data = await response.json();
     
-    // Filter out empty categories and uncategorized
     const filteredCategories = data.filter((cat: any) => 
       cat.count > 0 && 
       cat.slug !== 'uncategorized' && 
-      cat.id !== 25 // Exclude Featured category
+      cat.id !== 25
     );
     
     const successResponse = new Response(JSON.stringify(filteredCategories), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=600' // 10 minutes cache
+        'Cache-Control': 'public, max-age=600'
       }
     });
 
-    // Add rate limit headers if available
     if (rateLimit.remaining !== undefined && rateLimit.resetTime) {
       return addRateLimitHeaders(successResponse, rateLimit.remaining, rateLimit.resetTime);
     }

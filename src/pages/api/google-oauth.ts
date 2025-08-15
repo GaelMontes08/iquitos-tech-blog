@@ -1,11 +1,9 @@
 import type { APIRoute } from 'astro';
 import { getSecureEnv } from '../../lib/env-security.js';
 
-// Secure environment variable loading - cached at startup for performance
 const GOOGLE_CLIENT_ID = getSecureEnv('GOOGLE_CLIENT_ID');
 const GOOGLE_CLIENT_SECRET = getSecureEnv('GOOGLE_CLIENT_SECRET');
 
-// Validate critical configuration at startup
 if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
   console.error('🔒 CRITICAL: Google OAuth credentials not configured properly');
 }
@@ -31,7 +29,6 @@ interface GoogleUserInfo {
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    // Validate Google OAuth configuration
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
       console.error('❌ Google OAuth credentials not configured');
       return new Response(JSON.stringify({
@@ -56,7 +53,6 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Exchange authorization code for access token
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
       headers: {
@@ -85,7 +81,6 @@ export const POST: APIRoute = async ({ request }) => {
 
     const tokenData: GoogleTokenResponse = await tokenResponse.json();
 
-    // Get user information from Google
     const userResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
       headers: {
         'Authorization': `Bearer ${tokenData.access_token}`,
@@ -105,7 +100,6 @@ export const POST: APIRoute = async ({ request }) => {
 
     const userData: GoogleUserInfo = await userResponse.json();
 
-    // Verify email is verified
     if (!userData.verified_email) {
       return new Response(JSON.stringify({
         success: false,
@@ -118,7 +112,6 @@ export const POST: APIRoute = async ({ request }) => {
 
     console.log('✅ Google OAuth successful for:', userData.email);
 
-    // Subscribe user to newsletter
     try {
       const subscribeResponse = await fetch(`${new URL(request.url).origin}/api/newsletter-subscribe`, {
         method: 'POST',

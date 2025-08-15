@@ -1,12 +1,7 @@
-/**
- * API Rate Limiting System for WordPress endpoints
- * Protects against abuse and ensures service availability
- */
-
 interface RateLimitConfig {
-  windowMs: number;     // Time window in milliseconds
-  maxRequests: number;  // Maximum requests per window
-  blockDurationMs: number; // How long to block after limit exceeded
+  windowMs: number;
+  maxRequests: number;
+  blockDurationMs: number;
 }
 
 interface RateLimitEntry {
@@ -15,43 +10,34 @@ interface RateLimitEntry {
   blockedUntil?: number;
 }
 
-// Rate limiting configurations for different endpoint types
 const RATE_LIMITS: Record<string, RateLimitConfig> = {
-  // WordPress content endpoints (posts, categories, etc.)
   wordpress: {
-    windowMs: 60 * 1000,     // 1 minute
-    maxRequests: 30,         // 30 requests per minute
-    blockDurationMs: 5 * 60 * 1000  // Block for 5 minutes
+    windowMs: 60 * 1000,
+    maxRequests: 30,
+    blockDurationMs: 5 * 60 * 1000
   },
   
-  // API endpoints (contact, newsletter, etc.)
   api: {
-    windowMs: 60 * 1000,     // 1 minute  
-    maxRequests: 10,         // 10 requests per minute
-    blockDurationMs: 10 * 60 * 1000  // Block for 10 minutes
+    windowMs: 60 * 1000,
+    maxRequests: 10,
+    blockDurationMs: 10 * 60 * 1000
   },
   
-  // View increment endpoint (more lenient for user engagement)
   views: {
-    windowMs: 60 * 1000,     // 1 minute
-    maxRequests: 60,         // 60 requests per minute
-    blockDurationMs: 2 * 60 * 1000   // Block for 2 minutes
+    windowMs: 60 * 1000,
+    maxRequests: 60,
+    blockDurationMs: 2 * 60 * 1000
   },
   
-  // Sitemap and feeds (less frequent, more resource intensive)
   sitemap: {
-    windowMs: 60 * 1000,     // 1 minute
-    maxRequests: 5,          // 5 requests per minute
-    blockDurationMs: 15 * 60 * 1000  // Block for 15 minutes
+    windowMs: 60 * 1000,
+    maxRequests: 5,
+    blockDurationMs: 15 * 60 * 1000
   }
 };
 
-// In-memory rate limit store (in production, use Redis or database)
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
-/**
- * Get client IP address from request
- */
 export function getClientIP(request: Request): string {
   return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
          request.headers.get('x-real-ip') || 
@@ -60,16 +46,10 @@ export function getClientIP(request: Request): string {
          'unknown';
 }
 
-/**
- * Get rate limit key for request
- */
 function getRateLimitKey(ip: string, endpoint: string): string {
   return `${ip}:${endpoint}`;
 }
 
-/**
- * Check if request should be rate limited
- */
 export function checkRateLimit(
   request: Request, 
   endpointType: keyof typeof RATE_LIMITS
@@ -80,22 +60,19 @@ export function checkRateLimit(
   const key = getRateLimitKey(ip, endpointType);
   const now = Date.now();
   
-  // Clean up expired entries periodically
-  if (Math.random() < 0.01) { // 1% chance to clean up
+  if (Math.random() < 0.01) {
     cleanupExpiredEntries();
   }
   
   let entry = rateLimitStore.get(key);
   
-  // Check if IP is currently blocked
   if (entry?.blockedUntil && now < entry.blockedUntil) {
     return { 
       allowed: false, 
       resetTime: entry.blockedUntil 
     };
   }
-  
-  // Initialize or reset window if expired
+
   if (!entry || (now - entry.windowStart) >= config.windowMs) {
     entry = {
       count: 0,
@@ -104,10 +81,8 @@ export function checkRateLimit(
     rateLimitStore.set(key, entry);
   }
   
-  // Increment request count
   entry.count++;
   
-  // Check if limit exceeded
   if (entry.count > config.maxRequests) {
     entry.blockedUntil = now + config.blockDurationMs;
     rateLimitStore.set(key, entry);
@@ -120,7 +95,6 @@ export function checkRateLimit(
     };
   }
   
-  // Calculate remaining requests and reset time
   const remaining = config.maxRequests - entry.count;
   const resetTime = entry.windowStart + config.windowMs;
   
@@ -131,9 +105,7 @@ export function checkRateLimit(
   };
 }
 
-/**
- * Create rate limit response
- */
+
 export function createRateLimitResponse(resetTime: number, remaining?: number): Response {
   const resetTimeSeconds = Math.ceil(resetTime / 1000);
   const retryAfterSeconds = Math.ceil((resetTime - Date.now()) / 1000);
@@ -158,9 +130,6 @@ export function createRateLimitResponse(resetTime: number, remaining?: number): 
   });
 }
 
-/**
- * Add rate limit headers to successful responses
- */
 export function addRateLimitHeaders(
   response: Response, 
   remaining: number, 
@@ -179,16 +148,12 @@ export function addRateLimitHeaders(
   });
 }
 
-/**
- * Clean up expired rate limit entries
- */
 function cleanupExpiredEntries(): void {
   const now = Date.now();
   const expiredKeys: string[] = [];
   
   for (const [key, entry] of rateLimitStore.entries()) {
-    // Remove entries that are expired and not blocked
-    const windowExpired = (now - entry.windowStart) >= (5 * 60 * 1000); // 5 minutes
+    const windowExpired = (now - entry.windowStart) >= (5 * 60 * 1000);
     const blockExpired = !entry.blockedUntil || now >= entry.blockedUntil;
     
     if (windowExpired && blockExpired) {
@@ -203,9 +168,6 @@ function cleanupExpiredEntries(): void {
   }
 }
 
-/**
- * Get rate limit statistics (for monitoring)
- */
 export function getRateLimitStats(): {
   totalEntries: number;
   blockedIPs: number;
@@ -231,9 +193,6 @@ export function getRateLimitStats(): {
   };
 }
 
-/**
- * Advanced rate limiting with user agent analysis
- */
 export function checkAdvancedRateLimit(
   request: Request,
   endpointType: keyof typeof RATE_LIMITS
@@ -242,7 +201,6 @@ export function checkAdvancedRateLimit(
   const userAgent = request.headers.get('user-agent') || '';
   const ip = getClientIP(request);
   
-  // Block obvious bots and scrapers
   const suspiciousBots = [
     /bot/i, /crawler/i, /spider/i, /scraper/i,
     /python/i, /curl/i, /wget/i, /java/i,
@@ -254,14 +212,12 @@ export function checkAdvancedRateLimit(
   if (isSuspiciousBot && endpointType !== 'sitemap') {
     console.warn(`🤖 Suspicious bot detected: ${userAgent} from IP ${ip}`);
     
-    // Apply stricter rate limits for bots
     const botConfig = {
       ...RATE_LIMITS[endpointType],
-      maxRequests: Math.floor(RATE_LIMITS[endpointType].maxRequests / 3), // 1/3 of normal limit
-      blockDurationMs: RATE_LIMITS[endpointType].blockDurationMs * 2 // 2x longer block
+      maxRequests: Math.floor(RATE_LIMITS[endpointType].maxRequests / 3),
+      blockDurationMs: RATE_LIMITS[endpointType].blockDurationMs * 2
     };
     
-    // Use modified check with stricter limits
     const result = checkRateLimit(request, endpointType);
     
     if (!result.allowed) {
@@ -273,15 +229,11 @@ export function checkAdvancedRateLimit(
     }
   }
   
-  // Standard rate limit check
   const result = checkRateLimit(request, endpointType);
   
   return result;
 }
 
-/**
- * Middleware to protect WordPress endpoints
- */
 export function withWordPressRateLimit(
   handler: (request: Request) => Promise<Response> | Response
 ) {

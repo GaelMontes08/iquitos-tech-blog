@@ -5,7 +5,6 @@ export const GET: APIRoute = async () => {
   try {
     console.log('🔍 Getting all contact attempts...');
     
-    // Get all contact attempts from the last 24 hours
     const yesterday = new Date();
     yesterday.setHours(yesterday.getHours() - 24);
     
@@ -28,7 +27,6 @@ export const GET: APIRoute = async () => {
 
     console.log(`📊 Found ${data?.length || 0} contact attempts in last 24 hours`);
     
-    // Group by IP address
     const attemptsByIP: Record<string, any[]> = {};
     data?.forEach(attempt => {
       if (!attemptsByIP[attempt.ip_address]) {

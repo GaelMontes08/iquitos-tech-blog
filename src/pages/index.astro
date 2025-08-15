@@ -31,7 +31,6 @@ const { title, content, date, seo } = await getPageInfo('home');
     </div>
     
     <script>
-      // Simple progressive content loading
       document.addEventListener('DOMContentLoaded', () => {
         const skeleton = document.getElementById('content-skeleton');
         const actualContent = document.getElementById('actual-content');
@@ -40,12 +39,11 @@ const { title, content, date, seo } = await getPageInfo('home');
           skeleton.style.display = 'block';
           actualContent.style.display = 'none';
           
-          // Simulate progressive loading - adjust based on your actual loading time
           setTimeout(() => {
             skeleton.style.display = 'none';
             actualContent.style.display = 'block';
             actualContent.style.animation = 'fadeIn 0.4s ease-in-out';
-          }, 500); // Adjust based on your actual loading time
+          }, 500);
         }
       });
     </script>    <style>

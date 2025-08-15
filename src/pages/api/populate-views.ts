@@ -20,7 +20,6 @@ export const GET: APIRoute = async ({ request }) => {
 
     console.log('Fetching posts from WordPress...');
     
-    // Fetch all posts from WordPress
     const response = await fetchWithTimeout(
       `https://${domain}/wp-json/wp/v2/posts?per_page=50&_fields=slug,title`
     );
@@ -32,11 +31,9 @@ export const GET: APIRoute = async ({ request }) => {
     const posts = await response.json();
     console.log(`Found ${posts.length} posts from WordPress`);
 
-    // Insert each post slug into Supabase with random view counts for testing
     let successCount = 0;
     
     for (const post of posts) {
-      // Generate random view count between 50-500 for testing
       const randomViews = Math.floor(Math.random() * 450) + 50;
       
       const { error } = await supabase

@@ -1,0 +1,21 @@
+# ads.txt file for iquitos-tech.com
+# This file authorizes advertising systems to sell ad inventory on this website
+
+# Google AdSense
+google.com, pub-XXXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+
+# Google Ad Manager (if using)
+# google.com, pub-XXXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+
+# Other authorized ad networks (examples - replace with actual IDs)
+# facebook.com, XXXXXXXXXXXXXXXX, RESELLER, c3e20eee3f780d68
+# amazon-adsystem.com, XXXX, RESELLER, f5ab79cb980f11d1
+# pubmatic.com, XXXXX, RESELLER, 5d62403b186f2ace
+
+# Instructions:
+# Replace pub-XXXXXXXXXXXXXXXXX with your actual Google AdSense Publisher ID
+# You can find your Publisher ID in your AdSense account under Account > Account information
+# Format: google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0
+# 
+# If you use other ad networks, add them here following the format:
+# domain.com, publisher-id, DIRECT/RESELLER, ads-cert-id

@@ -2,20 +2,13 @@ import type { APIRoute } from 'astro';
 import { checkAdvancedRateLimit, createRateLimitResponse } from '../../lib/rate-limit.js';
 import { generateEnvironmentSecurityReport, validateEnvironmentVariables } from '../../lib/env-security.js';
 
-/**
- * Environment Security Report API
- * Provides security status of environment variables
- * Protected endpoint - requires proper authentication
- */
 export const GET: APIRoute = async ({ request, clientAddress }) => {
   try {
-    // Enhanced rate limiting for security endpoint
     const rateLimitResult = await checkAdvancedRateLimit(request, clientAddress);
     if (!rateLimitResult.allowed) {
       return createRateLimitResponse(rateLimitResult.resetTime || 60);
     }
 
-    // Simple authentication check - in production, use proper auth
     const authHeader = request.headers.get('authorization');
     const adminKey = import.meta.env.ADMIN_SECRET_KEY || process.env.ADMIN_SECRET_KEY;
     
@@ -31,7 +24,6 @@ export const GET: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    // Get current environment values for reporting
     const envValues = {
       'RESEND_API_KEY': import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY,
       'RECAPTCHA_SECRET_KEY': import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY,
@@ -44,10 +36,8 @@ export const GET: APIRoute = async ({ request, clientAddress }) => {
       'ADMIN_SECRET_KEY': import.meta.env.ADMIN_SECRET_KEY || process.env.ADMIN_SECRET_KEY
     };
 
-    // Generate comprehensive security report
     const report = generateEnvironmentSecurityReport(envValues);
     
-    // Add runtime security check
     const runtimeCheck = {
       timestamp: new Date().toISOString(),
       environment: import.meta.env.MODE || 'unknown',
@@ -87,13 +77,11 @@ export const GET: APIRoute = async ({ request, clientAddress }) => {
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
   try {
-    // Enhanced rate limiting
     const rateLimitResult = await checkAdvancedRateLimit(request, clientAddress);
     if (!rateLimitResult.allowed) {
       return createRateLimitResponse(rateLimitResult.resetTime || 60);
     }
 
-    // Authentication check
     const authHeader = request.headers.get('authorization');
     const adminKey = import.meta.env.ADMIN_SECRET_KEY || process.env.ADMIN_SECRET_KEY;
     
@@ -113,7 +101,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     const { action } = body;
 
     if (action === 'validate') {
-      // Get current environment values for validation
       const envValues = {
         'RESEND_API_KEY': import.meta.env.RESEND_API_KEY || process.env.RESEND_API_KEY,
         'RECAPTCHA_SECRET_KEY': import.meta.env.RECAPTCHA_SECRET_KEY || process.env.RECAPTCHA_SECRET_KEY,
@@ -126,7 +113,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
         'ADMIN_SECRET_KEY': import.meta.env.ADMIN_SECRET_KEY || process.env.ADMIN_SECRET_KEY
       };
 
-      // Run comprehensive validation
       const validation = validateEnvironmentVariables(envValues);
       
       return new Response(JSON.stringify({

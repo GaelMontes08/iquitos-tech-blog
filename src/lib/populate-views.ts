@@ -15,7 +15,6 @@ export async function populateViewsFromWordPress() {
   try {
     console.log('Fetching posts from WordPress...');
     
-    // Fetch all posts from WordPress
     const response = await fetchWithTimeout(
       `https://${domain}/wp-json/wp/v2/posts?per_page=100&_fields=slug`
     );
@@ -27,7 +26,6 @@ export async function populateViewsFromWordPress() {
     const posts = await response.json();
     console.log(`Found ${posts.length} posts from WordPress`);
 
-    // Insert each post slug into Supabase with 0 views (if it doesn't exist)
     const insertPromises = posts.map(async (post: any) => {
       const { error } = await supabase
         .from('Views')

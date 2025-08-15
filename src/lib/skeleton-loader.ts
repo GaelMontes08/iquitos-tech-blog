@@ -1,7 +1,3 @@
-/**
- * Dynamic skeleton loader utility for progressive content loading
- */
-
 export interface SkeletonConfig {
   selector: string;
   skeletonComponent: string;
@@ -20,45 +16,30 @@ export class SkeletonLoader {
     };
   }
   
-  /**
-   * Initialize skeleton loading for a page
-   */
   init(): void {
     const skeleton = document.getElementById('content-skeleton');
     const actualContent = document.getElementById('actual-content');
     
     if (!skeleton || !actualContent) return;
     
-    // Start with skeleton visible
     skeleton.style.display = 'block';
     actualContent.style.display = 'none';
     
-    // Load content progressively
     this.loadContent(skeleton, actualContent);
   }
   
-  /**
-   * Load content and replace skeleton
-   */
   private loadContent(skeleton: HTMLElement, actualContent: HTMLElement): void {
-    // Simulate content loading (replace with actual API calls)
     setTimeout(() => {
       this.showContent(skeleton, actualContent);
     }, this.config.loadingDelay);
   }
   
-  /**
-   * Show actual content with fade-in animation
-   */
   private showContent(skeleton: HTMLElement, actualContent: HTMLElement): void {
     skeleton.style.display = 'none';
     actualContent.style.display = 'block';
     actualContent.style.animation = `fadeIn ${this.config.fadeInDuration}ms ease-in-out`;
   }
   
-  /**
-   * Create transition skeleton for ViewTransitions
-   */
   static createTransitionSkeleton(): HTMLElement {
     const skeletonLoader = document.createElement('div');
     skeletonLoader.id = 'transition-skeleton';
@@ -97,7 +78,6 @@ export class SkeletonLoader {
   }
 }
 
-// Auto-initialize on page load
 if (typeof window !== 'undefined') {
   document.addEventListener('DOMContentLoaded', () => {
     const loader = new SkeletonLoader({

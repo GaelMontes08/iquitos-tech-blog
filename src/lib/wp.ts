@@ -14,7 +14,6 @@ if (!domain) {
   console.error('WP_DOMAIN environment variable is not set');
 }
 
-// Validate domain format
 const isValidDomain = (domain: string) => {
   const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$/;
   return domainRegex.test(domain);
@@ -30,7 +29,6 @@ if (!domain) {
 
 const apiUrl = `https://${domain}/wp-json/wp/v2`;
 
-// Add timeout and retry logic
 export const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 10000) => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -51,7 +49,6 @@ export const fetchWithTimeout = async (url: string, options: RequestInit = {}, t
   } catch (error: any) {
     clearTimeout(timeoutId);
     
-    // Log specific error types
     if (error.code === 'ENOTFOUND' || error.errno === -3008) {
       console.error(`DNS resolution failed for domain: ${domain}`);
       console.error('Check if the WordPress domain is correct and accessible');
@@ -83,7 +80,6 @@ export const getPageInfo = async (slug: string) => {
     const rawTitle = page.title?.rendered || 'Iquitos Tech - Tecnología y Gaming';
     const rawContent = page.content?.rendered || 'Iquitos Tech es tu fuente confiable de noticias sobre tecnología, videojuegos y cultura digital. Explora lo último del mundo tech.';
     
-    // Apply HTML entity decoding and title cleaning
     const title = cleanTitle(decodeHtmlEntities(rawTitle));
     const content = decodeHtmlEntities(rawContent);
     const date = page.date;
@@ -119,14 +115,11 @@ export const getPostInfo = async (slug: string) => {
     const rawTitle = post.title?.rendered || 'Post no encontrado';
     const rawContent = post.content?.rendered || '<p>Este post no está disponible en este momento.</p>';
     
-    // Apply HTML entity decoding and title cleaning
     const title = cleanTitle(decodeHtmlEntities(rawTitle));
     const date = post.date;
     const seo = post.yoast_head_json;
 
-    // Extract different sections using regex
     const extractSection = (content: string, sectionTitle: string) => {
-      // Match the section heading and capture content until the next h2 or end of string
       const regex = new RegExp(
         `<h2[^>]*>\\s*${sectionTitle}\\s*</h2>([\\s\\S]*?)(?=<h2[^>]*>|$)`,
         'i'
@@ -135,7 +128,6 @@ export const getPostInfo = async (slug: string) => {
       return match ? match[1].trim() : '';
     };
 
-    // Remove section from content
     const removeSection = (content: string, sectionTitle: string) => {
       const regex = new RegExp(
         `<h2[^>]*>\\s*${sectionTitle}\\s*</h2>[\\s\\S]*?(?=<h2[^>]*>|$)`,
@@ -144,11 +136,9 @@ export const getPostInfo = async (slug: string) => {
       return content.replace(regex, '').trim();
     };
 
-    // Extract sections
     const puntosClave = extractSection(rawContent, 'Puntos clave');
     const faqs = extractSection(rawContent, 'Preguntas frecuentes');
     
-    // Remove extracted sections from main content
     let content = rawContent;
     if (puntosClave) {
       content = removeSection(content, 'Puntos clave');
@@ -209,7 +199,6 @@ export const getLatestsPosts = async ({ perPage = 10 }: { perPage?: number } = {
       return getFallbackPosts();
     }
     
-    // Add cache busting parameter and exclude category 25
     const cacheBuster = Date.now();
     const url = `${apiUrl}/posts?per_page=${perPage}&categories_exclude=25&_embed&t=${cacheBuster}`;
     console.log('Fetching posts from:', url);
@@ -231,9 +220,8 @@ export const getLatestsPosts = async ({ perPage = 10 }: { perPage?: number } = {
         const rawTitle = post.title?.rendered || 'Sin título';
         const rawExcerpt = post.excerpt?.rendered || '';
         
-        // Apply HTML entity decoding and title cleaning
         const title = cleanTitle(decodeHtmlEntities(rawTitle));
-        const excerpt = decodeHtmlEntities(rawExcerpt.replace(/<[^>]*>/g, '')); // Also remove HTML tags from excerpt
+        const excerpt = decodeHtmlEntities(rawExcerpt.replace(/<[^>]*>/g, ''));
         
         const content = post.content?.rendered || '';
         const { date, slug } = post;
@@ -268,7 +256,6 @@ export const getLatestsPosts = async ({ perPage = 10 }: { perPage?: number } = {
   }
 }
 
-// Get all posts for sitemap generation (optimized for high-volume sites)
 export const getAllPosts = async (maxPosts = 500) => {
   try {
     if (!domain) {
@@ -278,7 +265,7 @@ export const getAllPosts = async (maxPosts = 500) => {
 
     const posts = [];
     let page = 1;
-    const perPage = 100; // WordPress API max per page is 100
+    const perPage = 100;
 
     while (posts.length < maxPosts) {
       const response = await fetchWithTimeout(
@@ -287,7 +274,6 @@ export const getAllPosts = async (maxPosts = 500) => {
       
       if (!response.ok) {
         if (response.status === 400 && page > 1) {
-          // No more pages
           break;
         }
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -300,7 +286,6 @@ export const getAllPosts = async (maxPosts = 500) => {
 
       posts.push(...pagePosts);
       
-      // If we got less than perPage posts, we've reached the end
       if (pagePosts.length < perPage) {
         break;
       }
@@ -308,14 +293,13 @@ export const getAllPosts = async (maxPosts = 500) => {
       page++;
     }
 
-    return posts.slice(0, maxPosts); // Limit to most recent posts for performance
+    return posts.slice(0, maxPosts);
   } catch (error) {
     console.error('Error in getAllPosts:', error);
     return [];
   }
 };
 
-// Get all categories for sitemap generation
 export const getAllCategories = async () => {
   try {
     if (!domain) {
@@ -339,7 +323,6 @@ export const getAllCategories = async () => {
   }
 };
 
-// Fallback posts for when WordPress is unavailable
 const getFallbackPosts = () => {
   return [
     {
@@ -366,7 +349,6 @@ const getFallbackPosts = () => {
       authorAvatar: '/author.jpg',
       categories: [{ name: 'Gaming' }]
     },
-    // Add more fallback posts as needed...
   ];
 };
 
@@ -388,34 +370,25 @@ export const testConnection = async () => {
   }
 };
 
-/**
- * Cleans titles by removing redundant domain references
- */
 const cleanTitle = (title: string): string => {
   return title
-    // Remove complete domain references first (most specific to least specific)
     .replace(/\s*[-|–—]\s*cms-iquitostech\.com/gi, '')
     .replace(/\s*\|\s*cms-iquitostech\.com/gi, '')
     .replace(/\s*[-|–—]\s*iquitostech\.com/gi, '')
     .replace(/\s*\|\s*iquitostech\.com/gi, '')
-    // Remove any remaining "- cms" or "| cms" patterns
     .replace(/\s*[-|–—]\s*cms\s*$/gi, '')
     .replace(/\s*\|\s*cms\s*$/gi, '')
-    // Remove any trailing separators that might be left
     .replace(/\s*[-|–—]\s*$/, '')
     .replace(/\s*\|\s*$/, '')
     .trim();
 };
 
-  // More comprehensive HTML entity decoder
 const decodeHtmlEntities = (text: string): string => {
   if (typeof document !== 'undefined') {
-    // Browser environment
     const textarea = document.createElement('textarea');
     textarea.innerHTML = text;
     return textarea.value;
   } else {
-    // Server-side fallback
     const entities: Record<string, string> = {
       '&amp;': '&',
       '&lt;': '<',

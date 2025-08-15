@@ -1,8 +1,3 @@
-/**
- * Environment Security Manager
- * Handles secure loading, validation, and management of API keys and environment variables
- */
-
 interface EnvironmentConfig {
   name: string;
   required: boolean;
@@ -14,11 +9,7 @@ interface EnvironmentConfig {
   description: string;
 }
 
-/**
- * Environment variable configuration registry
- */
 const ENV_CONFIG: Record<string, EnvironmentConfig> = {
-  // WordPress Configuration
   WP_DOMAIN: {
     name: 'WP_DOMAIN',
     required: true,
@@ -28,7 +19,6 @@ const ENV_CONFIG: Record<string, EnvironmentConfig> = {
     description: 'WordPress CMS domain'
   },
 
-  // Database Configuration
   PUBLIC_SUPABASE_URL: {
     name: 'PUBLIC_SUPABASE_URL',
     required: true,
@@ -47,7 +37,6 @@ const ENV_CONFIG: Record<string, EnvironmentConfig> = {
     description: 'Supabase anonymous key'
   },
 
-  // Email Service
   RESEND_API_KEY: {
     name: 'RESEND_API_KEY',
     required: true,
@@ -64,7 +53,6 @@ const ENV_CONFIG: Record<string, EnvironmentConfig> = {
     description: 'Resend audience ID for newsletters'
   },
 
-  // reCAPTCHA Configuration
   PUBLIC_RECAPTCHA_SITE_KEY: {
     name: 'PUBLIC_RECAPTCHA_SITE_KEY',
     required: true,
@@ -82,7 +70,6 @@ const ENV_CONFIG: Record<string, EnvironmentConfig> = {
     description: 'reCAPTCHA v3 secret key'
   },
 
-  // Google OAuth
   PUBLIC_GOOGLE_CLIENT_ID: {
     name: 'PUBLIC_GOOGLE_CLIENT_ID',
     required: false,
@@ -100,7 +87,15 @@ const ENV_CONFIG: Record<string, EnvironmentConfig> = {
     description: 'Google OAuth client secret'
   },
 
-  // Application Configuration
+  ADSENSE_PUBLISHER_ID: {
+    name: 'ADSENSE_PUBLISHER_ID',
+    required: false,
+    type: 'string',
+    sensitive: false,
+    pattern: /^pub-[0-9]{16}$/,
+    description: 'Google AdSense Publisher ID'
+  },
+
   MODE: {
     name: 'MODE',
     required: false,
@@ -118,9 +113,6 @@ interface ValidationResult {
   masked: Record<string, string>;
 }
 
-/**
- * Secure Environment Manager - Optimized for Performance
- */
 export class EnvironmentSecurity {
   private static instance: EnvironmentSecurity;
   private validationCache = new Map<string, ValidationResult>();
@@ -129,7 +121,6 @@ export class EnvironmentSecurity {
   private isInitialized = false;
 
   private constructor() {
-    // Pre-load and validate critical environment variables at startup
     this.initializeCriticalEnvVars();
   }
 
@@ -140,9 +131,6 @@ export class EnvironmentSecurity {
     return EnvironmentSecurity.instance;
   }
 
-  /**
-   * Pre-load critical environment variables for fast access
-   */
   private initializeCriticalEnvVars(): void {
     const criticalVars = [
       'RESEND_API_KEY',
@@ -155,7 +143,6 @@ export class EnvironmentSecurity {
       'WORDPRESS_API_URL'
     ];
 
-    // Pre-validate and cache all critical environment variables
     for (const key of criticalVars) {
       const value = this.getEnvironmentValue(key);
       const config = ENV_CONFIG[key];
@@ -166,18 +153,13 @@ export class EnvironmentSecurity {
         console.warn(`🔒 WARNING: Environment variable ${key} format may be invalid`);
       }
       
-      // Cache for fast access
       this.envCache.set(key, value);
     }
 
-    // Pre-validate startup configuration
     this.validateStartupConfiguration();
     this.isInitialized = true;
   }
 
-  /**
-   * One-time startup validation to catch issues early
-   */
   private validateStartupConfiguration(): void {
     const hasResend = this.envCache.get('RESEND_API_KEY');
     const hasRecaptcha = this.envCache.get('RECAPTCHA_SECRET_KEY');
@@ -191,9 +173,6 @@ export class EnvironmentSecurity {
     console.log(`   OAuth: ${hasGoogle ? '✅' : '⚠️'}`);
   }
 
-  /**
-   * Validate all environment variables
-   */
   validateEnvironment(): ValidationResult {
     const cacheKey = 'full_validation';
     
@@ -221,19 +200,13 @@ export class EnvironmentSecurity {
       result.masked[key] = this.maskSensitiveValue(value, config.sensitive);
     }
 
-    // Cache result for 5 minutes
     this.validationCache.set(cacheKey, result);
     setTimeout(() => this.validationCache.delete(cacheKey), 5 * 60 * 1000);
 
     return result;
   }
 
-  /**
-   * Fast access to validated environment variable with caching
-   * Performance optimized for frequent access
-   */
   validateSecureEnv(key: string, value?: string): string | undefined {
-    // Use cached value if available (critical vars are pre-cached)
     if (this.envCache.has(key)) {
       const cachedValue = this.envCache.get(key);
       return cachedValue;
@@ -242,7 +215,6 @@ export class EnvironmentSecurity {
     const config = ENV_CONFIG[key];
     
     if (!config) {
-      // Only warn once per unknown key
       if (!this.validationCache.has(`unknown_${key}`)) {
         console.warn(`🔒 Unknown environment variable requested: ${key}`);
         this.validationCache.set(`unknown_${key}`, { isValid: false, errors: [], warnings: [], masked: {} });
@@ -250,24 +222,18 @@ export class EnvironmentSecurity {
       return undefined;
     }
 
-    // For non-critical vars, do lightweight validation
     const actualValue = value || this.getEnvironmentValue(key);
     
-    // Quick validation for production performance
     if (!actualValue && config.required) {
       console.error(`🔒 Required environment variable ${key} is missing`);
       return undefined;
     }
 
-    // Cache the result for future calls
     this.envCache.set(key, actualValue);
     
     return actualValue;
   }
 
-  /**
-   * Validate environment variables with provided values
-   */
   validateEnvironmentValues(envValues: Record<string, string | undefined>): ValidationResult {
     const result: ValidationResult = {
       isValid: true,
@@ -292,9 +258,6 @@ export class EnvironmentSecurity {
     return result;
   }
 
-  /**
-   * Generate security report for provided environment values
-   */
   generateSecurityReportForValues(envValues: Record<string, string | undefined>): {
     summary: string;
     requiredVariables: { configured: number; total: number };
@@ -317,7 +280,6 @@ export class EnvironmentSecurity {
     const issues: string[] = [];
     const recommendations: string[] = [];
 
-    // Check for missing required variables
     const missingRequired = Object.entries(ENV_CONFIG)
       .filter(([key, config]) => config.required && !envValues[key])
       .map(([key]) => key);
@@ -327,14 +289,12 @@ export class EnvironmentSecurity {
       recommendations.push('Configure all required environment variables');
     }
 
-    // Check for development mode in production
     const mode = envValues['MODE'];
     if (mode === 'development' && this.isProduction()) {
       issues.push('Application running in development mode in production');
       recommendations.push('Set MODE=production for production deployments');
     }
 
-    // Check for weak keys
     if (validation.warnings.some(w => w.includes('weak'))) {
       issues.push('Weak API keys detected');
       recommendations.push('Regenerate API keys with stronger entropy');
@@ -353,16 +313,10 @@ export class EnvironmentSecurity {
     };
   }
 
-  /**
-   * Get environment variable securely
-   */
   getSecureEnv(key: string): string | undefined {
     return this.validateSecureEnv(key, this.getEnvironmentValue(key));
   }
 
-  /**
-   * Check if all required environment variables are set
-   */
   checkRequiredVariables(): { missing: string[], invalid: string[] } {
     const missing: string[] = [];
     const invalid: string[] = [];
@@ -385,9 +339,6 @@ export class EnvironmentSecurity {
     return { missing, invalid };
   }
 
-  /**
-   * Generate environment security report
-   */
   generateSecurityReport(): {
     summary: string;
     requiredVariables: { configured: number; total: number };
@@ -409,25 +360,21 @@ export class EnvironmentSecurity {
     const issues: string[] = [];
     const recommendations: string[] = [];
 
-    // Check for hardcoded keys in code
     if (validation.errors.some(e => e.includes('hardcoded'))) {
       issues.push('Hardcoded API keys detected in source code');
       recommendations.push('Move all API keys to environment variables');
     }
 
-    // Check for weak keys
     if (validation.warnings.some(w => w.includes('weak'))) {
       issues.push('Weak API keys detected');
       recommendations.push('Regenerate API keys with stronger entropy');
     }
 
-    // Check for missing required variables
     if (required.missing.length > 0) {
       issues.push(`Missing required environment variables: ${required.missing.join(', ')}`);
       recommendations.push('Configure all required environment variables');
     }
 
-    // Check for development mode in production
     const mode = this.getEnvironmentValue('MODE');
     if (mode === 'development' && this.isProduction()) {
       issues.push('Application running in development mode in production');
@@ -447,13 +394,8 @@ export class EnvironmentSecurity {
     };
   }
 
-  /**
-   * Private helper methods
-   */
   private getEnvironmentValue(key: string): string | undefined {
-    // In Astro server-side context, use the passed value or fallback
-    // This function should be called with values from import.meta.env
-    return undefined; // Placeholder - values should be passed to validation functions
+    return undefined;
   }
 
   private validateVariable(key: string, value: string | undefined, config: EnvironmentConfig): ValidationResult {
@@ -464,7 +406,6 @@ export class EnvironmentSecurity {
       masked: {}
     };
 
-    // Check if required variable is missing
     if (config.required && !value) {
       result.isValid = false;
       result.errors.push(`Required environment variable ${key} is missing`);
@@ -472,10 +413,9 @@ export class EnvironmentSecurity {
     }
 
     if (!value) {
-      return result; // Optional variable not set
+      return result;
     }
 
-    // Validate type and format
     switch (config.type) {
       case 'url':
         if (!this.isValidUrl(value)) {
@@ -503,13 +443,11 @@ export class EnvironmentSecurity {
         break;
     }
 
-    // Validate pattern
     if (config.pattern && !config.pattern.test(value)) {
       result.isValid = false;
       result.errors.push(`${key} does not match required format`);
     }
 
-    // Security checks for sensitive variables
     if (config.sensitive) {
       if (this.isWeakKey(value)) {
         result.warnings.push(`${key} appears to be a weak key`);
@@ -541,8 +479,8 @@ export class EnvironmentSecurity {
     const weakPatterns = [
       /^(test|demo|example|sample)/i,
       /^(123|abc|password)/i,
-      /(.)\1{4,}/, // Repeated characters
-      /^[a-zA-Z0-9]{1,10}$/ // Too short
+      /(.)\1{4,}/,
+      /^[a-zA-Z0-9]{1,10}$/
     ];
     
     return weakPatterns.some(pattern => pattern.test(key));
@@ -578,33 +516,17 @@ export class EnvironmentSecurity {
   }
 }
 
-/**
- * Singleton instance for global access
- */
 export const envSecurity = EnvironmentSecurity.getInstance();
 
-/**
- * Performance-optimized utility functions for environment variable access
- */
-
-/**
- * Fast environment variable access with minimal validation overhead
- * Use this for frequently accessed variables in API routes
- */
 export function getSecureEnv(key: string, envValue?: string): string | undefined {
-  // Fast path: return pre-cached critical vars immediately
   const instance = EnvironmentSecurity.getInstance();
   if (instance['envCache'].has(key)) {
     return instance['envCache'].get(key);
   }
 
-  // Fallback to validation for non-cached vars
   return envSecurity.validateSecureEnv(key, envValue);
 }
 
-/**
- * Full validation version - use only when comprehensive validation is needed
- */
 export function getSecureEnvWithValidation(key: string, envValue?: string): string | undefined {
   const config = ENV_CONFIG[key];
   if (!config) return undefined;

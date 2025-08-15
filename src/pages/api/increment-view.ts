@@ -3,7 +3,6 @@ import { incrementPostViewCount } from '../../lib/views';
 import { checkAdvancedRateLimit, createRateLimitResponse, addRateLimitHeaders } from '../../lib/rate-limit.js';
 
 export const POST: APIRoute = async ({ request }) => {
-  // Apply rate limiting first  
   const rateLimit = checkAdvancedRateLimit(request, 'views');
   
   if (!rateLimit.allowed) {
@@ -23,10 +22,8 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Get the user agent for additional bot detection
     const userAgent = request.headers.get('user-agent') || '';
     
-    // Server-side bot detection
     const botPatterns = [
       'googlebot', 'bingbot', 'slurp', 'duckduckbot', 'baiduspider',
       'yandexbot', 'facebookexternalhit', 'twitterbot', 'linkedinbot',
@@ -51,7 +48,6 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
-    // Increment the view count
     console.log(`📊 Incrementing view count for post: ${slug}`);
     const newViewCount = await incrementPostViewCount(slug);
     console.log(`📊 New view count for ${slug}: ${newViewCount}`);
@@ -66,7 +62,6 @@ export const POST: APIRoute = async ({ request }) => {
       },
     });
 
-    // Add rate limit headers if available
     if (rateLimit.remaining !== undefined && rateLimit.resetTime) {
       return addRateLimitHeaders(successResponse, rateLimit.remaining, rateLimit.resetTime);
     }

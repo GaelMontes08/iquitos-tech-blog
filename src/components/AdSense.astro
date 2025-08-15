@@ -1,0 +1,119 @@
+---
+
+interface Props {
+  adSlot?: string;
+  adFormat?: 'auto' | 'rectangle' | 'vertical' | 'horizontal' | 'leaderboard' | 'banner';
+  responsive?: boolean;
+  className?: string;
+  style?: string;
+  testMode?: boolean;
+}
+
+const { 
+  adSlot = 'auto',
+  adFormat = 'auto', 
+  responsive = true,
+  className = '',
+  style = '',
+  testMode = false
+} = Astro.props;
+
+const ADSENSE_PUBLISHER_ID = import.meta.env.ADSENSE_PUBLISHER_ID;
+
+const isAdSenseEnabled = ADSENSE_PUBLISHER_ID && !testMode;
+
+const adId = `adsense-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+{isAdSenseEnabled ? (
+  <div class={`adsense-container ${className}`} style={style}>
+    <ins 
+      class="adsbygoogle"
+      style="display:block"
+      data-ad-client={ADSENSE_PUBLISHER_ID}
+      data-ad-slot={adSlot}
+      data-ad-format={adFormat}
+      data-full-width-responsive={responsive ? "true" : "false"}
+      id={adId}
+    ></ins>
+    
+    <script>
+      if (!window.adsbygoogle) {
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + {JSON.stringify(ADSENSE_PUBLISHER_ID)};
+        script.crossOrigin = 'anonymous';
+        document.head.appendChild(script);
+        
+        window.adsbygoogle = window.adsbygoogle || [];
+      }
+      
+      // Push ad configuration
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (e) {
+        console.warn('AdSense initialization failed:', e);
+      }
+    </script>
+  </div>
+) : (
+  <div class={`adsense-placeholder ${className}`} style={`background: #f0f0f0; border: 2px dashed #ccc; padding: 20px; text-align: center; ${style}`}>
+    <p style="color: #666; margin: 0;">
+      {testMode ? '📢 AdSense Test Mode' : '📢 AdSense Not Configured'}
+    </p>
+    <small style="color: #999;">
+      {testMode ? 'Set testMode=false to show real ads' : 'Configure ADSENSE_PUBLISHER_ID environment variable'}
+    </small>
+  </div>
+)}
+
+<style>
+  .adsense-container {
+    margin: 1rem 0;
+    text-align: center;
+  }
+
+  .adsense-placeholder {
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    font-family: system-ui, sans-serif;
+  }
+
+  .adsbygoogle {
+    margin: 0 auto;
+  }
+
+  @media (prefers-reduced-data: reduce) {
+    .adsense-container {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .adsense-container ins {
+      animation: none !important;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (navigator.doNotTrack === '1') {
+      console.info('AdSense: Respecting Do Not Track preference');
+      return;
+    }
+    
+    setTimeout(() => {
+      const ads = document.querySelectorAll('.adsbygoogle');
+      ads.forEach(ad => {
+        if (ad.innerHTML.length === 0 && ad.clientHeight === 0) {
+          console.info('AdSense: Ad blocker detected or ads failed to load');
+        }
+      });
+    }, 3000);
+  });
+</script>

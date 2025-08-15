@@ -1,6 +1,5 @@
 import { supabase } from './supabase.js';
 
-// Types for our newsletter system
 export interface NewsletterSubscriber {
   id?: string;
   email: string;
@@ -38,12 +37,8 @@ export interface NewsletterStats {
   subscribersLastMonth: number;
 }
 
-// Newsletter Database Service
 export class NewsletterDB {
-  
-  /**
-   * Check if an email is already subscribed
-   */
+
   static async isEmailSubscribed(email: string): Promise<boolean> {
     try {
       const { data, error } = await supabase.rpc('email_already_subscribed', {
@@ -62,9 +57,6 @@ export class NewsletterDB {
     }
   }
 
-  /**
-   * Get recent subscription attempts by IP address (for rate limiting)
-   */
   static async getRecentAttemptsByIP(ipAddress: string, hoursBack: number = 1): Promise<number> {
     try {
       const { data, error } = await supabase.rpc('get_recent_attempts_by_ip', {
@@ -84,15 +76,10 @@ export class NewsletterDB {
     }
   }
 
-  /**
-   * Add a new newsletter subscriber
-   */
   static async addSubscriber(subscriber: NewsletterSubscriber): Promise<{ success: boolean; data?: NewsletterSubscriber; error?: string }> {
     try {
-      // Clean email
       const cleanEmail = subscriber.email.toLowerCase().trim();
       
-      // Check if already subscribed
       const alreadySubscribed = await this.isEmailSubscribed(cleanEmail);
       if (alreadySubscribed) {
         return {
@@ -101,7 +88,6 @@ export class NewsletterDB {
         };
       }
 
-      // Insert new subscriber
       const { data, error } = await supabase
         .from('newsletter_subscribers')
         .insert({
@@ -147,9 +133,6 @@ export class NewsletterDB {
     }
   }
 
-  /**
-   * Log a subscription attempt (for analytics and rate limiting)
-   */
   static async logAttempt(attempt: SubscriptionAttempt): Promise<void> {
     try {
       await supabase
@@ -164,13 +147,9 @@ export class NewsletterDB {
         });
     } catch (error) {
       console.error('Error logging subscription attempt:', error);
-      // Don't throw error - logging is not critical
     }
   }
 
-  /**
-   * Get newsletter statistics
-   */
   static async getStats(): Promise<NewsletterStats | null> {
     try {
       const { data, error } = await supabase
@@ -198,9 +177,6 @@ export class NewsletterDB {
     }
   }
 
-  /**
-   * Confirm a subscription (for email confirmation flow)
-   */
   static async confirmSubscription(token: string): Promise<{ success: boolean; error?: string }> {
     try {
       const { data, error } = await supabase
@@ -233,9 +209,6 @@ export class NewsletterDB {
     }
   }
 
-  /**
-   * Unsubscribe from newsletter
-   */
   static async unsubscribe(email: string): Promise<{ success: boolean; error?: string }> {
     try {
       const { data, error } = await supabase

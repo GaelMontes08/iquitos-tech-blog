@@ -1,0 +1,126 @@
+---
+import AdSense from '@/components/AdSense.astro';
+import { getAdsForLocation } from '@/lib/adsense.js';
+
+const headerAds = getAdsForLocation('header');
+const sidebarAds = getAdsForLocation('sidebar');
+const contentAds = getAdsForLocation('content');
+const footerAds = getAdsForLocation('footer');
+---
+
+{headerAds.length > 0 && (
+  <section class="header-ads">
+    {headerAds.map(ad => (
+      <AdSense
+        adSlot={ad.slot}
+        adFormat={ad.format}
+        responsive={ad.responsive}
+        className="header-ad"
+      />
+    ))}
+  </section>
+)}
+
+<div class="content-layout">
+  <main class="main-content">
+    <h1>Contenido Principal</h1>
+    
+    {contentAds.length > 0 && (
+      <div class="content-ad-wrapper">
+        <AdSense
+          adSlot={contentAds[0].slot}
+          adFormat={contentAds[0].format}
+          responsive={contentAds[0].responsive}
+          className="content-ad"
+        />
+      </div>
+    )}
+
+    <p>Más contenido continúa aquí...</p>
+  </main>
+  
+  <aside class="sidebar">
+    <h3>Contenido de la Barra Lateral</h3>
+
+    {sidebarAds.length > 0 && (
+      <div class="sidebar-ads">
+        {sidebarAds.map(ad => (
+          <AdSense
+            adSlot={ad.slot}
+            adFormat={ad.format}
+            responsive={ad.responsive}
+            className="sidebar-ad"
+            style="margin: 1rem 0;"
+          />
+        ))}
+      </div>
+    )}
+  </aside>
+</div>
+
+{footerAds.length > 0 && (
+  <section class="footer-ads">
+    {footerAds.map(ad => (
+      <AdSense
+        adSlot={ad.slot}
+        adFormat={ad.format}
+        responsive={ad.responsive}
+        className="footer-ad"
+      />
+    ))}
+  </section>
+)}
+
+<style>
+  .content-layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  .header-ads {
+    text-align: center;
+    margin: 1rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .content-ad-wrapper {
+    margin: 2rem 0;
+    padding: 1rem 0;
+  }
+  
+  .sidebar-ads {
+    margin-top: 2rem;
+  }
+  
+  .footer-ads {
+    margin-top: 3rem;
+    padding: 2rem 0;
+    border-top: 1px solid #eee;
+    text-align: center;
+  }
+  
+  @media (max-width: 768px) {
+    .content-layout {
+      grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+      order: -1;
+    }
+  }
+  
+  @media print {
+    .header-ads,
+    .content-ad-wrapper,
+    .sidebar-ads,
+    .footer-ads {
+      display: none !important;
+    }
+  }
+</style>

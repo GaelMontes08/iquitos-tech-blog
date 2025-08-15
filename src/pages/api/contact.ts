@@ -12,12 +12,10 @@ import {
   handleExternalServiceError
 } from '../../lib/secure-error-handler.js';
 
-// Secure environment variable loading - cached at startup for performance
 const RECAPTCHA_SECRET_KEY = getSecureEnv('RECAPTCHA_SECRET_KEY');
 const RESEND_API_KEY = getSecureEnv('RESEND_API_KEY');
 const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
-// Validate critical API keys at startup
 if (!RECAPTCHA_SECRET_KEY) {
   console.error('🔒 CRITICAL: RECAPTCHA_SECRET_KEY not configured or invalid');
 }
@@ -26,10 +24,8 @@ if (!RESEND_API_KEY) {
   console.error('🔒 CRITICAL: RESEND_API_KEY not configured or invalid');
 }
 
-// Initialize Resend securely
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
-// Rate limiting configuration - 1 contact per day
 const RATE_LIMIT_ATTEMPTS = 1;
 const RATE_LIMIT_HOURS = 24;
 
@@ -58,7 +54,6 @@ async function checkContactRateLimit(ipAddress: string): Promise<number> {
   try {
     console.log(`🔍 Checking rate limit for IP: ${ipAddress}, time window: ${RATE_LIMIT_HOURS} hours`);
 
-    // Try RPC function first (preferred method)
     const { data: rpcData, error: rpcError } = await supabase.rpc('get_recent_contact_attempts_by_ip', {
       ip_addr: ipAddress,
       hours_back: RATE_LIMIT_HOURS
@@ -72,7 +67,6 @@ async function checkContactRateLimit(ipAddress: string): Promise<number> {
 
     console.warn('⚠️ RPC function failed, trying direct query:', rpcError.message);
 
-    // Fallback to direct query
     const hoursAgo = new Date();
     hoursAgo.setHours(hoursAgo.getHours() - RATE_LIMIT_HOURS);
 
@@ -85,7 +79,6 @@ async function checkContactRateLimit(ipAddress: string): Promise<number> {
     if (directError) {
       console.error('❌ Both RPC and direct query failed:', directError);
       console.error('Please run the SQL script: supabase-contact-table.sql');
-      // Return 999 to indicate error - this will trigger rate limiting as a safety measure
       return 999;
     }
 
@@ -94,7 +87,6 @@ async function checkContactRateLimit(ipAddress: string): Promise<number> {
     return attemptCount;
   } catch (error) {
     console.error('❌ Rate limit check exception:', error);
-    // Return 999 to indicate error - this will trigger rate limiting as a safety measure
     return 999;
   }
 }
@@ -103,7 +95,6 @@ async function logContactAttempt(attempt: ContactAttempt): Promise<boolean> {
   try {
     console.log(`📝 Logging contact attempt: ${attempt.email}, success: ${attempt.success}, IP: ${attempt.ipAddress}`);
     
-    // Use RPC function like newsletter system (bypasses RLS)
     const { data, error } = await supabase.rpc('log_contact_attempt', {
       user_name: attempt.name || '',
       user_email: attempt.email.toLowerCase().trim(),
@@ -134,9 +125,8 @@ async function logContactAttempt(attempt: ContactAttempt): Promise<boolean> {
 }
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
-  // Apply fast rate limiting first
   const clientId = getClientId(request, clientAddress);
-  const rateLimit = checkFastRateLimit(clientId, 5, 60 * 1000); // 5 requests per minute
+  const rateLimit = checkFastRateLimit(clientId, 5, 60 * 1000);
   
   if (!rateLimit.allowed) {
     console.log(`🚫 Contact form rate limited for client: ${clientId}`);
@@ -148,7 +138,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   
   console.log(`📞 New contact form submission from IP: ${ipAddress}`);
   
-  // Check if Supabase is configured
   if (!supabase) {
     const errorContext = {
       endpoint: '/api/contact',
@@ -164,23 +153,19 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   }
   
   try {
-    // Parse form data
     const formData = await request.formData();
     
-    // Extract and sanitize form data
     const rawName = formData.get('name') as string;
     const rawEmail = formData.get('email') as string;
     const rawSubject = formData.get('subject') as string;
     const rawMessage = formData.get('message') as string;
     const recaptchaResponse = formData.get('g-recaptcha-response') as string;
 
-    // Sanitize inputs
     const name = sanitizeName(rawName, 100);
     const email = sanitizeEmail(rawEmail);
     const subject = sanitizeUserInput(rawSubject, { maxLength: 200, allowHtml: false, allowNewlines: false });
     const message = sanitizeUserInput(rawMessage, { maxLength: 5000, allowHtml: false, allowNewlines: true });
 
-    // Validate required fields
     if (!name || !email || !subject || !message) {
       const errorContext = {
         endpoint: '/api/contact',
@@ -201,7 +186,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       return handleValidationError('Todos los campos son obligatorios.', errorContext);
     }
 
-    // Validate field lengths after sanitization
     if (name.length < 2) {
       await logContactAttempt({
         email,
@@ -242,7 +226,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    // Validate email format (sanitizeEmail already validates, but double-check)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       await logContactAttempt({
@@ -264,7 +247,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    // Check rate limiting - 1 contact per day
     const recentAttempts = await checkContactRateLimit(ipAddress);
     if (recentAttempts >= RATE_LIMIT_ATTEMPTS) {
       await logContactAttempt({
@@ -288,7 +270,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    // Verify reCAPTCHA
     if (!recaptchaResponse) {
       await logContactAttempt({
         email,
@@ -309,7 +290,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    // Verify reCAPTCHA with Google
     const recaptchaVerification = await fetch(RECAPTCHA_VERIFY_URL, {
       method: 'POST',
       headers: {
@@ -342,7 +322,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    // For reCAPTCHA v3, check the score (0.0 to 1.0, higher is better)
     if (recaptchaResult.score !== undefined) {
       if (recaptchaResult.score < 0.5) {
         console.log('reCAPTCHA score too low:', recaptchaResult.score);
@@ -366,7 +345,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
         });
       }
       
-      // Also check if the action matches
       if (recaptchaResult.action && recaptchaResult.action !== 'contact_form') {
         console.log('reCAPTCHA action mismatch:', recaptchaResult.action);
         
@@ -392,7 +370,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       console.log('reCAPTCHA v3 verification successful. Score:', recaptchaResult.score);
     }
 
-    // Log the contact form submission
     console.log('📧 New contact form submission:', {
       name,
       email,
@@ -402,7 +379,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       ip: request.headers.get('x-forwarded-for') || 'unknown'
     });
 
-    // Send email using Resend
     if (resend) {
       try {
         const { data, error } = await resend.emails.send({
@@ -506,13 +482,11 @@ Para responder, simplemente responde a este email.
         
       } catch (emailError) {
         console.error('❌ Resend email error:', emailError);
-        // Don't fail the entire request if email fails, just log it
       }
     } else {
       console.warn('⚠️ Resend API key not configured, email not sent');
     }
 
-    // Log successful contact attempt
     await logContactAttempt({
       email,
       ipAddress,
@@ -522,7 +496,6 @@ Para responder, simplemente responde a este email.
       userAgent
     });
 
-    // Return success response with rate limit headers
     const successResponse = new Response(JSON.stringify({
       success: true,
       message: 'Mensaje enviado correctamente. Te responderemos pronto.'
@@ -538,7 +511,6 @@ Para responder, simplemente responde a este email.
     return successResponse;
 
   } catch (error) {
-    // Create error context for secure logging
     const errorContext = {
       endpoint: '/api/contact',
       ip: clientId,
@@ -546,7 +518,6 @@ Para responder, simplemente responde a este email.
       requestId: `contact_${Date.now()}`
     };
 
-    // Log error attempt securely (without sensitive data)
     try {
       await logContactAttempt({
         email: 'error_occurred',
@@ -556,14 +527,12 @@ Para responder, simplemente responde a este email.
         userAgent: getUserAgent(request)
       });
     } catch (logError) {
-      // Log the logging error securely
       console.error('🚨 Failed to log contact attempt:', {
         requestId: errorContext.requestId,
         timestamp: new Date().toISOString()
       });
     }
     
-    // Return secure error response
     if (error instanceof Error && error.message.includes('duplicate')) {
       return handleValidationError('Duplicate submission detected', errorContext);
     }
@@ -576,7 +545,6 @@ Para responder, simplemente responde a este email.
       return secureErrorHandler.handleError(error, 'TIMEOUT_ERROR', errorContext, 408);
     }
 
-    // Default secure error response
     const errorToHandle = error instanceof Error ? error : new Error(String(error));
     return secureErrorHandler.handleError(errorToHandle, 'INTERNAL_SERVER_ERROR', errorContext, 500);
   }

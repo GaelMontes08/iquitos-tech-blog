@@ -1,18 +1,11 @@
-/**
- * Rate Limiting Monitoring API
- * Provides statistics about current rate limiting status
- * For development and monitoring purposes only
- */
 import type { APIRoute } from 'astro';
 import { getRateLimitStats } from '../../lib/rate-limit.js';
 
 export const GET: APIRoute = async ({ request }) => {
   try {
-    // Only allow access in development mode or from admin IPs
     const isDevelopment = import.meta.env.MODE === 'development';
     const userAgent = request.headers.get('user-agent') || '';
     
-    // Basic security check
     if (!isDevelopment && !userAgent.includes('admin')) {
       return new Response(JSON.stringify({ 
         error: 'Access denied' 

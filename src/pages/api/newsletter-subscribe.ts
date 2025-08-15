@@ -12,15 +12,12 @@ import {
   handleExternalServiceError
 } from '../../lib/secure-error-handler.js';
 
-// Secure environment variable loading - cached at startup for performance
 const RESEND_API_KEY = getSecureEnv('RESEND_API_KEY');
 const RECAPTCHA_SECRET_KEY = getSecureEnv('RECAPTCHA_SECRET_KEY');
 const RECAPTCHA_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
 
-// Resend audience ID for newsletter subscribers
 const RESEND_AUDIENCE_ID = getSecureEnv('RESEND_AUDIENCE_ID');
 
-// Validate critical API keys at startup
 if (!RESEND_API_KEY) {
   console.error('🔒 CRITICAL: RESEND_API_KEY not configured or invalid');
 }
@@ -29,12 +26,10 @@ if (!RECAPTCHA_SECRET_KEY) {
   console.warn('🔒 WARNING: RECAPTCHA_SECRET_KEY not configured - spam protection disabled');
 }
 
-// Initialize Resend securely
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
-// Rate limiting configuration
-const RATE_LIMIT_ATTEMPTS = 3; // Max attempts per hour
-const RATE_LIMIT_HOURS = 1; // Time window in hours
+const RATE_LIMIT_ATTEMPTS = 3;
+const RATE_LIMIT_HOURS = 1;
 
 interface NewsletterSubscribeRequest {
   email: string;
@@ -57,9 +52,8 @@ function getUserAgent(request: Request): string {
 }
 
 export const POST: APIRoute = async ({ request, clientAddress }) => {
-  // Apply fast rate limiting first
   const clientId = getClientId(request, clientAddress);
-  const rateLimit = checkFastRateLimit(clientId, 3, 60 * 1000); // 3 requests per minute
+  const rateLimit = checkFastRateLimit(clientId, 3, 60 * 1000);
   
   if (!rateLimit.allowed) {
     console.log(`🚫 Newsletter subscription rate limited for client: ${clientId}`);
@@ -73,14 +67,11 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
     const body = await request.json();
     const { email: rawEmail, firstName: rawFirstName, lastName: rawLastName, source = 'manual', googleId, recaptchaToken }: NewsletterSubscribeRequest = body;
 
-    // Sanitize inputs
     const email = sanitizeEmail(rawEmail || '');
     const firstName = sanitizeName(rawFirstName || '', 50);
     const lastName = sanitizeName(rawLastName || '', 50);
 
-    // Validate required fields
     if (!email) {
-      // Log failed attempt
       await NewsletterDB.logAttempt({
         email: email || 'missing',
         ipAddress,
@@ -99,10 +90,8 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      // Log failed attempt
       await NewsletterDB.logAttempt({
         email,
         ipAddress,
@@ -121,7 +110,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    // Validate reCAPTCHA for manual subscriptions (Google OAuth doesn't need it)
     if (source === 'manual' && recaptchaToken && RECAPTCHA_SECRET_KEY) {
       try {
         console.log('🔍 Validating reCAPTCHA token...');
@@ -139,7 +127,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
         if (!recaptchaResult.success) {
           console.log('❌ reCAPTCHA verification failed:', recaptchaResult);
           
-          // Log failed attempt
           await NewsletterDB.logAttempt({
             email,
             ipAddress,
@@ -158,12 +145,10 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
           });
         }
 
-        // For reCAPTCHA v3, check the score (0.0 to 1.0, higher is better)
         if (recaptchaResult.score !== undefined) {
           if (recaptchaResult.score < 0.5) {
             console.log('❌ reCAPTCHA score too low:', recaptchaResult.score);
             
-            // Log failed attempt
             await NewsletterDB.logAttempt({
               email,
               ipAddress,
@@ -182,11 +167,9 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
             });
           }
 
-          // Check if the action matches
           if (recaptchaResult.action && recaptchaResult.action !== 'newsletter_subscribe') {
             console.log('❌ reCAPTCHA action mismatch:', recaptchaResult.action);
             
-            // Log failed attempt
             await NewsletterDB.logAttempt({
               email,
               ipAddress,
@@ -213,17 +196,14 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       } catch (recaptchaError) {
         console.error('❌ reCAPTCHA validation error:', recaptchaError);
         
-        // Log the error but don't fail the request - reCAPTCHA might be temporarily unavailable
         console.warn('⚠️ Proceeding without reCAPTCHA validation due to error');
       }
     } else if (source === 'manual' && !recaptchaToken && RECAPTCHA_SECRET_KEY) {
       console.log('⚠️ reCAPTCHA token missing for manual subscription, but continuing...');
     }
 
-    // Check rate limiting
     const recentAttempts = await NewsletterDB.getRecentAttemptsByIP(ipAddress, RATE_LIMIT_HOURS);
     if (recentAttempts >= RATE_LIMIT_ATTEMPTS) {
-      // Log rate limit exceeded
       await NewsletterDB.logAttempt({
         email,
         ipAddress,
@@ -244,10 +224,8 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    // Check if email is already subscribed
     const alreadySubscribed = await NewsletterDB.isEmailSubscribed(email);
     if (alreadySubscribed) {
-      // Log duplicate attempt
       await NewsletterDB.logAttempt({
         email,
         ipAddress,
@@ -266,7 +244,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    // Prepare subscriber data
     const subscriberData: NewsletterSubscriber = {
       email: email.toLowerCase().trim(),
       firstName: firstName?.trim(),
@@ -277,11 +254,9 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       googleId
     };
 
-    // Add subscriber to database
     const dbResult = await NewsletterDB.addSubscriber(subscriberData);
     
     if (!dbResult.success) {
-      // Log database error
       await NewsletterDB.logAttempt({
         email,
         ipAddress,
@@ -300,7 +275,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       });
     }
 
-    // Add subscriber to Resend audience
     if (resend && RESEND_AUDIENCE_ID) {
       try {
         console.log('📋 Adding subscriber to Resend audience...');
@@ -322,7 +296,6 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
         if (audienceError) {
           console.error('❌ Error adding to Resend audience:', audienceError);
-          // Don't fail the entire request - subscriber is already in database
           console.warn('⚠️ Subscriber added to database but not to Resend audience');
         } else {
           console.log('✅ Subscriber added to Resend audience:', audienceData);
@@ -330,13 +303,11 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
 
       } catch (audienceError) {
         console.error('❌ Resend audience error:', audienceError);
-        // Don't fail the entire request - subscriber is already in database
       }
     } else {
       console.warn('⚠️ Resend API key or audience ID not configured');
     }
 
-    // Log successful attempt
     await NewsletterDB.logAttempt({
       email,
       ipAddress,
@@ -354,10 +325,8 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
       timestamp: new Date().toISOString()
     });
 
-    // Send welcome email using Resend
     if (resend) {
       try {
-        // Send welcome email to subscriber
         const { data, error } = await resend.emails.send({
           from: 'Iquitos Tech <newsletter@iquitostech.com>',
           to: [email],
@@ -523,7 +492,6 @@ Para darte de baja: https://iquitostech.com/newsletter?unsubscribe=${encodeURICo
           console.log('✅ Welcome email sent successfully via Resend:', data);
         }
 
-        // Send notification to admin
         await resend.emails.send({
           from: 'Iquitos Tech <noreply@iquitostech.com>',
           to: ['admin@iquitostech.com'],
@@ -543,13 +511,11 @@ Para darte de baja: https://iquitostech.com/newsletter?unsubscribe=${encodeURICo
         
       } catch (emailError) {
         console.error('❌ Newsletter email error:', emailError);
-        // Don't fail the entire request if email fails, just log it
       }
     } else {
       console.warn('⚠️ Resend API key not configured, emails not sent');
     }
 
-    // Return success response with rate limit headers
     const successResponse = new Response(JSON.stringify({
       success: true,
       message: 'Te has suscrito correctamente al newsletter.',
@@ -571,7 +537,6 @@ Para darte de baja: https://iquitostech.com/newsletter?unsubscribe=${encodeURICo
   } catch (error) {
     console.error('Newsletter subscription error:', error);
     
-    // Log error attempt
     try {
       await NewsletterDB.logAttempt({
         email: 'unknown',

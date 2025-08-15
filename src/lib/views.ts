@@ -16,7 +16,6 @@ declare global {
 const domain = import.meta.env.WP_DOMAIN;
 const apiUrl = `https://${domain}/wp-json/wp/v2`;
 
-// Supabase configuration
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
@@ -25,7 +24,6 @@ if (supabaseUrl && supabaseKey) {
   supabase = createClient(supabaseUrl, supabaseKey);
 }
 
-// Helper function to format view numbers
 const formatViews = (views: number): string => {
   if (views >= 1000000) {
     return `${(views / 1000000).toFixed(1)}M`;
@@ -35,7 +33,6 @@ const formatViews = (views: number): string => {
   return views.toString();
 };
 
-// Helper function to format date in Spanish
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
   const months = [
@@ -50,7 +47,6 @@ const formatDate = (dateString: string): string => {
   return `${day} ${month}, ${year}`;
 };
 
-// Get view count for a specific post from Supabase
 export const getPostViewCount = async (slug: string): Promise<number> => {
   try {
     if (!supabase) {
@@ -59,8 +55,8 @@ export const getPostViewCount = async (slug: string): Promise<number> => {
     }
 
     const { data, error } = await supabase
-      .from('Views')  // Your table name
-      .select('views') // Your column name
+      .from('Views')
+      .select('views')
       .eq('slug', slug)
       .single();
 
@@ -76,7 +72,6 @@ export const getPostViewCount = async (slug: string): Promise<number> => {
   }
 };
 
-// Increment view count for a specific post
 export const incrementPostViewCount = async (slug: string): Promise<number> => {
   try {
     if (!supabase) {
@@ -84,7 +79,6 @@ export const incrementPostViewCount = async (slug: string): Promise<number> => {
       return 0;
     }
 
-    // Try using the PostgreSQL function first
     const { data, error } = await supabase
       .rpc('increment_view_count', { post_slug: slug });
 
@@ -101,10 +95,8 @@ export const incrementPostViewCount = async (slug: string): Promise<number> => {
   }
 };
 
-// Manual increment as fallback
 const manualIncrementViews = async (slug: string): Promise<number> => {
   try {
-    // Check if record exists
     const { data: existingRecord, error: fetchError } = await supabase
       .from('Views')
       .select('views')
@@ -119,7 +111,6 @@ const manualIncrementViews = async (slug: string): Promise<number> => {
     let newViewCount = 1;
 
     if (existingRecord) {
-      // Record exists, increment it
       newViewCount = existingRecord.views + 1;
       const { error: updateError } = await supabase
         .from('Views')
@@ -131,7 +122,6 @@ const manualIncrementViews = async (slug: string): Promise<number> => {
         return existingRecord.views;
       }
     } else {
-      // Record doesn't exist, create it (UUID will be auto-generated)
       const { error: insertError } = await supabase
         .from('Views')
         .insert({ slug, views: 1 });
@@ -149,7 +139,6 @@ const manualIncrementViews = async (slug: string): Promise<number> => {
   }
 };
 
-// Get most viewed posts from Supabase + WordPress data
 export const getMostViewedPosts = async () => {
   try {
     if (!supabase) {
@@ -159,7 +148,6 @@ export const getMostViewedPosts = async () => {
 
     console.log('Fetching view data from Supabase...');
     
-    // Get top viewed posts from Supabase (remove the gt filter for now)
     const { data: viewData, error: viewError } = await supabase
       .from('Views')
       .select('slug, views')
@@ -185,7 +173,6 @@ export const getMostViewedPosts = async () => {
       return createPostsFromViewData(viewData);
     }
 
-    // Get post data from WordPress for posts
     const postPromises = viewData.slice(0, 5).map(async (viewRecord: any) => {
       try {
         const response = await fetchWithTimeout(
@@ -241,7 +228,6 @@ export const getMostViewedPosts = async () => {
   }
 };
 
-// Create posts from view data only (fallback when WordPress is not available)
 const createPostsFromViewData = (viewData: any[]) => {
   return viewData.slice(0, 5).map((record, index) => ({
     id: index + 1,
@@ -254,7 +240,6 @@ const createPostsFromViewData = (viewData: any[]) => {
   }));
 };
 
-// Alternative function that combines WordPress posts with Supabase view counts
 export const getMostViewedPostsWithWordPress = async () => {
   try {
     if (!domain) {
@@ -262,7 +247,6 @@ export const getMostViewedPostsWithWordPress = async () => {
       return getFallbackMostViewedPosts();
     }
 
-    // Fetch recent posts from WordPress
     const response = await fetchWithTimeout(
       `${apiUrl}/posts?_embed&per_page=20&orderby=date&order=desc&_fields=id,title,slug,date,_embedded`
     );
@@ -278,7 +262,6 @@ export const getMostViewedPostsWithWordPress = async () => {
       return getFallbackMostViewedPosts();
     }
 
-    // Get view counts for all posts from Supabase
     const postsWithViews = await Promise.all(
       posts.map(async (post: any) => {
         const viewCount = await getPostViewCount(post.slug);
@@ -296,7 +279,6 @@ export const getMostViewedPostsWithWordPress = async () => {
       })
     );
 
-    // Filter posts with views and sort by view count
     const postsWithRealViews = postsWithViews.filter(post => post.rawViews > 0);
     
     if (postsWithRealViews.length === 0) {
@@ -306,7 +288,6 @@ export const getMostViewedPostsWithWordPress = async () => {
 
     const sortedPosts = postsWithRealViews.sort((a, b) => b.rawViews - a.rawViews);
 
-    // Take top 5 and format the response
     const mostViewedPosts = sortedPosts.slice(0, 5).map((post) => ({
       id: post.id,
       title: post.title,
@@ -325,7 +306,6 @@ export const getMostViewedPostsWithWordPress = async () => {
   }
 };
 
-// Fallback data
 function getFallbackMostViewedPosts() {
   const currentDate = new Date();
   
@@ -373,5 +353,4 @@ function getFallbackMostViewedPosts() {
   ];
 }
 
-// Legacy function for backward compatibility
 export const getMostViewedPostsWithMetaQuery = getMostViewedPosts;

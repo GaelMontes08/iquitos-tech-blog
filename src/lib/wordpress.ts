@@ -1,8 +1,3 @@
-/**
- * WordPress data fetching and processing utilities
- * Handles post data extraction with SEO information
- */
-
 import { fetchWithTimeout } from './wp';
 import { cleanWordPressHtml } from './content-transformer';
 
@@ -22,9 +17,6 @@ export interface PostInfo {
   slug: string;
 }
 
-/**
- * Parse WordPress content into distinct sections
- */
 function parseWordPressContent(htmlContent: string) {
   if (!htmlContent) {
     return {
@@ -34,20 +26,16 @@ function parseWordPressContent(htmlContent: string) {
     };
   }
 
-  // Extract "Puntos clave" section
   const puntosClaveRegex = /<h2[^>]*>\s*Puntos\s+clave\s*<\/h2>([\s\S]*?)(?=<h2[^>]*>|$)/i;
   const puntosClaveMatch = htmlContent.match(puntosClaveRegex);
   const puntosClave = puntosClaveMatch ? cleanWordPressHtml(puntosClaveMatch[1]) : '';
 
-  // Extract "Preguntas frecuentes" section  
   const faqRegex = /<h2[^>]*>\s*Preguntas\s+frecuentes\s*<\/h2>([\s\S]*?)(?=<h2[^>]*>|$)/i;
   const faqMatch = htmlContent.match(faqRegex);
   const faqSection = faqMatch ? faqMatch[1].trim() : '';
 
-  // Parse FAQ section into question/answer pairs
   const faqPairs: Array<{question: string, answer: string}> = [];
   if (faqSection) {
-    // Split by h3 tags (questions)
     const h3Regex = /<h3[^>]*>(.*?)<\/h3>([\s\S]*?)(?=<h3[^>]*>|$)/gi;
     let match;
     while ((match = h3Regex.exec(faqSection)) !== null) {
@@ -59,7 +47,6 @@ function parseWordPressContent(htmlContent: string) {
     }
   }
 
-  // Remove extracted sections from main content
   let mainContent = htmlContent;
   if (puntosClave) {
     mainContent = mainContent.replace(puntosClaveRegex, '');
@@ -67,8 +54,6 @@ function parseWordPressContent(htmlContent: string) {
   if (faqSection) {
     mainContent = mainContent.replace(faqRegex, '');
   }
-
-  // Clean and style the main content
   mainContent = cleanWordPressHtml(mainContent);
 
   return {
@@ -78,9 +63,6 @@ function parseWordPressContent(htmlContent: string) {
   };
 }
 
-/**
- * Fetch and process post data from WordPress
- */
 export async function getPostInfo(slug: string): Promise<PostInfo | null> {
   const domain = import.meta.env.WP_DOMAIN;
   const apiUrl = `https://${domain}/wp-json/wp/v2`;
@@ -94,19 +76,15 @@ export async function getPostInfo(slug: string): Promise<PostInfo | null> {
     
     const post = data[0];
     
-    // Parse the content
     const { puntosClave, mainContent, faqPairs } = parseWordPressContent(post.content?.rendered || '');
     
-    // ENHANCED: Get featured image with better validation and fallback logic
     let featuredImage: string | undefined;
     let imageSource = 'none';
     
-    // Method 1: Try embedded media (most reliable)
     if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
       featuredImage = post._embedded['wp:featuredmedia'][0].source_url;
       imageSource = 'embedded_media';
     }
-    // Method 2: If no embedded media but there's a featured_media ID, fetch it directly
     else if (post.featured_media) {
       try {
         const mediaResponse = await fetchWithTimeout(`${apiUrl}/media/${post.featured_media}`);
@@ -120,7 +98,6 @@ export async function getPostInfo(slug: string): Promise<PostInfo | null> {
       }
     }
     
-    // Method 3: Last resort - use Yoast og_image but validate it's reasonable
     if (!featuredImage && post.yoast_head_json?.og_image?.[0]?.url) {
       const yoastImage = post.yoast_head_json.og_image[0].url;
       featuredImage = yoastImage;
@@ -128,7 +105,6 @@ export async function getPostInfo(slug: string): Promise<PostInfo | null> {
       console.warn(`⚠️ Using Yoast og_image as fallback for post ${post.slug}. This might be the first content image, not the featured image.`);
     }
 
-    // Validation logging
     console.log(`🖼️ Image source for "${post.slug}": ${imageSource}`, {
       featuredMediaId: post.featured_media,
       hasEmbeddedMedia: !!post._embedded?.['wp:featuredmedia']?.[0],

@@ -1,12 +1,7 @@
-/**
- * Protected WordPress Posts API endpoint
- * Rate-limited access to WordPress posts data
- */
 import type { APIRoute } from 'astro';
 import { checkAdvancedRateLimit, createRateLimitResponse, addRateLimitHeaders } from '../../../lib/rate-limit.js';
 
 export const GET: APIRoute = async ({ request }) => {
-  // Apply rate limiting
   const rateLimit = checkAdvancedRateLimit(request, 'wordpress');
   
   if (!rateLimit.allowed) {
@@ -49,11 +44,10 @@ export const GET: APIRoute = async ({ request }) => {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=300' // 5 minutes cache
+        'Cache-Control': 'public, max-age=300'
       }
     });
 
-    // Add rate limit headers if available
     if (rateLimit.remaining !== undefined && rateLimit.resetTime) {
       return addRateLimitHeaders(successResponse, rateLimit.remaining, rateLimit.resetTime);
     }
