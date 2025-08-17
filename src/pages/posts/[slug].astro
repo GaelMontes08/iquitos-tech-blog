@@ -5,7 +5,7 @@ import PostPageSkeleton from "../../components/skeletons/PostPageSkeleton.astro"
 import SocialShare from "../../components/SocialShare.astro";
 import { fetchWithTimeout } from '@/lib/wp';
 import { getPostViewCount, getMostViewedPosts } from '../../lib/views';
-import { getPostInfo } from '../../lib/wordpress';
+import { getPostInfo, getRelatedPosts } from '../../lib/wordpress';
 
 const slug = Astro.params.slug;
 if (!slug) return Astro.redirect('/404');
@@ -21,35 +21,8 @@ if (!postInfo) return Astro.redirect('/404');
 
 const { title, date, seo, puntosClave, content, faqPairs, featuredImage, author, authorAvatar, excerpt, categories, id } = postInfo;
 
-const getRelatedPosts = async (categoryIds: number[], currentPostId: number) => {
-  try {
-    if (!categoryIds.length) return [];
-    
-    const categoryQuery = categoryIds.join(',');
-    const response = await fetchWithTimeout(
-      `${apiUrl}/posts?categories=${categoryQuery}&exclude=${currentPostId}&per_page=4&_embed`
-    );
-    
-    if (!response.ok) return [];
-    
-    const posts = await response.json();
-    return posts.map((post: any) => ({
-      id: post.id,
-      title: post.title?.rendered || 'Sin título',
-      excerpt: post.excerpt?.rendered || '',
-      slug: post.slug,
-      date: post.date,
-      image: post._embedded?.['wp:featuredmedia']?.[0]?.source_url,
-      categories: post._embedded?.['wp:term']?.[0] || []
-    }));
-  } catch (error) {
-    console.error('Error fetching related posts:', error);
-    return [];
-  }
-};
-
-const relatedPosts = categories.length > 0 ? 
-  await getRelatedPosts(categories, id) : [];
+// Use the new advanced related posts algorithm
+const relatedPosts = await getRelatedPosts(postInfo, 4);
 
 const trendingPosts = await getMostViewedPosts();
 
@@ -264,28 +237,34 @@ export const prerender = false;
 
       {relatedPosts.length > 0 && (
         <section class="mt-16 border-t border-gray-800 pt-12">
-          <h2 class="text-2xl md:text-3xl font-bold text-white mb-8 text-left">
-            Noticias Relacionadas
-          </h2>
+          <div class="flex items-center justify-between mb-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-white text-left">
+              Artículos Relacionados
+            </h2>
+          </div>
           
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {relatedPosts.slice(0, 4).map((post: any) => {
               const categoryName = post.categories?.[0]?.name || 'Sin categoría';
               
               return (
-                <PostCard
-                  id={post.id}
-                  title={post.title}
-                  excerpt={post.excerpt}
-                  slug={post.slug}
-                  date={post.date}
-                  image={post.image}
-                  category={categoryName}
-                  featured={false}
-                />
+                <div class="relative group">
+                  <PostCard
+                    id={post.id}
+                    title={post.title}
+                    excerpt={post.excerpt}
+                    slug={post.slug}
+                    date={post.date}
+                    image={post.image}
+                    category={categoryName}
+                    featured={false}
+                  />
+                  
+                </div>
               );
             })}
           </div>
+          
         </section>
       )}
 
