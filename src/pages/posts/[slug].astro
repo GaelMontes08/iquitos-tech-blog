@@ -2,12 +2,16 @@
 import Layout from "../../layouts/Layout.astro";
 import PostCard from "../../components/PostCard.astro";
 import PostPageSkeleton from "../../components/skeletons/PostPageSkeleton.astro";
+import SocialShare from "../../components/SocialShare.astro";
 import { fetchWithTimeout } from '@/lib/wp';
 import { getPostViewCount, getMostViewedPosts } from '../../lib/views';
 import { getPostInfo } from '../../lib/wordpress';
 
 const slug = Astro.params.slug;
 if (!slug) return Astro.redirect('/404');
+
+// Debug: Log the slug to see if it contains duplicates
+console.log('🔍 Current slug from params:', slug);
 
 const domain = import.meta.env.WP_DOMAIN;
 const apiUrl = `https://${domain}/wp-json/wp/v2`;
@@ -212,6 +216,16 @@ export const prerender = false;
               </div>
             </section>
           )}
+
+          <section class="content-area">
+            <SocialShare 
+              title={title}
+              url={`https://iquitostech.com/posts/${slug}`}
+              description={seo?.description || tldr}
+              image={featuredImage}
+              hashtags={['IquitosTech', 'tecnologia', 'noticias']}
+            />
+          </section>
 
         </main>
         <aside class="lg:col-span-4 mt-12 lg:mt-0">
