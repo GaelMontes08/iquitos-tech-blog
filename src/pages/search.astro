@@ -1,0 +1,228 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SearchComponent from '../components/Search.astro';
+import SEO from '../components/SEO.astro';
+---
+
+<Layout>
+  <SEO 
+    slot="head"
+    title="Buscar en Iquitos Tech"
+    description="Busca artículos, noticias y categorías en Iquitos Tech. Encuentra el contenido tecnológico que necesitas."
+    keywords="buscar, búsqueda, artículos, tecnología, Iquitos, noticias tech"
+    type="website"
+  />
+
+  <main class="search-page">
+    <div class="container mx-auto px-4 py-8">
+      <div class="search-header mb-8">
+        <h1 class="text-4xl font-bold text-white mb-4">
+          Buscar en Iquitos Tech
+        </h1>
+        <p class="text-lg text-gray-400 max-w-2xl">
+          Encuentra artículos, noticias y categorías sobre tecnología. 
+          Usa los filtros para refinar tu búsqueda.
+        </p>
+      </div>
+
+      <div class="search-container p-6 mb-8">
+        <SearchComponent />
+      </div>
+
+      <div class="search-tips grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div class="tip-card bg-[#1f2937] border border-[#2847d7] rounded-lg p-6">
+          <div class="tip-icon text-[#2847d7] text-2xl mb-3">💡</div>
+          <h3 class="text-lg font-semibold text-white mb-2">Consejos de búsqueda</h3>
+          <ul class="text-gray-300 text-sm space-y-1">
+            <li>• Usa palabras clave específicas</li>
+            <li>• Combina términos con espacios</li>
+            <li>• Prueba sinónimos si no encuentras resultados</li>
+          </ul>
+        </div>
+
+        <div class="tip-card bg-[#1f2937] border border-[#2847d7] rounded-lg p-6">
+          <div class="tip-icon text-[#2847d7] text-2xl mb-3">🎯</div>
+          <h3 class="text-lg font-semibold text-white mb-2">Filtros avanzados</h3>
+          <ul class="text-gray-300 text-sm space-y-1">
+            <li>• Filtra por categoría específica</li>
+            <li>• Selecciona rango de fechas</li>
+            <li>• Ordena por relevancia o fecha</li>
+          </ul>
+        </div>
+
+        <div class="tip-card bg-[#1f2937] border border-[#2847d7] rounded-lg p-6">
+          <div class="tip-icon text-[#2847d7] text-2xl mb-3">⚡</div>
+          <h3 class="text-lg font-semibold text-white mb-2">Búsqueda rápida</h3>
+          <ul class="text-gray-300 text-sm space-y-1">
+            <li>• Los resultados aparecen mientras escribes</li>
+            <li>• Usa las sugerencias relacionadas</li>
+            <li>• Presiona Enter para buscar</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="popular-searches rounded-lg p-6">
+        <h2 class="text-2xl font-bold text-white mb-4">Búsquedas populares</h2>
+        <div class="popular-tags flex flex-wrap gap-3">
+          <a href="/search?q=inteligencia+artificial" 
+             class="tag border border-[#2847d7] rounded-full px-4 py-2 text-sm font-medium hover:bg-gray-900 transition-colors">
+            Inteligencia Artificial
+          </a>
+          <a href="/search?q=desarrollo+web" 
+             class="tag border border-[#2847d7] rounded-full px-4 py-2 text-sm font-medium hover:bg-gray-900 transition-colors">
+            Desarrollo Web
+          </a>
+          <a href="/search?q=cybersecurity" 
+             class="tag border border-[#2847d7] rounded-full px-4 py-2 text-sm font-medium hover:bg-gray-900 transition-colors">
+            Ciberseguridad
+          </a>
+          <a href="/search?q=programacion" 
+             class="tag border border-[#2847d7] rounded-full px-4 py-2 text-sm font-medium hover:bg-gray-900 transition-colors">
+            Programación
+          </a>
+          <a href="/search?q=mobile+development" 
+             class="tag border border-[#2847d7] rounded-full px-4 py-2 text-sm font-medium hover:bg-gray-900 transition-colors">
+            Desarrollo Móvil
+          </a>
+          <a href="/search?q=cloud+computing" 
+             class="tag border border-[#2847d7] rounded-full px-4 py-2 text-sm font-medium hover:bg-gray-900 transition-colors">
+            Cloud Computing
+          </a>
+          <a href="/search?q=blockchain" 
+             class="tag border border-[#2847d7] rounded-full px-4 py-2 text-sm font-medium hover:bg-gray-900 transition-colors">
+            Blockchain
+          </a>
+          <a href="/search?q=machine+learning" 
+             class="tag border border-[#2847d7] rounded-full px-4 py-2 text-sm font-medium hover:bg-gray-900 transition-colors">
+            Machine Learning
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  declare global {
+    interface Window {
+      SearchComponent?: any;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('q');
+    const category = urlParams.get('category');
+    const dateFrom = urlParams.get('date_from');
+    const dateTo = urlParams.get('date_to');
+    const sort = urlParams.get('sort');
+
+    if (query || category || dateFrom || dateTo || sort) {
+      const searchContainer = document.querySelector('[data-search-container]');
+      if (searchContainer && (searchContainer as any).searchComponent) {
+        const component = (searchContainer as any).searchComponent;
+        
+        if (query) {
+          component.searchInput.value = query;
+          component.currentQuery = query;
+        }
+
+        if (category && component.categoryFilter) {
+          component.categoryFilter.value = category;
+        }
+        if (dateFrom && component.dateFromFilter) {
+          component.dateFromFilter.value = dateFrom;
+        }
+        if (dateTo && component.dateToFilter) {
+          component.dateToFilter.value = dateTo;
+        }
+        if (sort && component.sortFilter) {
+          component.sortFilter.value = sort;
+        }
+
+        if (query) {
+          component.performSearch();
+        }
+      }
+    }
+  });
+
+  function updateURL(query: string, filters: Record<string, string> = {}) {
+    const params = new URLSearchParams();
+    
+    if (query) {
+      params.set('q', query);
+    }
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, String(value));
+      }
+    });
+
+    const newURL = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+    window.history.pushState({ query, filters }, '', newURL);
+  }
+
+  if (window.SearchComponent) {
+    const originalPerformSearch = window.SearchComponent.prototype.performSearch;
+    window.SearchComponent.prototype.performSearch = function() {
+      // Update URL
+      const filters = this.getFilters();
+      updateURL(this.currentQuery, filters);
+
+      return originalPerformSearch.call(this);
+    };
+  }
+</script>
+
+<style>
+  .search-page {
+    min-height: calc(100vh - 200px);
+  }
+
+  .search-tips {
+    background: linear-gradient(135deg, rgba(40, 71, 215, 0.08) 0%, rgba(0, 0, 0, 0.2) 100%);
+  }
+
+  .tip-card {
+    transition: transform 0.2s ease;
+    background: linear-gradient(135deg, rgba(40, 71, 215, 0.08) 0%, rgba(0, 0, 0, 0.2) 100%);
+  }
+
+  .tip-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .tip-icon {
+    font-size: 2rem;
+  }
+
+  .popular-tags .tag {
+    transition: all 0.2s ease;
+  }
+
+  .popular-tags .tag:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    .search-header h1 {
+      font-size: 2rem;
+    }
+    
+    .search-tips {
+      grid-template-columns: 1fr;
+    }
+    
+    .popular-tags {
+      gap: 0.5rem;
+    }
+    
+    .popular-tags .tag {
+      font-size: 0.875rem;
+      padding: 0.5rem 0.75rem;
+    }
+  }
+</style>

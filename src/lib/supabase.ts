@@ -1,15 +1,25 @@
 import { createClient } from '@supabase/supabase-js'
-import { getSecureEnv } from './env-security.js';
 
-const supabaseUrl = getSecureEnv('PUBLIC_SUPABASE_URL');
-const supabaseKey = getSecureEnv('PUBLIC_SUPABASE_ANON_KEY');
+// Use import.meta.env directly instead of the security wrapper for now
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const supabaseKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+
+// Allow development mode without Supabase
+const isDevelopment = import.meta.env.MODE === 'development';
 
 if (!supabaseUrl || !supabaseKey) {
-  console.error('🔒 CRITICAL: Supabase configuration missing or invalid');
-  throw new Error('Missing or invalid Supabase environment variables');
+  if (isDevelopment) {
+    console.warn('⚠️ Supabase not configured - some features may not work in development');
+  } else {
+    console.error('🔒 CRITICAL: Supabase configuration missing or invalid');
+    throw new Error('Missing or invalid Supabase environment variables');
+  }
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// Create a fallback client for development
+export const supabase = (supabaseUrl && supabaseKey) 
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
 export const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 10000) => {
   const controller = new AbortController();

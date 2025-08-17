@@ -395,6 +395,27 @@ export class EnvironmentSecurity {
   }
 
   private getEnvironmentValue(key: string): string | undefined {
+    // Check if we're in browser environment
+    if (typeof window !== 'undefined') {
+      return undefined;
+    }
+    
+    // Try to get from import.meta.env (Astro/Vite environment)
+    try {
+      // @ts-ignore - import.meta is available in Astro/Vite
+      if (import.meta?.env) {
+        // @ts-ignore
+        return import.meta.env[key];
+      }
+    } catch (e) {
+      // Fall through to process.env
+    }
+    
+    // Fallback to process.env (Node.js environment)
+    if (typeof process !== 'undefined' && process.env) {
+      return process.env[key];
+    }
+    
     return undefined;
   }
 

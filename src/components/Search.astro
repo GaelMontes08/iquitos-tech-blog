@@ -1,0 +1,418 @@
+---
+interface Props {
+  placeholder?: string;
+  showFilters?: boolean;
+  className?: string;
+  size?: 'small' | 'medium' | 'large';
+  autofocus?: boolean;
+}
+
+const { 
+  placeholder = 'Buscar artículos y categorías...',
+  showFilters = true,
+  className = '',
+  size = 'medium',
+  autofocus = false
+} = Astro.props;
+
+const sizeClasses = {
+  small: 'text-sm h-10',
+  medium: 'text-base h-12',
+  large: 'text-lg h-14'
+};
+---
+
+<div class={`search-component ${className}`} data-search-container>
+  <div class="search-input-container">
+    <div class="search-input-wrapper">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="21 21l-4.35-4.35"></path>
+      </svg>
+      
+      <input
+        type="text"
+        class={`search-input ${sizeClasses[size]}`}
+        placeholder={placeholder}
+        autocomplete="off"
+        spellcheck="false"
+        autofocus={autofocus}
+        data-search-input
+      />
+      
+      <button type="button" class="clear-button hidden" data-clear-search aria-label="Limpiar búsqueda">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      
+      <div class="loading-spinner hidden" data-search-loading>
+        <svg class="animate-spin" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+    </div>
+    
+    <button type="button" class="search-button" data-search-button>
+      Buscar
+    </button>
+    
+    {showFilters && (
+      <button type="button" class="filters-toggle-button" data-filters-toggle>
+        <svg class="filters-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
+        </svg>
+        Filtros
+      </button>
+    )}
+  </div>
+
+  {showFilters && (
+    <div class="search-filters hidden" data-search-filters>
+      <div class="filters-container">
+        <div class="filter-group">
+          <label for="search-category" class="filter-label">Categoría:</label>
+          <select id="search-category" class="filter-select" data-filter-category>
+            <option value="">Todas las categorías</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="search-date-from" class="filter-label">Desde:</label>
+          <input type="date" id="search-date-from" class="filter-input" data-filter-date-from />
+        </div>
+        
+        <div class="filter-group">
+          <label for="search-date-to" class="filter-label">Hasta:</label>
+          <input type="date" id="search-date-to" class="filter-input" data-filter-date-to />
+        </div>
+        
+        <div class="filter-group">
+          <label for="search-sort" class="filter-label">Ordenar:</label>
+          <select id="search-sort" class="filter-select" data-filter-sort>
+            <option value="relevance">Relevancia</option>
+            <option value="date">Fecha</option>
+            <option value="title">Título</option>
+          </select>
+        </div>
+        
+        <button type="button" class="clear-filters-button" data-clear-filters>
+          Limpiar filtros
+        </button>
+      </div>
+    </div>
+  )}
+  
+  <div class="search-results hidden" data-search-results>
+  </div>
+  
+  <div class="search-suggestions hidden" data-search-suggestions>
+  </div>
+</div>
+
+<style>
+  .search-component {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .search-input-container {
+    position: relative;
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 1rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #9ca3af;
+    z-index: 1;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.75rem 3rem 0.75rem 3rem;
+    border: 2px solid #374151;
+    border-radius: 0.75rem;
+    color: #f9fafb;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    outline: none;
+  }
+
+  .search-input:focus {
+    border-color: #2847d7;
+    box-shadow: 0 0 0 3px rgba(40, 71, 215, 0.1);
+  }
+
+  .search-input::placeholder {
+    color: #9ca3af;
+  }
+
+  .clear-button,
+  .loading-spinner {
+    position: absolute;
+    right: 1rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #9ca3af;
+    cursor: pointer;
+    z-index: 1;
+  }
+
+  .clear-button:hover {
+    color: #f9fafb;
+  }
+
+  .search-button {
+    padding: 0.75rem 1.5rem;
+    background: #2847d7;
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .search-button:hover {
+    background: #1e40af;
+  }
+
+  .filters-toggle-button {
+    padding: 0.75rem 1rem;
+    background: #374151;
+    color: #e5e7eb;
+    border: 1px solid #4b5563;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .filters-toggle-button:hover {
+    background: #4b5563;
+    border-color: #6b7280;
+  }
+
+  .filters-toggle-button.active {
+    background: #2847d7;
+    border-color: #2847d7;
+    color: white;
+  }
+
+  .filters-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .search-filters {
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .filters-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    align-items: end;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .filter-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #e5e7eb;
+  }
+
+  .filter-select,
+  .filter-input {
+    padding: 0.5rem;
+    border: 1px solid #4b5563;
+    border-radius: 0.5rem;
+    background: #374151;
+    color: #f9fafb;
+    font-size: 0.875rem;
+    outline: none;
+  }
+
+  .filter-select:focus,
+  .filter-input:focus {
+    border-color: #2847d7;
+    box-shadow: 0 0 0 2px rgba(40, 71, 215, 0.1);
+  }
+
+  .filter-select option {
+    background: #374151;
+    color: #f9fafb;
+  }
+
+  .clear-filters-button {
+    padding: 0.5rem 1rem;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    height: fit-content;
+  }
+
+  .clear-filters-button:hover {
+    background: #b91c1c;
+  }
+
+  .search-results {
+    border: 1px solid #374151;
+    border-radius: 0.75rem;
+    max-height: 400px;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  }
+
+  .search-suggestions {
+    background: #1f2937;
+    border: 1px solid #374151;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .search-input-container {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .search-input-container > div:first-child {
+      order: 2;
+    }
+
+    .search-button,
+    .filters-toggle-button {
+      order: 1;
+    }
+
+    .filters-container {
+      grid-template-columns: 1fr;
+    }
+
+    .search-input {
+      padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+    }
+
+    .search-icon {
+      left: 0.75rem;
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .clear-button,
+    .loading-spinner {
+      right: 0.75rem;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-spin {
+      animation: none;
+    }
+    
+    .search-input,
+    .search-button,
+    .filter-select,
+    .filter-input {
+      transition: none;
+    }
+  }
+
+  /* Scrollbar styling for dark theme */
+  .search-results::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .search-results::-webkit-scrollbar-track {
+    background: #374151;
+    border-radius: 4px;
+  }
+
+  .search-results::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+  }
+
+
+  /* Focus states for accessibility */
+  .search-button:focus,
+  .clear-filters-button:focus {
+    outline: 2px solid #2847d7;
+    outline-offset: 2px;
+  }
+
+  .clear-button:focus {
+    outline: 2px solid #2847d7;
+    outline-offset: 1px;
+    border-radius: 2px;
+  }
+
+  /* Loading spinner color for dark theme */
+  .loading-spinner svg {
+    color: #9ca3af;
+  }
+
+  .loading-spinner .opacity-75 {
+    color: #2847d7;
+  }
+</style>
+
+<script>
+  import './search-component.js';
+</script>

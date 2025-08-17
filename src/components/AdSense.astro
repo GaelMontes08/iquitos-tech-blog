@@ -37,11 +37,11 @@ const adId = `adsense-${Math.random().toString(36).substr(2, 9)}`;
       id={adId}
     ></ins>
     
-    <script>
+    <script define:vars={{ publisherId: ADSENSE_PUBLISHER_ID }}>
       if (!window.adsbygoogle) {
         const script = document.createElement('script');
         script.async = true;
-        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + {JSON.stringify(ADSENSE_PUBLISHER_ID)};
+        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + publisherId;
         script.crossOrigin = 'anonymous';
         document.head.appendChild(script);
         
