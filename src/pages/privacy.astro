@@ -3,7 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 
 const pageTitle = 'Política de Privacidad | Iquitos Tech';
 const pageDescription = 'Política de privacidad de Iquitos Tech. Conoce cómo recopilamos, usamos y protegemos tu información personal de acuerdo con GDPR y normativas de privacidad.';
-const lastUpdated = '08/08/2025';
+const lastUpdated = '17/08/2025';
 
 export const prerender = true;
 ---
@@ -62,11 +62,12 @@ export const prerender = true;
               <li><a href="#derechos-privacidad" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">10. Tus derechos de privacidad</a></li>
               <li><a href="#proveedores-servicios" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">11. Proveedores de servicios</a></li>
               <li><a href="#afiliados-enlaces" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">12. Afiliados y enlaces</a></li>
-              <li><a href="#cookies" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">13. Cookies y tecnologías</a></li>
-              <li><a href="#menores-edad" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">14. Menores de edad</a></li>
-              <li><a href="#enlaces-sitios" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">15. Enlaces a otros sitios</a></li>
-              <li><a href="#cambios-politica" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">16. Cambios a esta política</a></li>
-              <li><a href="#contacto" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">17. Contacto</a></li>
+              <li><a href="#redes-sociales" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">13. Redes sociales y compartir</a></li>
+              <li><a href="#cookies" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">14. Cookies y tecnologías</a></li>
+              <li><a href="#menores-edad" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">15. Menores de edad</a></li>
+              <li><a href="#enlaces-sitios" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">16. Enlaces a otros sitios</a></li>
+              <li><a href="#cambios-politica" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">17. Cambios a esta política</a></li>
+              <li><a href="#contacto" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">18. Contacto</a></li>
             </ul>
           </nav>
         </aside>
@@ -90,30 +91,42 @@ export const prerender = true;
             <section id="informacion-que-recopilamos">
               <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">2. Información que recopilamos y cómo la usamos</h2>
               
-              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Formularios de contacto</h3>
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Formularios de contacto y newsletter</h3>
               <p class="text-gray-300 mb-4">
-                Cuando utilizas nuestro formulario de contacto, recopilamos:
+                Cuando utilizas nuestros formularios de contacto o te suscribes a nuestro newsletter, recopilamos:
               </p>
               <ul class="text-gray-300 space-y-1 mb-4">
                 <li>• Nombre completo</li>
                 <li>• Dirección de correo electrónico</li>
-                <li>• Asunto del mensaje</li>
-                <li>• Contenido del mensaje</li>
+                <li>• Asunto del mensaje (formulario de contacto)</li>
+                <li>• Contenido del mensaje (formulario de contacto)</li>
+                <li>• Fecha y hora de la suscripción</li>
+                <li>• Dirección IP para prevención de spam</li>
               </ul>
 
               <h3 class="text-xl font-semibold text-white mt-6 mb-3">Google reCAPTCHA</h3>
               <p class="text-gray-300 mb-4">
-                Utilizamos Google reCAPTCHA v3 para proteger nuestro sitio web contra spam y abuso. Este servicio recopila información sobre tu interacción con nuestro sitio web para determinar si eres un usuario legítimo.
+                Utilizamos Google reCAPTCHA v3 para proteger nuestro sitio web contra spam y abuso. Este servicio recopila información sobre tu interacción con nuestro sitio web para determinar si eres un usuario legítimo. Los datos procesados incluyen la dirección IP, cookies y datos de navegación.
               </p>
 
-              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Métricas de uso</h3>
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Métricas de uso y analíticas</h3>
               <p class="text-gray-300 mb-4">
-                Recopilamos métricas básicas de uso como páginas visitadas y número de visualizaciones para mejorar nuestro contenido. Esta información se almacena en Supabase y no contiene datos personales identificables.
+                Recopilamos métricas básicas de uso para mejorar nuestro contenido y experiencia del usuario:
+              </p>
+              <ul class="text-gray-300 space-y-1 mb-4">
+                <li>• Páginas visitadas y tiempo de permanencia</li>
+                <li>• Número de visualizaciones de artículos</li>
+                <li>• Patrones de navegación agregados</li>
+                <li>• Datos demográficos generales (país/región)</li>
+                <li>• Dispositivo y navegador utilizado (datos técnicos)</li>
+              </ul>
+              <p class="text-gray-300 mb-4">
+                Esta información se almacena en Supabase con cifrado y no contiene datos personales identificables.
               </p>
 
-              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Almacenamiento local</h3>
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Almacenamiento local del navegador</h3>
               <p class="text-gray-300 mb-6">
-                Utilizamos localStorage y sessionStorage del navegador para evitar conteos duplicados de visualizaciones de páginas. Esta información permanece en tu dispositivo y no se transmite a nuestros servidores.
+                Utilizamos localStorage y sessionStorage del navegador para evitar conteos duplicados de visualizaciones de páginas y recordar preferencias como el consentimiento de cookies. Esta información permanece únicamente en tu dispositivo y no se transmite a nuestros servidores.
               </p>
             </section>
 
@@ -125,14 +138,19 @@ export const prerender = true;
                 Información que puedes proporcionarnos directamente, como nombre y dirección de correo electrónico a través de formularios de contacto.
               </p>
 
-              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Datos de uso</h3>
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Datos de uso y analíticas</h3>
               <p class="text-gray-300 mb-4">
-                Información sobre cómo utilizas nuestro sitio web, incluyendo páginas visitadas, tiempo de permanencia y patrones de navegación.
+                Información sobre cómo utilizas nuestro sitio web, incluyendo páginas visitadas, tiempo de permanencia, patrones de navegación, y datos técnicos como tipo de dispositivo, navegador, y resolución de pantalla.
               </p>
 
-              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Cookies y almacenamiento local</h3>
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Cookies y tecnologías de seguimiento</h3>
+              <p class="text-gray-300 mb-4">
+                Utilizamos cookies esenciales y de analíticas, así como localStorage y sessionStorage para mejorar la funcionalidad del sitio web y prevenir conteos duplicados. También empleamos Google Analytics y Google reCAPTCHA que pueden establecer sus propias cookies.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Datos de comunicación</h3>
               <p class="text-gray-300 mb-6">
-                Pequeños archivos de datos almacenados en tu dispositivo para mejorar la funcionalidad del sitio web y prevenir conteos duplicados.
+                Cuando nos contactas o te suscribes a nuestro newsletter, recopilamos la información necesaria para responder a tus consultas y proporcionarte el servicio solicitado, incluyendo direcciones IP para prevención de spam.
               </p>
             </section>
 
@@ -143,9 +161,12 @@ export const prerender = true;
               </p>
               <ul class="text-gray-300 space-y-2 mb-6">
                 <li>• <strong>Responder consultas:</strong> Para comunicarnos contigo y responder a tus preguntas o comentarios.</li>
+                <li>• <strong>Newsletter:</strong> Para enviarte contenido curado sobre tecnología si te has suscrito.</li>
                 <li>• <strong>Mejorar el servicio:</strong> Para analizar el uso del sitio web y mejorar nuestro contenido y funcionalidad.</li>
-                <li>• <strong>Seguridad y antispam:</strong> Para proteger nuestro sitio web contra actividades maliciosas.</li>
+                <li>• <strong>Seguridad y antispam:</strong> Para proteger nuestro sitio web contra actividades maliciosas y spam.</li>
                 <li>• <strong>Estadísticas:</strong> Para generar estadísticas anónimas sobre el uso del sitio web.</li>
+                <li>• <strong>Personalización:</strong> Para recordar tus preferencias y mejorar tu experiencia de navegación.</li>
+                <li>• <strong>Cumplimiento legal:</strong> Para cumplir con obligaciones legales aplicables.</li>
               </ul>
             </section>
 
@@ -167,9 +188,11 @@ export const prerender = true;
                 Conservamos los datos personales durante el tiempo necesario para cumplir con los propósitos descritos en esta política:
               </p>
               <ul class="text-gray-300 space-y-2 mb-6">
-                <li>• <strong>Consultas de contacto:</strong> 2 años desde la última comunicación.</li>
-                <li>• <strong>Métricas de uso:</strong> Datos agregados y anónimos conservados indefinidamente.</li>
-                <li>• <strong>Datos de seguridad:</strong> Conservados según sea necesario para investigar incidentes.</li>
+                <li>• <strong>Consultas de contacto:</strong> 2 años desde la última comunicación o hasta que solicites la eliminación.</li>
+                <li>• <strong>Suscripciones al newsletter:</strong> Hasta que canceles la suscripción o solicites la eliminación de datos.</li>
+                <li>• <strong>Métricas de uso:</strong> Datos agregados y anónimos conservados indefinidamente para análisis estadísticos.</li>
+                <li>• <strong>Datos de seguridad y logs:</strong> Conservados durante 12 meses para investigar incidentes de seguridad.</li>
+                <li>• <strong>Cookies y almacenamiento local:</strong> Según la configuración de tu navegador o hasta que las elimines manualmente.</li>
               </ul>
             </section>
 
@@ -228,26 +251,36 @@ export const prerender = true;
                 <li>• <strong>Limitación:</strong> Solicitar la limitación del procesamiento</li>
               </ul>
               <p class="text-gray-300 mb-6">
-                Para ejercer estos derechos, contáctanos en <a href="mailto:contact@iquitostech.com" class="text-[#2847d7] hover:underline">contact@iquitostech.com</a>.
+                Para ejercer estos derechos, contáctanos en <a href="mailto:gaelmontes@iquitostech.com" class="text-[#2847d7] hover:underline">gaelmontes@iquitostech.com</a>. Responderemos a tu solicitud dentro de 30 días y sin costo alguno, a menos que las solicitudes sean manifiestamente infundadas o excesivas.
               </p>
             </section>
 
             <section id="proveedores-servicios">
               <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">11. Proveedores de servicios</h2>
               
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Google Analytics</h3>
+              <p class="text-gray-300 mb-4">
+                Utilizamos Google Analytics para analizar el uso de nuestro sitio web. Google Analytics recopila información de forma anónima sobre cómo los visitantes utilizan nuestro sitio. Esta información nos ayuda a mejorar el contenido y la funcionalidad.
+              </p>
+
               <h3 class="text-xl font-semibold text-white mt-6 mb-3">Supabase</h3>
               <p class="text-gray-300 mb-4">
-                Utilizamos Supabase para almacenar métricas de visualizaciones de páginas. Supabase cumple con las normativas de protección de datos y ofrece cifrado en tránsito y en reposo.
+                Utilizamos Supabase para almacenar métricas de visualizaciones de páginas y datos de suscripciones al newsletter. Supabase cumple con las normativas de protección de datos y ofrece cifrado en tránsito y en reposo.
               </p>
 
               <h3 class="text-xl font-semibold text-white mt-6 mb-3">Resend</h3>
               <p class="text-gray-300 mb-4">
-                Utilizamos Resend para el envío de correos electrónicos desde nuestro formulario de contacto. Resend procesa los datos únicamente para entregar los mensajes y no los utiliza para otros propósitos.
+                Utilizamos Resend para el envío de correos electrónicos desde nuestro formulario de contacto y newsletter. Resend procesa los datos únicamente para entregar los mensajes y cumple con las normativas de protección de datos.
               </p>
 
               <h3 class="text-xl font-semibold text-white mt-6 mb-3">Google reCAPTCHA</h3>
-              <p class="text-gray-300 mb-6">
+              <p class="text-gray-300 mb-4">
                 Utilizamos Google reCAPTCHA v3 para protección antispam. Este servicio está sujeto a la Política de Privacidad de Google y puede recopilar información sobre tu uso del sitio web.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Vercel</h3>
+              <p class="text-gray-300 mb-6">
+                Nuestro sitio web está alojado en Vercel, que puede recopilar datos de logs del servidor para propósitos de seguridad y rendimiento. Vercel cumple con las normativas de protección de datos internacionales.
               </p>
             </section>
 
@@ -265,44 +298,75 @@ export const prerender = true;
               </p>
             </section>
 
+            <section id="redes-sociales">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">13. Redes sociales y compartir contenido</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Botones de compartir</h3>
+              <p class="text-gray-300 mb-4">
+                Nuestro sitio incluye botones para compartir contenido en redes sociales (Facebook, X/Twitter, LinkedIn, WhatsApp, Telegram). Estos botones no transmiten datos a las plataformas hasta que hagas clic en ellos.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Interacción con redes sociales</h3>
+              <p class="text-gray-300 mb-4">
+                Cuando compartes nuestro contenido en redes sociales, esas plataformas pueden:
+              </p>
+              <ul class="text-gray-300 space-y-2 mb-4">
+                <li>• Recopilar información sobre tu actividad de compartir</li>
+                <li>• Asociar el contenido compartido con tu perfil</li>
+                <li>• Usar esta información según sus propias políticas de privacidad</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Contenido integrado</h3>
+              <p class="text-gray-300 mb-6">
+                Algunos artículos pueden incluir contenido integrado (como videos de YouTube o tweets). Este contenido puede establecer cookies y recopilar datos según las políticas de privacidad de las respectivas plataformas.
+              </p>
+            </section>
+
             <section id="cookies">
-              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">13. Cookies y tecnologías similares</h2>
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">14. Cookies y tecnologías similares</h2>
               <p class="text-gray-300 mb-4">
                 Utilizamos las siguientes tecnologías:
               </p>
               <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• <strong>Cookies esenciales:</strong> Necesarias para el funcionamiento básico del sitio web</li>
+                <li>• <strong>Cookies de analíticas:</strong> Para recopilar información sobre el uso del sitio (Google Analytics)</li>
                 <li>• <strong>localStorage:</strong> Para almacenar preferencias y evitar conteos duplicados</li>
-                <li>• <strong>sessionStorage:</strong> Para datos temporales durante la sesión</li>
-                <li>• <strong>Google reCAPTCHA:</strong> Para protección antispam</li>
+                <li>• <strong>sessionStorage:</strong> Para datos temporales durante la sesión de navegación</li>
+                <li>• <strong>Google reCAPTCHA:</strong> Para protección antispam y seguridad</li>
               </ul>
+              <p class="text-gray-300 mb-4">
+                Puedes controlar el uso de cookies a través de la configuración de tu navegador. Ten en cuenta que desactivar ciertas cookies puede afectar la funcionalidad del sitio web.
+              </p>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">Gestión de cookies</h3>
               <p class="text-gray-300 mb-6">
-                Puedes controlar el uso de estas tecnologías a través de la configuración de tu navegador, aunque esto puede afectar la funcionalidad del sitio web.
+                Proporcionamos un banner de consentimiento de cookies que te permite elegir qué tipos de cookies aceptar. Puedes cambiar tus preferencias en cualquier momento a través de la configuración de cookies en tu navegador o contactándonos directamente.
               </p>
             </section>
 
             <section id="menores-edad">
-              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">14. Menores de edad</h2>
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">15. Menores de edad</h2>
               <p class="text-gray-300 mb-6">
                 Nuestro sitio web no está dirigido a menores de 16 años. No recopilamos conscientemente datos personales de menores de 16 años. Si descubrimos que hemos recopilado datos personales de un menor de 16 años, tomaremos medidas para eliminar esa información de nuestros servidores.
               </p>
             </section>
 
             <section id="enlaces-sitios">
-              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">15. Enlaces a otros sitios</h2>
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">16. Enlaces a otros sitios</h2>
               <p class="text-gray-300 mb-6">
                 Nuestro sitio web puede contener enlaces a sitios web de terceros. No somos responsables de las prácticas de privacidad de estos sitios web. Te recomendamos leer las políticas de privacidad de cualquier sitio web que visites.
               </p>
             </section>
 
             <section id="cambios-politica">
-              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">16. Cambios a esta política</h2>
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">17. Cambios a esta política</h2>
               <p class="text-gray-300 mb-6">
                 Podemos actualizar esta Política de Privacidad ocasionalmente. Te notificaremos sobre cambios significativos publicando la nueva política en esta página con una fecha de "última actualización" revisada. Te recomendamos revisar esta política periódicamente.
               </p>
             </section>
 
             <section id="contacto">
-              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">17. Contacto</h2>
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">18. Contacto</h2>
               <p class="text-gray-300 mb-4">
                 Si tienes preguntas sobre esta Política de Privacidad o deseas ejercer tus derechos de privacidad, puedes contactarnos:
               </p>
@@ -312,7 +376,7 @@ export const prerender = true;
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                   </svg>
                   <span class="text-white font-medium">Email:</span>
-                  <a href="mailto:contact@iquitostech.com" class="text-[#2847d7] hover:underline">contact@iquitostech.com</a>
+                  <a href="mailto:gaelmontes@iquitostech.com" class="text-[#2847d7] hover:underline">gaelmontes@iquitostech.com</a>
                 </div>
                 <div class="flex items-center space-x-3">
                   <svg class="w-5 h-5 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

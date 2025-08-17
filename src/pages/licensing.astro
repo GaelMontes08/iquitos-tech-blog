@@ -1,0 +1,491 @@
+---
+import Layout from '@/layouts/Layout.astro';
+
+const pageTitle = 'Licencias de Contenido | Iquitos Tech';
+const pageDescription = 'Acuerdos de licencias de contenido de Iquitos Tech. Conoce cómo puedes usar nuestro contenido, requisitos de atribución y términos de licenciamiento.';
+const lastUpdated = '17/08/2025';
+
+export const prerender = true;
+---
+
+<Layout 
+  title={pageTitle}
+  description={pageDescription}
+  canonical="https://iquitostech.com/licensing"
+  type="website"
+>
+  <section class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-transparent">
+      
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">
+          Licencias de Contenido
+        </h1>
+        <p class="text-xl text-gray-300 mb-6">
+          Conoce cómo puedes usar nuestro contenido y los términos de licenciamiento
+        </p>
+        <div class="inline-flex items-center px-4 py-2 bg-transparent ring-1 ring-white/10 rounded-lg">
+          <svg class="w-5 h-5 text-[#2847d7] mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <span class="text-gray-200 text-sm">Última actualización: {lastUpdated}</span>
+        </div>
+      </div>
+
+      <div class="lg:grid lg:grid-cols-12 lg:gap-8 items-start overflow-visible">
+        
+        <aside class="lg:col-span-3 self-start sticky top-24">
+          
+          <div class="lg:hidden mb-6">
+            <button 
+              id="toc-toggle"
+              class="w-full flex items-center justify-between px-4 py-3 bg-transparent border border-white/10 rounded-2xl text-white hover:border-white/20 transition-colors"
+            >
+              <span class="font-medium">Índice de contenidos</span>
+              <svg id="toc-icon" class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+          </div>
+
+          <nav id="toc-content" class="hidden lg:block rounded-2xl border border-white/10 p-4 max-h-[calc(100vh-8rem)] overflow-auto">
+            <h3 class="text-lg font-semibold text-white mb-4">Contenidos</h3>
+            <ul class="space-y-2 text-sm" id="toc-list">
+              <li><a href="#introduccion" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">1. Introducción</a></li>
+              <li><a href="#tipos-contenido" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">2. Tipos de contenido</a></li>
+              <li><a href="#licencia-general" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">3. Licencia general</a></li>
+              <li><a href="#uso-personal" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">4. Uso personal</a></li>
+              <li><a href="#uso-educativo" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">5. Uso educativo</a></li>
+              <li><a href="#uso-comercial" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">6. Uso comercial</a></li>
+              <li><a href="#atribucion" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">7. Requisitos de atribución</a></li>
+              <li><a href="#contenido-terceros" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">8. Contenido de terceros</a></li>
+              <li><a href="#usos-prohibidos" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">9. Usos prohibidos</a></li>
+              <li><a href="#marcas-comerciales" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">10. Marcas comerciales</a></li>
+              <li><a href="#derechos-autor" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">11. Derechos de autor</a></li>
+              <li><a href="#solicitar-permisos" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">12. Solicitar permisos</a></li>
+              <li><a href="#violaciones" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">13. Violaciones de licencia</a></li>
+              <li><a href="#modificaciones" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">14. Modificaciones</a></li>
+              <li><a href="#contacto" class="toc-link text-gray-300 hover:text-[#2847d7] transition-colors block py-1">15. Contacto</a></li>
+            </ul>
+          </nav>
+        </aside>
+
+        <article class="lg:col-span-7 min-w-0">
+          <div class="prose prose-invert max-w-none">
+            
+            <section id="introduccion">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">1. Introducción</h2>
+              <p class="text-gray-300 mb-4">
+                Esta página describe los términos bajo los cuales puedes usar el contenido publicado en Iquitos Tech. Nuestro objetivo es facilitar el compartir conocimiento tecnológico mientras protegemos nuestros derechos de propiedad intelectual.
+              </p>
+              <p class="text-gray-300 mb-6">
+                Al usar cualquier contenido de nuestro sitio, aceptas cumplir con estos términos de licenciamiento. Si tienes dudas sobre el uso permitido, no dudes en contactarnos.
+              </p>
+            </section>
+
+            <section id="tipos-contenido">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">2. Tipos de contenido cubierto</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">2.1 Contenido original</h3>
+              <p class="text-gray-300 mb-4">Incluye, pero no se limita a:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Artículos y análisis técnicos escritos por nuestro equipo</li>
+                <li>• Tutoriales y guías paso a paso</li>
+                <li>• Reseñas y comparativas de productos</li>
+                <li>• Infografías y gráficos originales</li>
+                <li>• Código fuente y ejemplos de programación</li>
+                <li>• Capturas de pantalla y materiales visuales creados por nosotros</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">2.2 Contenido con licencias especiales</h3>
+              <p class="text-gray-300 mb-4">Algunos contenidos pueden tener licencias específicas:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Imágenes bajo Creative Commons (indicado claramente)</li>
+                <li>• Código open source con licencias específicas (MIT, GPL, etc.)</li>
+                <li>• Materiales con permisos especiales de terceros</li>
+              </ul>
+            </section>
+
+            <section id="licencia-general">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">3. Licencia general de contenido</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">3.1 Creative Commons BY-NC-SA 4.0</h3>
+              <p class="text-gray-300 mb-4">
+                Salvo que se indique lo contrario, nuestro contenido original está licenciado bajo 
+                <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="text-[#2847d7] hover:underline" target="_blank" rel="noopener">Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional</a>.
+              </p>
+              
+              <div class="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-6 mb-6">
+                <h4 class="text-lg font-semibold text-blue-200 mb-3">Esto significa que puedes:</h4>
+                <ul class="text-blue-200/90 space-y-2">
+                  <li>✅ <strong>Compartir:</strong> Copiar y redistribuir el material en cualquier medio o formato</li>
+                  <li>✅ <strong>Adaptar:</strong> Remezclar, transformar y construir a partir del material</li>
+                  <li>✅ <strong>Usar para educación:</strong> Utilizar en contextos educativos y de investigación</li>
+                </ul>
+              </div>
+
+              <div class="bg-orange-500/10 border border-orange-500/20 rounded-2xl p-6 mb-6">
+                <h4 class="text-lg font-semibold text-orange-200 mb-3">Bajo las siguientes condiciones:</h4>
+                <ul class="text-orange-200/90 space-y-2">
+                  <li>📝 <strong>Atribución:</strong> Debes dar crédito apropiado y enlazar a la fuente original</li>
+                  <li>🚫 <strong>No comercial:</strong> No puedes usar el material para propósitos comerciales</li>
+                  <li>🔄 <strong>Compartir igual:</strong> Debes licenciar tus adaptaciones bajo los mismos términos</li>
+                </ul>
+              </div>
+            </section>
+
+            <section id="uso-personal">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">4. Uso personal</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">4.1 Usos permitidos</h3>
+              <p class="text-gray-300 mb-4">Para uso personal, puedes:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Leer y estudiar todo el contenido sin restricciones</li>
+                <li>• Compartir enlaces a nuestros artículos en redes sociales</li>
+                <li>• Citar fragmentos cortos con atribución apropiada</li>
+                <li>• Imprimir artículos para referencia personal</li>
+                <li>• Usar código de ejemplo en proyectos personales</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">4.2 Buenas prácticas</h3>
+              <p class="text-gray-300 mb-6">
+                Aunque el uso personal es amplio, recomendamos siempre dar crédito cuando compartes o citas nuestro contenido, aunque no sea legalmente requerido.
+              </p>
+            </section>
+
+            <section id="uso-educativo">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">5. Uso educativo</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">5.1 Instituciones educativas</h3>
+              <p class="text-gray-300 mb-4">Las instituciones educativas pueden:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Usar nuestros artículos como material de clase</li>
+                <li>• Incluir contenido en plataformas de aprendizaje (LMS)</li>
+                <li>• Crear materiales derivados para cursos</li>
+                <li>• Traducir contenido para uso educativo local</li>
+                <li>• Usar en cursos en línea gratuitos</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">5.2 Requisitos para uso educativo</h3>
+              <p class="text-gray-300 mb-4">Debes cumplir con:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Atribución clara a Iquitos Tech</li>
+                <li>• Enlace al artículo original cuando sea posible</li>
+                <li>• No cobrar específicamente por el contenido de Iquitos Tech</li>
+                <li>• Mantener avisos de derechos de autor</li>
+              </ul>
+            </section>
+
+            <section id="uso-comercial">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">6. Uso comercial</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">6.1 Restricciones generales</h3>
+              <p class="text-gray-300 mb-4">
+                El uso comercial directo de nuestro contenido no está permitido bajo la licencia Creative Commons BY-NC-SA. Sin embargo, ofrecemos opciones para uso comercial legítimo.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">6.2 Licencias comerciales disponibles</h3>
+              <p class="text-gray-300 mb-4">Podemos otorgar licencias comerciales para:</p>
+              <ul class="text-gray-300 space-y-2 mb-4">
+                <li>• Redistribución en productos comerciales</li>
+                <li>• Uso en cursos de pago</li>
+                <li>• Incorporación en software propietario</li>
+                <li>• Uso en campañas de marketing</li>
+                <li>• Publicación en medios comerciales</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">6.3 Colaboraciones comerciales</h3>
+              <p class="text-gray-300 mb-6">
+                Estamos abiertos a colaboraciones comerciales mutuamente beneficiosas. Contáctanos para discutir oportunidades de licenciamiento o asociación.
+              </p>
+            </section>
+
+            <section id="atribucion">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">7. Requisitos de atribución</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">7.1 Atribución mínima requerida</h3>
+              <p class="text-gray-300 mb-4">Cuando uses nuestro contenido, debes incluir:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Nombre del autor (si está disponible)</li>
+                <li>• "Iquitos Tech" como fuente</li>
+                <li>• Enlace al artículo original</li>
+                <li>• Indicación de licencia Creative Commons</li>
+                <li>• Nota si has modificado el contenido original</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">7.2 Ejemplos de atribución correcta</h3>
+              
+              <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                <h4 class="text-sm font-semibold text-gray-300 mb-2">Para uso en web:</h4>
+                <code class="text-sm text-green-400">
+                  "Artículo original por [Autor] en &lt;a href="[URL]"&gt;Iquitos Tech&lt;/a&gt;, 
+                  licenciado bajo CC BY-NC-SA 4.0"
+                </code>
+              </div>
+
+              <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                <h4 class="text-sm font-semibold text-gray-300 mb-2">Para uso impreso:</h4>
+                <code class="text-sm text-green-400">
+                  "Fuente: [Título del artículo], Iquitos Tech (iquitostech.com), 
+                  CC BY-NC-SA 4.0"
+                </code>
+              </div>
+
+              <div class="bg-gray-800 rounded-lg p-4 mb-6">
+                <h4 class="text-sm font-semibold text-gray-300 mb-2">Para contenido modificado:</h4>
+                <code class="text-sm text-green-400">
+                  "Basado en contenido original de Iquitos Tech, adaptado por [Tu nombre]. 
+                  Original disponible en [URL]"
+                </code>
+              </div>
+            </section>
+
+            <section id="contenido-terceros">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">8. Contenido de terceros</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">8.1 Imágenes y multimedia</h3>
+              <p class="text-gray-300 mb-4">
+                Algunas imágenes, videos o gráficos pueden provenir de terceros y tener sus propias licencias. Siempre verificamos los derechos, pero es tu responsabilidad:
+              </p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Verificar la licencia de contenido específico antes de reutilizar</li>
+                <li>• Contactar al propietario original para usos comerciales</li>
+                <li>• Respetar las limitaciones de cada licencia individual</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">8.2 Software y código</h3>
+              <p class="text-gray-300 mb-6">
+                El código de ejemplo puede tener licencias específicas (MIT, Apache, GPL, etc.). Siempre indicamos la licencia correspondiente en el artículo o en comentarios del código.
+              </p>
+            </section>
+
+            <section id="usos-prohibidos">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">9. Usos prohibidos</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">9.1 Prohibiciones absolutas</h3>
+              <p class="text-gray-300 mb-4">Está estrictamente prohibido:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Plagiar nuestro contenido presentándolo como propio</li>
+                <li>• Usar contenido para difundir desinformación</li>
+                <li>• Modificar contenido para cambiar su significado original</li>
+                <li>• Usar en contextos que dañen nuestra reputación</li>
+                <li>• Violar términos específicos de contenido de terceros</li>
+                <li>• Uso en actividades ilegales o dañinas</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">9.2 Restricciones comerciales</h3>
+              <p class="text-gray-300 mb-6">
+                Sin licencia comercial explícita, no puedes vender, redistribuir comercialmente, o usar nuestro contenido en productos o servicios de pago.
+              </p>
+            </section>
+
+            <section id="marcas-comerciales">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">10. Marcas comerciales</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">10.1 Uso del nombre y logo</h3>
+              <p class="text-gray-300 mb-4">
+                "Iquitos Tech" y nuestro logo son marcas comerciales. Su uso está limitado a:
+              </p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Atribución requerida según estos términos</li>
+                <li>• Referencias periodísticas o editoriales</li>
+                <li>• Uso académico con atribución apropiada</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">10.2 Usos no permitidos</h3>
+              <p class="text-gray-300 mb-6">
+                No puedes usar nuestras marcas para sugerir asociación, patrocinio o aprobación sin permiso explícito.
+              </p>
+            </section>
+
+            <section id="derechos-autor">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">11. Derechos de autor</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">11.1 Propiedad intelectual</h3>
+              <p class="text-gray-300 mb-6">
+                Iquitos Tech retiene todos los derechos de autor sobre el contenido original. Las licencias otorgadas no constituyen una transferencia de propiedad intelectual.
+              </p>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">11.2 DMCA y violaciones</h3>
+              <p class="text-gray-300 mb-6">
+                Respetamos los derechos de propiedad intelectual de otros y esperamos que otros respeten los nuestros. Si crees que tu contenido ha sido usado sin autorización, contáctanos.
+              </p>
+            </section>
+
+            <section id="solicitar-permisos">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">12. Solicitar permisos especiales</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">12.1 Proceso de solicitud</h3>
+              <p class="text-gray-300 mb-4">Para solicitar permisos especiales, incluye:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Descripción específica del uso previsto</li>
+                <li>• Alcance y duración del uso</li>
+                <li>• Contexto comercial o no comercial</li>
+                <li>• Audiencia objetivo y distribución esperada</li>
+                <li>• Beneficios mutuos (si aplica)</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">12.2 Tiempo de respuesta</h3>
+              <p class="text-gray-300 mb-6">
+                Nos comprometemos a responder solicitudes de licenciamiento dentro de 7 días hábiles. Las licencias comerciales pueden requerir negociación adicional.
+              </p>
+            </section>
+
+            <section id="violaciones">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">13. Violaciones de licencia</h2>
+              
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">13.1 Consecuencias</h3>
+              <p class="text-gray-300 mb-4">Las violaciones de estos términos pueden resultar en:</p>
+              <ul class="text-gray-300 space-y-2 mb-6">
+                <li>• Revocación inmediata de licencias otorgadas</li>
+                <li>• Solicitud de remoción de contenido no autorizado</li>
+                <li>• Acciones legales según corresponda</li>
+                <li>• Reclamo de daños y perjuicios</li>
+              </ul>
+
+              <h3 class="text-xl font-semibold text-white mt-6 mb-3">13.2 Resolución amistosa</h3>
+              <p class="text-gray-300 mb-6">
+                Preferimos resolver disputas de manera amistosa. Si hay un malentendido sobre el uso, contáctanos para aclarar la situación.
+              </p>
+            </section>
+
+            <section id="modificaciones">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">14. Modificaciones a esta política</h2>
+              <p class="text-gray-300 mb-4">
+                Podemos actualizar estos términos de licenciamiento ocasionalmente. Los cambios se publicarán en esta página con la fecha de actualización.
+              </p>
+              <p class="text-gray-300 mb-6">
+                El uso continuo de nuestro contenido después de los cambios constituye aceptación de los nuevos términos.
+              </p>
+            </section>
+
+            <section id="contacto">
+              <h2 class="text-2xl font-bold text-white mb-4 scroll-mt-24">15. Contacto</h2>
+              <p class="text-gray-300 mb-4">
+                Para consultas sobre licenciamiento, permisos o uso de contenido:
+              </p>
+              
+              <div class="bg-transparent border border-white/10 rounded-2xl p-6 mb-6">
+                <div class="flex items-center space-x-3 mb-3">
+                  <svg class="w-5 h-5 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                  </svg>
+                  <span class="text-white font-medium">Email de licencias:</span>
+                  <a href="mailto:gaelmontes@iquitostech.com" class="text-[#2847d7] hover:underline">gaelmontes@iquitostech.com</a>
+                </div>
+                <div class="flex items-center space-x-3 mb-3">
+                  <svg class="w-5 h-5 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke-width="1.5"/>
+                    <path d="M2 12h20" stroke-width="1"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke-width="1"/>
+                    <path d="M8 12c0-4.5 1.8-8 4-8s4 3.5 4 8-1.8 8-4 8-4-3.5-4-8z" stroke-width="1" opacity="0.6"/>
+                  </svg>
+                  <span class="text-white font-medium">Sitio web:</span>
+                  <a href="https://iquitostech.com" class="text-[#2847d7] hover:underline">iquitostech.com</a>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <svg class="w-5 h-5 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <span class="text-white font-medium">Asunto recomendado:</span>
+                  <span class="text-gray-300">"Consulta de licenciamiento - [Tipo de uso]"</span>
+                </div>
+              </div>
+
+              <div class="bg-green-500/10 border border-green-500/20 rounded-2xl p-6">
+                <div class="flex items-start space-x-3">
+                  <svg class="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <div>
+                    <p class="text-sm text-green-200 font-medium mb-1">Compromiso con el conocimiento abierto</p>
+                    <p class="text-sm text-green-200/80">
+                      Creemos en compartir conocimiento tecnológico. Si tu uso promueve la educación o beneficia a la comunidad tech, estaremos encantados de trabajar contigo para encontrar una solución que funcione para ambos.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+  </section>
+
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    .toc-link.active {
+      color: #2847d7;
+      font-weight: 600;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const tocToggle = document.getElementById('toc-toggle');
+      const tocContent = document.getElementById('toc-content');
+      const tocIcon = document.getElementById('toc-icon');
+      
+      if (tocToggle && tocContent && tocIcon) {
+        tocToggle.addEventListener('click', function() {
+          tocContent.classList.toggle('hidden');
+          tocIcon.classList.toggle('rotate-180');
+        });
+      }
+
+      const sections = document.querySelectorAll('section[id]');
+      const tocLinks = document.querySelectorAll('.toc-link');
+      
+      const observerOptions = {
+        rootMargin: '-20% 0px -70% 0px',
+        threshold: 0
+      };
+      
+      const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            tocLinks.forEach(link => {
+              link.classList.remove('active');
+              link.removeAttribute('aria-current');
+            });
+            
+            const activeLink = document.querySelector(`a[href="#${entry.target.id}"]`);
+            if (activeLink) {
+              activeLink.classList.add('active');
+              activeLink.setAttribute('aria-current', 'true');
+            }
+          }
+        });
+      }, observerOptions);
+      
+      sections.forEach(section => {
+        observer.observe(section);
+      });
+
+      for (let i = 0; i < tocLinks.length; i++) {
+        const link = tocLinks[i];
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const href = link.getAttribute('href') || '';
+          const targetId = href.substring(1);
+          const targetElement = document.getElementById(targetId);
+          
+          if (targetElement) {
+            const offsetTop = targetElement.offsetTop - 100;
+            window.scrollTo({
+              top: offsetTop,
+              behavior: 'smooth'
+            });
+            
+            if (window.innerWidth < 1024 && tocContent && tocIcon) {
+              tocContent.classList.add('hidden');
+              tocIcon.classList.remove('rotate-180');
+            }
+          }
+        });
+      }
+    });
+  </script>
+</Layout>
