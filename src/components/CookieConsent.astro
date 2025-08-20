@@ -317,15 +317,20 @@
     }
 
     hasConsent() {
-      return this.getCookie(this.cookieName) !== null;
+      const consentCookie = this.getCookie(this.cookieName);
+      console.log('Cookie consent check:', consentCookie);
+      return consentCookie !== null;
     }
 
     getConsent() {
       const cookie = this.getCookie(this.cookieName);
       if (cookie) {
         try {
-          return JSON.parse(cookie);
+          const parsed = JSON.parse(cookie);
+          console.log('Retrieved cookie consent:', parsed);
+          return parsed;
         } catch (e) {
+          console.warn('Failed to parse cookie consent:', e);
           return { essential: true, analytics: false, marketing: false };
         }
       }
@@ -340,7 +345,16 @@
         timestamp: new Date().toISOString()
       };
 
-      this.setCookie(this.cookieName, JSON.stringify(consent), this.cookieExpiry);
+      const consentString = JSON.stringify(consent);
+      console.log('Setting cookie consent:', consentString);
+      
+      this.setCookie(this.cookieName, encodeURIComponent(consentString), this.cookieExpiry);
+      
+      // Verify the cookie was set
+      setTimeout(() => {
+        const savedCookie = this.getCookie(this.cookieName);
+        console.log('Cookie verification:', savedCookie);
+      }, 100);
       
       if (!consent.analytics) {
         this.clearAnalyticsCookies();
@@ -413,32 +427,35 @@
       const expires = new Date();
       expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
       
+      // For cookie consent, we need JavaScript access, so no HttpOnly
       const securityAttributes = [
         `${name}=${value}`,
         `expires=${expires.toUTCString()}`,
         'path=/',
-        'SameSite=Strict',
-        'Secure',
-        'HttpOnly'
+        'SameSite=Strict'
       ];
       
-      if (name !== 'cookie-consent') {
-        securityAttributes.push('Partitioned');
+      // Only add Secure in production (HTTPS)
+      if (location.protocol === 'https:') {
+        securityAttributes.push('Secure');
       }
       
-      document.cookie = securityAttributes.join(';');
+      document.cookie = securityAttributes.join('; ');
     }
 
     setSessionCookie(name: string, value: string) {
       const securityAttributes = [
         `${name}=${value}`,
         'path=/',
-        'SameSite=Strict',
-        'Secure',
-        'HttpOnly'
+        'SameSite=Strict'
       ];
       
-      document.cookie = securityAttributes.join(';');
+      // Only add Secure in production (HTTPS)
+      if (location.protocol === 'https:') {
+        securityAttributes.push('Secure');
+      }
+      
+      document.cookie = securityAttributes.join('; ');
     }
 
     setAnalyticsCookie(name: string, value: string, days: number = 730) {
@@ -449,11 +466,15 @@
         `${name}=${value}`,
         `expires=${expires.toUTCString()}`,
         'path=/',
-        'SameSite=Lax',
-        'Secure'
+        'SameSite=Lax'
       ];
       
-      document.cookie = securityAttributes.join(';');
+      // Only add Secure in production (HTTPS)
+      if (location.protocol === 'https:') {
+        securityAttributes.push('Secure');
+      }
+      
+      document.cookie = securityAttributes.join('; ');
     }
 
     clearCookie(name: string) {
@@ -461,11 +482,15 @@
         `${name}=`,
         'expires=Thu, 01 Jan 1970 00:00:00 UTC',
         'path=/',
-        'SameSite=Strict',
-        'Secure'
+        'SameSite=Strict'
       ];
       
-      document.cookie = securityAttributes.join(';');
+      // Only add Secure in production (HTTPS)
+      if (location.protocol === 'https:') {
+        securityAttributes.push('Secure');
+      }
+      
+      document.cookie = securityAttributes.join('; ');
     }
 
     clearAnalyticsCookies() {
@@ -526,7 +551,10 @@
       for (let i = 0; i < ca.length; i++) {
         let c = ca[i];
         while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        if (c.indexOf(nameEQ) === 0) {
+          const value = c.substring(nameEQ.length, c.length);
+          return decodeURIComponent(value);
+        }
       }
       return null;
     }
