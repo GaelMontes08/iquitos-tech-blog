@@ -1,5 +1,4 @@
 ---
-// filepath: f:\Código\Iquitos-Tech\iquitos-tech\src\pages\categoria\[slug].astro
 import Layout from '../../layouts/Layout.astro';
 import PostCard from '../../components/PostCard.astro';
 import CategoryPageSkeleton from '../../components/skeletons/CategoryPageSkeleton.astro';
@@ -81,6 +80,7 @@ const pageDescription = category
   ? category.description || `Últimos artículos de ${category.name} en Iquitos Tech`
   : 'Explora nuestros artículos por categoría';
 
+const canonical = category ? `https://iquitostech.com/categoria/${category.slug}` : 'https://iquitostech.com';
 const seo: YoastSEO | undefined = category?.yoast_head_json;
 
 export const prerender = false;
@@ -89,6 +89,7 @@ export const prerender = false;
 <Layout 
   title={pageTitle} 
   description={pageDescription}
+  canonical={canonical}
   seo={seo}
   type="website"
   urlType="category"

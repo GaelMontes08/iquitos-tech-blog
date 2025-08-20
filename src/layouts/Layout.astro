@@ -12,6 +12,11 @@ import type { SEOProps } from '@/lib/seo';
 export interface Props extends SEOProps {}
 
 const seoProps = Astro.props as Props;
+
+if (!seoProps.canonical) {
+  const currentURL = new URL(Astro.request.url);
+  seoProps.canonical = `https://iquitostech.com${currentURL.pathname}`;
+}
 ---
 
 <!doctype html>

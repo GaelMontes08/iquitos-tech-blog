@@ -5,7 +5,7 @@ import { getPageInfo } from '@/lib/wp';
 const { title, content } = await getPageInfo('404-2');
 ---
 
-<Layout title={title} description={content}>
+<Layout title={title} description={content} canonical="https://iquitostech.com/404">
   <div class="pb-10 flex items-center justify-center px-4">
     <div class="max-w-6xl mx-auto">
       <div class="grid lg:grid-cols-2 gap-12 items-center">

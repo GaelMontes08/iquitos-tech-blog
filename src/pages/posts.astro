@@ -104,10 +104,21 @@ const pageDescription = searchQuery
     ? `Artículos de ${categories.find(cat => cat.slug === selectedCategory)?.name || selectedCategory} en Iquitos Tech`
     : 'Explora todos nuestros artículos sobre tecnología, desarrollo, reviews y más';
 
+let canonical = 'https://iquitostech.com/posts';
+if (selectedCategory) {
+  canonical += `?category=${selectedCategory}`;
+}
+if (searchQuery) {
+  canonical += `${selectedCategory ? '&' : '?'}search=${encodeURIComponent(searchQuery)}`;
+}
+if (currentPage > 1) {
+  canonical += `${selectedCategory || searchQuery ? '&' : '?'}page=${currentPage}`;
+}
+
 export const prerender = false;
 ---
 
-<Layout title={pageTitle} description={pageDescription}>
+<Layout title={pageTitle} description={pageDescription} canonical={canonical}>
   <main class="min-h-screen">
 
     <section class="w-full py-12 lg:py-16">
