@@ -354,3 +354,146 @@ function getFallbackMostViewedPosts() {
 }
 
 export const getMostViewedPostsWithMetaQuery = getMostViewedPosts;
+
+// New function for monthly trending posts
+export const getMonthlyTrendingPosts = async (limit: number = 10) => {
+  try {
+    if (!supabase) {
+      console.warn('Supabase not configured, returning fallback trending posts');
+      return getFallbackMostViewedPosts();
+    }
+
+    console.log('Fetching monthly trending data from Supabase...');
+    
+    // Get all posts from Views table ordered by views
+    const { data: viewData, error: viewError } = await supabase
+      .from('Views')
+      .select('slug, views')
+      .order('views', { ascending: false })
+      .limit(50); // Get more posts to filter by date
+
+    if (viewError) {
+      console.error('Error fetching view data from Supabase:', viewError);
+      return getFallbackMostViewedPosts();
+    }
+
+    if (!viewData || viewData.length === 0) {
+      console.warn('No view data found in Supabase, returning fallback');
+      return getFallbackMostViewedPosts();
+    }
+
+    if (!domain) {
+      console.warn('WP_DOMAIN not configured, using view data only');
+      return createPostsFromViewData(viewData.slice(0, limit));
+    }
+
+    // Get current date and calculate start of current month
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    console.log(`Filtering posts from ${startOfMonth.toISOString()} to now for monthly trends`);
+
+    const postPromises = viewData.map(async (viewRecord: any) => {
+      try {
+        const response = await fetchWithTimeout(
+          `https://${domain}/wp-json/wp/v2/posts?slug=${viewRecord.slug}&_embed&_fields=id,title,slug,date,excerpt,featured_media,_embedded`,
+          {},
+          10000
+        );
+
+        if (!response.ok) {
+          console.warn(`Failed to fetch post data for slug: ${viewRecord.slug}`);
+          return null;
+        }
+
+        const posts = await response.json();
+        if (!posts || posts.length === 0) {
+          console.warn(`No WordPress post found for slug: ${viewRecord.slug}`);
+          return null;
+        }
+
+        const post = posts[0];
+        const postDate = new Date(post.date);
+
+        // Filter posts from current month only
+        if (postDate < startOfMonth) {
+          return null;
+        }
+
+        const category = post._embedded?.['wp:term']?.[0]?.[0]?.name || 'Tecnología';
+        
+        // Try multiple ways to get the featured image
+        let featuredImage = null;
+        
+        // Method 1: From _embedded wp:featuredmedia
+        if (post._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+          featuredImage = post._embedded['wp:featuredmedia'][0].source_url;
+        }
+        
+        // Method 2: From _embedded wp:featuredmedia with different structure
+        else if (post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.full?.source_url) {
+          featuredImage = post._embedded['wp:featuredmedia'][0].media_details.sizes.full.source_url;
+        }
+        
+        // Method 3: From _embedded wp:featuredmedia medium size
+        else if (post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium?.source_url) {
+          featuredImage = post._embedded['wp:featuredmedia'][0].media_details.sizes.medium.source_url;
+        }
+        
+        // Method 4: Check if post has featured_media field and make separate request
+        else if (post.featured_media && post.featured_media !== 0) {
+          try {
+            const mediaResponse = await fetchWithTimeout(
+              `https://${domain}/wp-json/wp/v2/media/${post.featured_media}`,
+              {},
+              5000
+            );
+            if (mediaResponse.ok) {
+              const media = await mediaResponse.json();
+              featuredImage = media.source_url || media.media_details?.sizes?.full?.source_url;
+            }
+          } catch (mediaError) {
+            console.warn(`Failed to fetch media for post ${post.id}:`, mediaError);
+          }
+        }
+        
+        console.log(`Post ${post.title?.rendered}: Featured image = ${featuredImage || 'FALLBACK'}`);
+
+        return {
+          id: post.id,
+          title: post.title?.rendered || 'Sin título',
+          slug: viewRecord.slug,
+          category,
+          views: formatViews(viewRecord.views),
+          viewsRaw: viewRecord.views,
+          date: formatDate(post.date),
+          dateRaw: post.date,
+          excerpt: post.excerpt?.rendered?.replace(/<[^>]*>/g, '').substring(0, 150) + '...' || '',
+          image: featuredImage || '/fallback-banner.webp',
+          url: `/posts/${viewRecord.slug}`
+        };
+      } catch (error) {
+        console.error(`Error fetching post data for ${viewRecord.slug}:`, error);
+        return null;
+      }
+    });
+
+    const results = await Promise.all(postPromises);
+    const filteredResults = results
+      .filter(post => post !== null)
+      .slice(0, limit);
+
+    console.log(`Found ${filteredResults.length} trending posts for this month`);
+    
+    if (filteredResults.length === 0) {
+      console.warn('No posts found for current month, returning all-time trending');
+      return await getMostViewedPosts();
+    }
+
+    return filteredResults;
+
+  } catch (error) {
+    console.error('Error in getMonthlyTrendingPosts:', error);
+    return getFallbackMostViewedPosts();
+  }
+};

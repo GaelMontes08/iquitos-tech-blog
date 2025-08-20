@@ -1,0 +1,231 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import SEO from '@/components/SEO.astro';
+import Schema from '@/components/Schema.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import { getMonthlyTrendingPosts } from '@/lib/views';
+
+let trendingPosts = [];
+let error: string | null = null;
+
+try {
+  trendingPosts = await getMonthlyTrendingPosts(10);
+} catch (err) {
+  console.error('Error loading trending posts:', err);
+  error = typeof err === 'object' && err !== null && 'message' in err ? (err as { message: string }).message : String(err);
+}
+
+const currentMonth = new Date().toLocaleDateString('es-ES', { 
+  month: 'long', 
+  year: 'numeric' 
+});
+
+const pageTitle = `Tendencias de ${currentMonth} | Iquitos Tech`;
+const pageDescription = `Descubre las 10 noticias más leídas de ${currentMonth} en tecnología, gaming, inteligencia artificial y más.`;
+const canonical = 'https://iquitostech.com/trends';
+
+export const prerender = false;
+---
+
+<Layout>
+  <SEO 
+    slot="head"
+    title={pageTitle} 
+    description={pageDescription}
+    canonical={canonical}
+    type="website"
+  />
+  
+  <Schema 
+    slot="head"
+    title={pageTitle}
+    description={pageDescription}
+    type="website"
+  />
+
+  <main class="min-h-screen bg-[#131313]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <Breadcrumb 
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Tendencias' }
+        ]}
+      />
+      
+      <div class="text-center mb-12">
+        <div class="inline-flex items-center px-4 py-2 bg-[#2847d7]/10 border border-[#2847d7]/20 rounded-full mb-6">
+          <svg class="w-5 h-5 text-[#2847d7] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+          <span class="text-[#2847d7] font-medium text-sm">Tendencias del mes</span>
+        </div>
+        
+        <h1 class="text-4xl font-bold text-white mb-4">
+          Lo Más Leído en {currentMonth}
+        </h1>
+        <p class="text-xl text-gray-400 max-w-3xl mx-auto">
+          Las 10 noticias más populares del mes basadas en visualizaciones. Mantente al día con lo que más interesa a nuestra comunidad tech.
+        </p>
+      </div>
+
+      {error ? (
+        <div class="text-center py-12">
+          <div class="bg-red-900/20 border border-red-500/30 rounded-lg p-6 max-w-md mx-auto">
+            <h3 class="text-lg font-medium text-red-400 mb-2">Error al cargar tendencias</h3>
+            <p class="text-red-300">{error}</p>
+          </div>
+        </div>
+      ) : trendingPosts.length === 0 ? (
+        <div class="text-center py-12">
+          <div class="bg-gray-800/50 border border-gray-700 rounded-lg p-6 max-w-md mx-auto">
+            <h3 class="text-lg font-medium text-gray-300 mb-2">No hay tendencias disponibles</h3>
+            <p class="text-gray-400">Vuelve más tarde para ver las tendencias del mes.</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          {trendingPosts.length >= 3 && (
+            <div class="mb-16">
+              <h2 class="text-2xl font-bold text-white mb-8 flex items-center">
+                <span class="bg-gradient-to-r from-[#2847d7] to-blue-500 bg-clip-text text-transparent mr-3">🏆</span>
+                Top 3 del Mes
+              </h2>
+              
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {trendingPosts.slice(0, 3).map((post: any, index: number) => (
+                  <article class="group relative">
+                    <a href={post.url} class="block">
+                      <div class="absolute top-4 left-4 z-10">
+                        <div class={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white ${
+                          index === 0 ? 'bg-yellow-500' : 
+                          index === 1 ? 'bg-gray-400' : 
+                          'bg-orange-600'
+                        }`}>
+                          {index + 1}
+                        </div>
+                      </div>
+                      
+                      <div class="aspect-video relative overflow-hidden rounded-lg mb-4">
+                        <img 
+                          src={post.image} 
+                          alt={post.title}
+                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onerror="this.onerror=null;this.src='/fallback-banner.webp';"
+                        />
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                        
+                        <div class="absolute bottom-3 right-3">
+                          <div class="bg-black/70 backdrop-blur-sm px-3 py-1 rounded-full flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-[#2847d7]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            <span class="text-white text-sm font-medium">{post.views}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="space-y-3">
+                        <div class="flex items-center space-x-3 text-sm">
+                          <span class="bg-[#2847d7]/20 text-[#2847d7] px-2 py-1 rounded-full text-xs font-medium">
+                            {post.category}
+                          </span>
+                          <span class="text-gray-400">{post.date}</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-white group-hover:text-[#2847d7] transition-colors line-clamp-2">
+                          {post.title}
+                        </h3>
+                        
+                        <p class="text-gray-400 text-sm line-clamp-2">
+                          {post.excerpt}
+                        </p>
+                      </div>
+                    </a>
+                  </article>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div class="mb-16">
+            <h2 class="text-2xl font-bold text-white mb-8 flex items-center">
+              <span class="bg-gradient-to-r from-[#2847d7] to-blue-500 bg-clip-text text-transparent mr-3">📊</span>
+              Ranking Completo
+            </h2>
+            
+            <div class="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden">
+              {trendingPosts.map((post: any, index: number) => (
+                <article class="group border-b border-gray-800 last:border-b-0">
+                  <a href={post.url} class="block p-6 hover:bg-gray-800/50 transition-colors">
+                    <div class="flex items-start space-x-4">
+                      <div class="flex-shrink-0">
+                        <div class={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm ${
+                          index < 3 ? 'bg-[#2847d7] text-white' : 'bg-gray-700 text-gray-300'
+                        }`}>
+                          {index + 1}
+                        </div>
+                      </div>
+                      
+                      <div class="flex-shrink-0">
+                        <img 
+                          src={post.image} 
+                          alt={post.title}
+                          class="w-20 h-20 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+                          onerror="this.onerror=null;this.src='/fallback-banner.webp';"
+                        />
+                      </div>
+                      
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center space-x-3 mb-2">
+                          <span class="bg-[#2847d7]/20 text-[#2847d7] px-2 py-1 rounded-full text-xs font-medium">
+                            {post.category}
+                          </span>
+                          <span class="text-gray-400 text-sm">{post.date}</span>
+                        </div>
+                        
+                        <h3 class="text-lg font-semibold text-white group-hover:text-[#2847d7] transition-colors mb-2 line-clamp-2">
+                          {post.title}
+                        </h3>
+                        
+                        <p class="text-gray-400 text-sm mb-3 line-clamp-2">
+                          {post.excerpt}
+                        </p>
+                        
+                        <div class="flex items-center space-x-4 text-sm">
+                          <div class="flex items-center space-x-1 text-[#2847d7]">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            <span class="font-medium">{post.views} vistas</span>
+                          </div>
+                          
+                          <div class="flex items-center space-x-1 text-gray-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                            <span>Leer más</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                </article>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
