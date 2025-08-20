@@ -30,12 +30,13 @@ interface GoogleUserInfo {
 export const POST: APIRoute = async ({ request }) => {
   try {
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-      console.error('❌ Google OAuth credentials not configured');
+      console.error('❌ Google OAuth credentials not properly configured');
       return new Response(JSON.stringify({
         success: false,
-        message: 'Configuración de Google OAuth no disponible.'
+        message: 'El servicio de Google OAuth no está disponible temporalmente. Por favor, usa el formulario manual.',
+        errorCode: 'OAUTH_NOT_CONFIGURED'
       }), {
-        status: 500,
+        status: 503,
         headers: { 'Content-Type': 'application/json' }
       });
     }
@@ -46,7 +47,8 @@ export const POST: APIRoute = async ({ request }) => {
     if (!code) {
       return new Response(JSON.stringify({
         success: false,
-        message: 'Código de autorización requerido.'
+        message: 'Código de autorización requerido.',
+        errorCode: 'MISSING_AUTH_CODE'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
