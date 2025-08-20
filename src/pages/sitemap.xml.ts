@@ -25,6 +25,7 @@ const STATIC_PAGES = [
   'privacy',
   'newsletter',
   'posts',
+  'categorias',
   'editorial',
   'corrections'
 ];

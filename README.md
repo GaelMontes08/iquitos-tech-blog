@@ -27,6 +27,7 @@ Iquitos Tech is a high-performance news platform focused on technology, gaming, 
 ### 📝 **Content Management**
 - **WordPress Headless CMS**: Content managed through WordPress REST API
 - **Dynamic Routes**: `/posts/[slug]` and `/categoria/[slug]`
+- **Categories Page**: `/categorias` - Complete directory of all content categories
 - **Rich Content**: Support for images, videos, code blocks, tables
 - **FAQ Accordion**: Interactive Q&A sections with smooth animations
 - **Related Posts**: Automatically generated based on categories

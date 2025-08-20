@@ -1,0 +1,198 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import SEO from '@/components/SEO.astro';
+import Schema from '@/components/Schema.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import { fetchWithTimeout } from '@/lib/wp';
+
+const domain = import.meta.env.WP_DOMAIN;
+
+if (!domain) {
+  throw new Error('WP_DOMAIN environment variable is required');
+}
+
+const fetchCategories = async () => {
+  try {
+    const response = await fetchWithTimeout(
+      `https://${domain}/wp-json/wp/v2/categories?per_page=100&_fields=id,name,slug,description,count,yoast_head,yoast_head_json`,
+      {},
+      10000
+    );
+
+    if (!response.ok) {
+      throw new Error(`Categories API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    return data.filter((cat: any) => 
+      cat.count > 0 && 
+      cat.slug !== 'uncategorized' && 
+      cat.id !== 25
+    );
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    throw error;
+  }
+};
+
+let categories = [];
+let error: string | null = null;
+
+try {
+  categories = await fetchCategories();
+} catch (err) {
+  console.error('Error loading categories:', err);
+  error = typeof err === 'object' && err !== null && 'message' in err ? (err as { message: string }).message : String(err);
+}
+
+const pageTitle = 'Todas las Categorías | Iquitos Tech';
+const pageDescription = 'Explora todas nuestras categorías de tecnología, programación, inteligencia artificial y más en Iquitos Tech.';
+const canonical = 'https://iquitostech.com/categorias';
+
+export const prerender = false;
+---
+
+<Layout>
+  <SEO 
+    slot="head"
+    title={pageTitle} 
+    description={pageDescription}
+    canonical={canonical}
+    type="website"
+  />
+  
+  <Schema 
+    slot="head"
+    title={pageTitle}
+    description={pageDescription}
+    type="website"
+  />
+  <main class="h-full">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <Breadcrumb 
+        items={[
+          { label: 'Inicio', href: '/' },
+          { label: 'Categorías' }
+        ]}
+      />
+      
+      <div class="text-center mb-12">
+        <h1 class="text-4xl text-[#2847d7] font-bold mb-4">
+          Todas las Categorías
+        </h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Descubre todos nuestros temas de tecnología, programación, inteligencia artificial y más.
+        </p>
+      </div>
+
+      {error ? (
+        <div class="text-center py-12">
+          <div class="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+            <h3 class="text-lg font-medium text-red-800 mb-2">Error al cargar categorías</h3>
+            <p class="text-red-600">{error}</p>
+          </div>
+        </div>
+      ) : categories.length === 0 ? (
+        <div class="text-center py-12">
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 max-w-md mx-auto">
+            <h3 class="text-lg font-medium text-gray-800 mb-2">No hay categorías disponibles</h3>
+            <p class="text-gray-600">Vuelve más tarde para ver las categorías.</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {categories.map((category: any) => (
+              <a 
+                href={`/categoria/${category.slug}`}
+                class="allCategories group rounded-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-[#2847d7] overflow-hidden"
+              >
+                <div class="p-6">
+                  <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-semibold transition-colors">
+                      {category.name}
+                    </h2>
+                    <span class="bg-[#2847d7] text-sm font-medium px-2.5 py-0.5 rounded-full">
+                      {category.count} {category.count === 1 ? 'artículo' : 'artículos'}
+                    </span>
+                  </div>
+                  
+                  {category.description && (
+                    <p class="text-gray-600 mb-4 line-clamp-3">
+                      {category.description}
+                    </p>
+                  )}
+                  
+                  <div class="flex items-center text-blue-600 group-hover:text-blue-700 font-medium">
+                    Ver artículos
+                    <svg 
+                      class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <div class="stats mt-16 rounded-lg shadow-md p-8">
+            <div class="text-center">
+              <h2 class="text-2xl font-bold mb-4">
+                Estadísticas de Contenido
+              </h2>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                  <div class="text-3xl font-bold text-blue-600 mb-2">
+                    {categories.length}
+                  </div>
+                  <div class="text-gray-300">
+                    Categorías Activas
+                  </div>
+                </div>
+                <div class="text-center">
+                  <div class="text-3xl font-bold text-blue-600 mb-2">
+                    {categories.reduce((total: number, cat: any) => total + cat.count, 0)}
+                  </div>
+                  <div class="text-gray-300">
+                    Total de Artículos
+                  </div>
+                </div>
+                <div class="text-center">
+                  <div class="text-3xl font-bold text-blue-600 mb-2">
+                    {Math.round(categories.reduce((total: number, cat: any) => total + cat.count, 0) / categories.length)}
+                  </div>
+                  <div class="text-gray-300">
+                    Promedio por Categoría
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .allCategories,
+  .stats {
+    background: linear-gradient(135deg, rgba(40, 71, 215, 0.08) 0%, rgba(0, 0, 0, 0.2) 100%);
+  }
+
+  .allCategories:hover {
+    box-shadow: 0 8px 32px rgba(40, 71, 215, 0.2);
+  }
+</style>

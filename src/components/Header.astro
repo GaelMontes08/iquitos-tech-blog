@@ -68,12 +68,6 @@ const categories = await fetchNavigationCategories();
 
         <div class="hidden md:flex">
             <ul class="flex items-center space-x-8">
-                <li>
-                    <a href="/" class="text-white font-bold category-hover">
-                        Inicio
-                    </a>
-                </li>
-                
 
                 {categories.map((category) => (
                     <li>
@@ -94,9 +88,7 @@ const categories = await fetchNavigationCategories();
             </ul>
         </div>
 
-        <!-- Search and Mobile Menu -->
         <div class="flex items-center space-x-4">
-            <!-- Search Button -->
             <button 
                 id="search-button" 
                 class="text-white hover:text-[#2847d7] focus:outline-none transition-colors"
@@ -134,11 +126,6 @@ const categories = await fetchNavigationCategories();
                     </svg>
                     <span>Buscar</span>
                 </button>
-            </li>
-            <li>
-                <a href="/" class="text-white hover:text-[#2847d7] transition-colors font-medium">
-                    Inicio
-                </a>
             </li>
             
             {categories.map((category) => (
