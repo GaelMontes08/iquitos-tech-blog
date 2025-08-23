@@ -3,6 +3,7 @@ import Layout from '@/layouts/Layout.astro';
 import ImportantNews from '@/components/ImportantNews.astro';
 import News1 from '@/components/News1.astro';
 import Trends from '@/sections/Trends.astro';
+import PartnersCarousel from '@/components/PartnersCarousel.astro';
 import PreFooter from '@/components/PreFooter.astro';
 import HomepageSkeleton from '@/components/skeletons/HomepageSkeleton.astro';
 import { getPageInfo } from '@/lib/wp';
@@ -27,6 +28,9 @@ const { title, content, date, seo } = await getPageInfo('home');
       <ImportantNews />   
       <News1 />
       <Trends />
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <PartnersCarousel />
+      </div>
       <PreFooter />
     </div>
     
