@@ -1,11 +1,26 @@
 ---
 import { getFeaturedPosts } from '@/lib/wp';
 
-const featuredPosts = await getFeaturedPosts({ perPage: 2, categoryId: 25 });
+// Get posts with category ID 25 (Featured category)
+const featuredPosts = await getFeaturedPosts({ perPage: 5, categoryId: 25 });
+
+// Ensure only posts with category ID 25 are displayed
+const finalPosts = featuredPosts.filter((post: any) => {
+  // Check if post belongs to category 25 (Featured)
+  const hasCategory25 = 
+    // Check categories array with ID numbers
+    (post.categories && Array.isArray(post.categories) && post.categories.includes(25)) ||
+    // Check categories array with objects containing id property
+    (post.categories && Array.isArray(post.categories) && post.categories.some((cat: any) => cat.id === 25)) ||
+    // Check _embedded wp:term categories
+    (post._embedded?.['wp:term']?.[0]?.some((cat: any) => cat.id === 25));
+  
+  return hasCategory25;
+}).slice(0, 2); // Take only the first 2 featured posts
 ---
 
 <div class="grid grid-cols-1 lg:grid-cols-10 gap-4 lg:gap-6">
-  {featuredPosts.map((post: { slug: string; featuredImage?: string; title: string; excerpt?: string }, index: number) => (
+  {finalPosts.map((post: { slug: string; featuredImage?: string; title: string; excerpt?: string }, index: number) => (
     <a 
       href={`/posts/${post.slug}`} 
       class={`
