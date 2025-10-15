@@ -73,8 +73,7 @@ Allow: /
 Crawl-delay: 1
 
 User-agent: Twitterbot
-Allow: /
-Crawl-delay: 1
+Disallow:
 
 User-agent: LinkedInBot
 Allow: /
