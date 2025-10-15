@@ -70,10 +70,11 @@ Crawl-delay: 10
 # Allow social media crawlers for rich previews
 User-agent: facebookexternalhit
 Allow: /
-Crawl-delay: 1
+Crawl-delay: 0
 
 User-agent: Twitterbot
 Disallow:
+Crawl-delay: 0
 
 User-agent: LinkedInBot
 Allow: /
@@ -84,4 +85,4 @@ Allow: /
 Crawl-delay: 1
 
 # Default crawl delay for performance
-Crawl-delay: 1
+Crawl-delay: 0
