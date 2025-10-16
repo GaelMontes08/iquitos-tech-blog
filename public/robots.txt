@@ -69,87 +69,87 @@ Crawl-delay: 10
 
 # Allow social media crawlers for immediate rich previews
 User-agent: facebookexternalhit
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: facebookexternalhit/1.1
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: Facebot
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: Twitterbot
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: X-Bot
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: XBot
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: X-Crawler
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: TwitterBot/1.0
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: LinkedInBot
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: LinkedInBot/1.0
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: WhatsApp
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: WhatsApp/2.0
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: TelegramBot
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: SkypeUriPreview
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: SlackBot
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: SlackBot-LinkExpanding
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: DiscordBot
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: redditbot
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: Pinterest
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: PinterestBot
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 User-agent: InstagramBot
-Allow: /
+Disallow:
 Crawl-delay: 0
 
 # No default crawl delay for optimal social media sharing
