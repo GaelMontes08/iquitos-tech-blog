@@ -84,6 +84,22 @@ User-agent: Twitterbot
 Allow: /
 Crawl-delay: 0
 
+User-agent: X-Bot
+Allow: /
+Crawl-delay: 0
+
+User-agent: XBot
+Allow: /
+Crawl-delay: 0
+
+User-agent: X-Crawler
+Allow: /
+Crawl-delay: 0
+
+User-agent: TwitterBot/1.0
+Allow: /
+Crawl-delay: 0
+
 User-agent: LinkedInBot
 Allow: /
 Crawl-delay: 0
