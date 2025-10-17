@@ -12,30 +12,25 @@ const WORDPRESS_DOMAIN = 'cms-iquitostech.com';
 
 // Helper function to sanitize avatar URLs for CSP compliance
 function sanitizeAvatarUrl(avatarUrl: string | undefined): string {
-  if (!avatarUrl) return '/author.jpg';
+  if (!avatarUrl) return '/author.webp';
   
-  // If it's a Gravatar URL, ensure it's HTTPS
-  if (avatarUrl.includes('gravatar.com')) {
-    return avatarUrl.replace(/^http:/, 'https:');
-  }
+  // For CSP compliance (connect-src 'self'), block ALL external URLs
+  // Only allow local/relative URLs and our own domain
   
-  // If it's a WordPress.com avatar, ensure it's HTTPS
-  if (avatarUrl.includes('wordpress.com') || avatarUrl.includes('wp.com')) {
-    return avatarUrl.replace(/^http:/, 'https:');
-  }
-  
-  // If it's from our CMS domain, allow it
+  // If it's from our CMS domain, allow it (convert to local path if possible)
   if (avatarUrl.includes('cms-iquitostech.com')) {
-    return avatarUrl.replace(/^http:/, 'https:');
+    // Try to convert to local path or use fallback
+    return '/author.webp';
   }
   
-  // For any other external URLs, use fallback
-  if (avatarUrl.startsWith('http')) {
-    return '/author.jpg';
+  // If it's already a relative/local URL, use it
+  if (!avatarUrl.startsWith('http')) {
+    return avatarUrl;
   }
   
-  // If it's already a relative URL, use it
-  return avatarUrl;
+  // Block ALL external URLs (Gravatar, WordPress.com, etc.) for CSP compliance
+  // This includes gravatar.com, secure.gravatar.com, wordpress.com, etc.
+  return '/author.webp';
 }
 
 interface Category {
@@ -371,7 +366,7 @@ const getFallbackPosts = () => {
       slug: 'noticias-tecnologia',
       featuredImage: '',
       author: 'Redacción',
-      authorAvatar: '/author.jpg',
+      authorAvatar: '/author.webp',
       categories: [{ name: 'Tecnología' }]
     },
     {
@@ -383,7 +378,7 @@ const getFallbackPosts = () => {
       slug: 'gaming-lanzamientos',
       featuredImage: '',
       author: 'Redacción',
-      authorAvatar: '/author.jpg',
+      authorAvatar: '/author.webp',
       categories: [{ name: 'Gaming' }]
     },
   ];
