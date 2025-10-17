@@ -67,10 +67,6 @@ const finalPosts = featuredPosts.filter((post: any) => {
         `}>
           {post.title}
         </h2>
-        
-        {post.excerpt && index === 0 && (
-          <p class="excerpt-desktop text-gray-300 text-base mb-2" set:html={post.excerpt} />
-        )}
       </div>
     </a>
   ))}
