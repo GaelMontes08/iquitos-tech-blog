@@ -18,6 +18,60 @@ export function replaceCMSDomain(url: string | undefined): string | undefined {
   return result;
 }
 
+// Social media image optimization function
+export function optimizeImageForSocialMedia(imageUrl: string | undefined, platform: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp' = 'facebook'): string | undefined {
+  if (!imageUrl) return 'https://iquitostech.com/fallback-banner.webp';
+  
+  // Clean the URL first
+  let optimizedUrl = replaceCMSDomain(imageUrl) || imageUrl;
+  
+  // Ensure HTTPS for better social media compatibility
+  optimizedUrl = optimizedUrl.replace(/^http:\/\//, 'https://');
+  
+  // Add query parameters for optimal social media image sizing
+  const url = new URL(optimizedUrl);
+  
+  switch (platform) {
+    case 'facebook':
+      // Facebook optimal: 1200x630 or 1.91:1 ratio
+      url.searchParams.set('w', '1200');
+      url.searchParams.set('h', '630');
+      url.searchParams.set('fit', 'crop');
+      url.searchParams.set('auto', 'format,compress');
+      url.searchParams.set('q', '85');
+      break;
+      
+    case 'twitter':
+      // Twitter card optimal: 1200x675 or 16:9 ratio for summary_large_image
+      url.searchParams.set('w', '1200');
+      url.searchParams.set('h', '675');
+      url.searchParams.set('fit', 'crop');
+      url.searchParams.set('auto', 'format,compress');
+      url.searchParams.set('q', '85');
+      break;
+      
+    case 'linkedin':
+      // LinkedIn optimal: 1200x627 or similar to Facebook
+      url.searchParams.set('w', '1200');
+      url.searchParams.set('h', '627');
+      url.searchParams.set('fit', 'crop');
+      url.searchParams.set('auto', 'format,compress');
+      url.searchParams.set('q', '85');
+      break;
+      
+    case 'whatsapp':
+      // WhatsApp works well with Facebook specs
+      url.searchParams.set('w', '1200');
+      url.searchParams.set('h', '630');
+      url.searchParams.set('fit', 'crop');
+      url.searchParams.set('auto', 'format,compress');
+      url.searchParams.set('q', '85');
+      break;
+  }
+  
+  return url.toString();
+}
+
 export function fixAstroUrlStructure(url: string | undefined, type: 'post' | 'category' | 'page' = 'post'): string | undefined {
   if (!url) return url;
   

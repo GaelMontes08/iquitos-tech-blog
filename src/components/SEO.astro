@@ -1,5 +1,5 @@
 ---
-import { generateSEOTags, generateRobotsContent, generateSchemaScript, defaultSEO, siteConfig, type SEOProps } from '../lib/seo';
+import { generateSEOTags, generateRobotsContent, generateSchemaScript, defaultSEO, siteConfig, optimizeImageForSocialMedia, type SEOProps } from '../lib/seo';
 
 export interface Props extends SEOProps {}
 
@@ -8,6 +8,12 @@ const props = Astro.props as Props;
 const seoTags = generateSEOTags({ ...defaultSEO, ...props });
 const robotsContent = generateRobotsContent(seoTags.robots);
 const schemaScript = generateSchemaScript(seoTags.schema);
+
+// Optimize images for different social media platforms
+const facebookImage = optimizeImageForSocialMedia(seoTags.ogImage, 'facebook');
+const twitterImage = optimizeImageForSocialMedia(seoTags.ogImage, 'twitter');
+const linkedinImage = optimizeImageForSocialMedia(seoTags.ogImage, 'linkedin');
+const whatsappImage = optimizeImageForSocialMedia(seoTags.ogImage, 'whatsapp');
 ---
 {seoTags.title && <title>{seoTags.title}</title>}
 {seoTags.description && <meta name="description" content={seoTags.description} />}
@@ -35,10 +41,10 @@ const schemaScript = generateSchemaScript(seoTags.schema);
 <meta property="og:site_name" content={seoTags.ogSiteName || 'Iquitos Tech'} />
 <meta property="og:locale" content={seoTags.ogLocale || 'es_ES'} />
 
-{seoTags.ogImage ? (
+{facebookImage ? (
   <>
-    <meta property="og:image" content={seoTags.ogImage} />
-    <meta property="og:image:secure_url" content={seoTags.ogImage} />
+    <meta property="og:image" content={facebookImage} />
+    <meta property="og:image:secure_url" content={facebookImage} />
     {seoTags.ogImageWidth && <meta property="og:image:width" content={seoTags.ogImageWidth.toString()} />}
     {seoTags.ogImageHeight && <meta property="og:image:height" content={seoTags.ogImageHeight.toString()} />}
     {seoTags.ogImageType && <meta property="og:image:type" content={seoTags.ogImageType} />}
@@ -74,12 +80,41 @@ const schemaScript = generateSchemaScript(seoTags.schema);
 
 <meta property="og:updated_time" content={seoTags.articleModifiedTime || new Date().toISOString()} />
 
+<!-- Additional social media optimization meta tags -->
+<meta property="og:see_also" content="https://iquitostech.com" />
+<meta property="og:rich_attachment" content="true" />
+
+<!-- LinkedIn specific tags -->
+<meta property="linkedin:owner" content="iquitos-tech" />
+
+<!-- Additional Twitter meta tags -->
+<meta name="twitter:widgets:theme" content="dark" />
+<meta name="twitter:widgets:border-color" content="#2847d7" />
+
+<!-- WhatsApp optimization -->
+<meta property="og:image:secure_url" content={whatsappImage || "https://iquitostech.com/fallback-banner.webp"} />
+<meta property="og:video:secure_url" content="" />
+
+<!-- Telegram optimization -->
+<meta name="telegram:channel" content="@iquitostech" />
+
+<!-- Additional caching and crawling hints -->
+<meta http-equiv="cache-control" content="public, max-age=3600" />
+<meta name="referrer" content="origin-when-cross-origin" />
+
 {seoTags.twitterCard && <meta name="twitter:card" content={seoTags.twitterCard} />}
 {seoTags.twitterSite && <meta name="twitter:site" content={seoTags.twitterSite} />}
 {seoTags.twitterCreator && <meta name="twitter:creator" content={seoTags.twitterCreator} />}
 {seoTags.ogTitle && <meta name="twitter:title" content={seoTags.ogTitle} />}
 {seoTags.ogDescription && <meta name="twitter:description" content={seoTags.ogDescription} />}
-{seoTags.ogImage && <meta name="twitter:image" content={seoTags.ogImage} />}
+{twitterImage && <meta name="twitter:image" content={twitterImage} />}
+
+<!-- Enhanced Twitter optimization -->
+{twitterImage && <meta name="twitter:image:src" content={twitterImage} />}
+<meta name="twitter:domain" content="iquitostech.com" />
+<meta name="twitter:app:name:iphone" content="Iquitos Tech" />
+<meta name="twitter:app:name:ipad" content="Iquitos Tech" />
+<meta name="twitter:app:name:googleplay" content="Iquitos Tech" />
 
 {seoTags.twitterLabel1 && seoTags.twitterData1 && (
   <>

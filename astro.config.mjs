@@ -39,6 +39,10 @@ export default defineConfig({
     },
     ssr: {
       noExternal: ['@fontsource-variable/onest']
+    },
+    assetsInclude: ['**/*.woff2', '**/*.woff', '**/*.ttf'],
+    optimizeDeps: {
+      exclude: ['@fontsource-variable/onest']
     }
   },
   compressHTML: true,

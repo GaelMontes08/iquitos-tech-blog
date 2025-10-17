@@ -1,1 +1,4 @@
 @import "tailwindcss";
+
+/* Import Onest Variable font with specific weights */
+@import '@fontsource-variable/onest/wght.css';
