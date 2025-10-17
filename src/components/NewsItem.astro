@@ -68,8 +68,8 @@ const finalPosts = featuredPosts.filter((post: any) => {
           {post.title}
         </h2>
         
-        {index === 0 && post.excerpt && (
-          <p class="!hidden lg:!block text-gray-300 text-base line-clamp-3 mb-2" set:html={post.excerpt} />
+        {post.excerpt && index === 0 && (
+          <p class="excerpt-desktop text-gray-300 text-base mb-2" set:html={post.excerpt} />
         )}
       </div>
     </a>
@@ -77,10 +77,16 @@ const finalPosts = featuredPosts.filter((post: any) => {
 </div>
 
 <style>
-  .line-clamp-3 {
-    display: -webkit-box;
+  .excerpt-desktop {
+    display: none !important;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  @media (min-width: 1024px) {
+    .excerpt-desktop {
+      display: -webkit-box !important;
+    }
   }
 </style>
