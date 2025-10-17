@@ -2,9 +2,9 @@
 import { getFeaturedPosts } from '@/lib/wp';
 
 // Get posts with category ID 25 (Featured category)
-const featuredPosts = await getFeaturedPosts({ perPage: 5, categoryId: 25 });
+const featuredPosts = await getFeaturedPosts({ perPage: 10, categoryId: 25 });
 
-// Ensure only posts with category ID 25 are displayed
+// Filter posts to ensure only category 25 (Featured) posts are displayed
 const finalPosts = featuredPosts.filter((post: any) => {
   // Check if post belongs to category 25 (Featured)
   const hasCategory25 = 
@@ -16,9 +16,10 @@ const finalPosts = featuredPosts.filter((post: any) => {
     (post._embedded?.['wp:term']?.[0]?.some((cat: any) => cat.id === 25));
   
   return hasCategory25;
-}).slice(0, 2); // Take only the first 2 featured posts
+}).slice(0, 2); // Take exactly 2 posts for the layout
 ---
 
+<!-- DEBUG: Featured posts count: {finalPosts.length} -->
 <div class="grid grid-cols-1 lg:grid-cols-10 gap-4 lg:gap-6">
   {finalPosts.map((post: { slug: string; featuredImage?: string; title: string; excerpt?: string }, index: number) => (
     <a 

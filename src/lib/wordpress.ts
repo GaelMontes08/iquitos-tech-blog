@@ -1,6 +1,34 @@
 import { fetchWithTimeout } from './wp';
 import { cleanWordPressHtml } from './content-transformer';
 
+// Helper function to sanitize avatar URLs for CSP compliance
+function sanitizeAvatarUrl(avatarUrl: string | undefined): string {
+  if (!avatarUrl) return '/author.jpg';
+  
+  // If it's a Gravatar URL, ensure it's HTTPS
+  if (avatarUrl.includes('gravatar.com')) {
+    return avatarUrl.replace(/^http:/, 'https:');
+  }
+  
+  // If it's a WordPress.com avatar, ensure it's HTTPS
+  if (avatarUrl.includes('wordpress.com') || avatarUrl.includes('wp.com')) {
+    return avatarUrl.replace(/^http:/, 'https:');
+  }
+  
+  // If it's from our CMS domain, allow it
+  if (avatarUrl.includes('cms-iquitostech.com')) {
+    return avatarUrl.replace(/^http:/, 'https:');
+  }
+  
+  // For any other external URLs, use fallback
+  if (avatarUrl.startsWith('http')) {
+    return '/author.jpg';
+  }
+  
+  // If it's already a relative URL, use it
+  return avatarUrl;
+}
+
 export interface PostInfo {
   id: number;
   title: string;
@@ -138,7 +166,7 @@ export async function getPostInfo(slug: string): Promise<PostInfo | null> {
       tags: post.tags || [],
       featuredImage,
       author: post._embedded?.author?.[0]?.name || 'Redacción',
-      authorAvatar: post._embedded?.author?.[0]?.avatar_urls?.['96'] || '/author.jpg',
+      authorAvatar: sanitizeAvatarUrl(post._embedded?.author?.[0]?.avatar_urls?.['96']),
       excerpt: post.excerpt?.rendered || '',
       slug: post.slug
     };

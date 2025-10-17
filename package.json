@@ -11,7 +11,7 @@
   "dependencies": {
     "@astrojs/check": "^0.9.4",
     "@astrojs/vercel": "^8.2.5",
-    "@fontsource-variable/onest": "^5.2.9",
+    "@fontsource-variable/onest": "^5.2.11",
     "@supabase/supabase-js": "^2.53.0",
     "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.1.11",

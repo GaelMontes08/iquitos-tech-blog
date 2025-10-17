@@ -8,7 +8,44 @@ declare global {
   }
 }
 
-const domain = import.meta.env.WP_DOMAIN;
+const WORDPRESS_DOMAIN = 'cms-iquitostech.com';
+
+// Helper function to sanitize avatar URLs for CSP compliance
+function sanitizeAvatarUrl(avatarUrl: string | undefined): string {
+  if (!avatarUrl) return '/author.jpg';
+  
+  // If it's a Gravatar URL, ensure it's HTTPS
+  if (avatarUrl.includes('gravatar.com')) {
+    return avatarUrl.replace(/^http:/, 'https:');
+  }
+  
+  // If it's a WordPress.com avatar, ensure it's HTTPS
+  if (avatarUrl.includes('wordpress.com') || avatarUrl.includes('wp.com')) {
+    return avatarUrl.replace(/^http:/, 'https:');
+  }
+  
+  // If it's from our CMS domain, allow it
+  if (avatarUrl.includes('cms-iquitostech.com')) {
+    return avatarUrl.replace(/^http:/, 'https:');
+  }
+  
+  // For any other external URLs, use fallback
+  if (avatarUrl.startsWith('http')) {
+    return '/author.jpg';
+  }
+  
+  // If it's already a relative URL, use it
+  return avatarUrl;
+}
+
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+}
+
+// Environment validation and setup
+const domain = import.meta.env.WP_DOMAIN || WORDPRESS_DOMAIN;
 
 if (!domain) {
   console.error('WP_DOMAIN environment variable is not set');
@@ -183,7 +220,7 @@ export const getFeaturedPosts = async ({
       slug: post.slug,
       featuredImage: post._embedded?.['wp:featuredmedia']?.[0]?.source_url,
       author: post._embedded?.author?.[0]?.name || 'Redacción',
-      authorAvatar: post._embedded?.author?.[0]?.avatar_urls?.['96'] || '/author.jpg',
+      authorAvatar: sanitizeAvatarUrl(post._embedded?.author?.[0]?.avatar_urls?.['96']),
       categories: post._embedded?.['wp:term']?.[0] || []
     }));
   } catch (error) {
@@ -226,7 +263,7 @@ export const getLatestsPosts = async ({ perPage = 10 }: { perPage?: number } = {
         const content = post.content?.rendered || '';
         const { date, slug } = post;
         const author = post._embedded?.author?.[0]?.name || 'Redacción';
-        const authorAvatar = post._embedded?.author?.[0]?.avatar_urls?.['96'] || '/author.jpg';
+        const authorAvatar = sanitizeAvatarUrl(post._embedded?.author?.[0]?.avatar_urls?.['96']);
         const featuredImage = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
         const categories = post._embedded?.['wp:term']?.[0] || [];
 
