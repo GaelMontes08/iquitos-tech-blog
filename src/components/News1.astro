@@ -12,7 +12,7 @@ const newsItems = posts.map((post: any, index: number) => ({
   image: post.featuredImage,
   author: {
     name: post.author || 'Redacción',
-    avatar: post.authorAvatar || "/author.jpg"
+    avatar: post.authorAvatar || "/author.webp"
   },
   featured: index === 0 || index === 5
 }));

@@ -10,29 +10,6 @@ declare global {
 
 const WORDPRESS_DOMAIN = 'cms-iquitostech.com';
 
-// Helper function to sanitize avatar URLs for CSP compliance
-function sanitizeAvatarUrl(avatarUrl: string | undefined): string {
-  if (!avatarUrl) return '/author.webp';
-  
-  // For CSP compliance (connect-src 'self'), block ALL external URLs
-  // Only allow local/relative URLs and our own domain
-  
-  // If it's from our CMS domain, allow it (convert to local path if possible)
-  if (avatarUrl.includes('cms-iquitostech.com')) {
-    // Try to convert to local path or use fallback
-    return '/author.webp';
-  }
-  
-  // If it's already a relative/local URL, use it
-  if (!avatarUrl.startsWith('http')) {
-    return avatarUrl;
-  }
-  
-  // Block ALL external URLs (Gravatar, WordPress.com, etc.) for CSP compliance
-  // This includes gravatar.com, secure.gravatar.com, wordpress.com, etc.
-  return '/author.webp';
-}
-
 interface Category {
   id: number;
   name: string;
@@ -215,7 +192,7 @@ export const getFeaturedPosts = async ({
       slug: post.slug,
       featuredImage: post._embedded?.['wp:featuredmedia']?.[0]?.source_url,
       author: post._embedded?.author?.[0]?.name || 'Redacción',
-      authorAvatar: sanitizeAvatarUrl(post._embedded?.author?.[0]?.avatar_urls?.['96']),
+      authorAvatar: '/author.webp',
       categories: post._embedded?.['wp:term']?.[0] || []
     }));
   } catch (error) {
@@ -258,7 +235,7 @@ export const getLatestsPosts = async ({ perPage = 10 }: { perPage?: number } = {
         const content = post.content?.rendered || '';
         const { date, slug } = post;
         const author = post._embedded?.author?.[0]?.name || 'Redacción';
-        const authorAvatar = sanitizeAvatarUrl(post._embedded?.author?.[0]?.avatar_urls?.['96']);
+        const authorAvatar = '/author.webp';
         const featuredImage = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
         const categories = post._embedded?.['wp:term']?.[0] || [];
 

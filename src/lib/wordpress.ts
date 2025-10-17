@@ -1,29 +1,6 @@
 import { fetchWithTimeout } from './wp';
 import { cleanWordPressHtml } from './content-transformer';
 
-// Helper function to sanitize avatar URLs for CSP compliance
-function sanitizeAvatarUrl(avatarUrl: string | undefined): string {
-  if (!avatarUrl) return '/author.webp';
-  
-  // For CSP compliance (connect-src 'self'), block ALL external URLs
-  // Only allow local/relative URLs and our own domain
-  
-  // If it's from our CMS domain, allow it (convert to local path if possible)
-  if (avatarUrl.includes('cms-iquitostech.com')) {
-    // Try to convert to local path or use fallback
-    return '/author.webp';
-  }
-  
-  // If it's already a relative/local URL, use it
-  if (!avatarUrl.startsWith('http')) {
-    return avatarUrl;
-  }
-  
-  // Block ALL external URLs (Gravatar, WordPress.com, etc.) for CSP compliance
-  // This includes gravatar.com, secure.gravatar.com, wordpress.com, etc.
-  return '/author.webp';
-}
-
 export interface PostInfo {
   id: number;
   title: string;
@@ -161,7 +138,7 @@ export async function getPostInfo(slug: string): Promise<PostInfo | null> {
       tags: post.tags || [],
       featuredImage,
       author: post._embedded?.author?.[0]?.name || 'Redacción',
-      authorAvatar: sanitizeAvatarUrl(post._embedded?.author?.[0]?.avatar_urls?.['96']),
+      authorAvatar: '/author.webp',
       excerpt: post.excerpt?.rendered || '',
       slug: post.slug
     };
