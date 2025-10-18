@@ -22,16 +22,20 @@ export function replaceCMSDomain(url: string | undefined): string | undefined {
 export function optimizeImageForSocialMedia(imageUrl: string | undefined, platform: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp' = 'facebook'): string | undefined {
   if (!imageUrl) return 'https://iquitostech.com/fallback-banner.webp';
   
-  // Clean the URL first - replace CMS domain with production domain
-  let optimizedUrl = replaceCMSDomain(imageUrl) || imageUrl;
+  // DON'T replace CMS domain for images - they're hosted on cms-iquitostech.com
+  // Only ensure HTTPS protocol
+  let optimizedUrl = imageUrl.replace(/^http:\/\//, 'https://');
   
-  // Ensure HTTPS for better social media compatibility
-  optimizedUrl = optimizedUrl.replace(/^http:\/\//, 'https://');
+  // Make sure cms-iquitostech.com images stay on cms domain
+  if (optimizedUrl.includes('cms-iquitostech.com')) {
+    // Keep the CMS domain, images are hosted there
+    return optimizedUrl;
+  }
   
-  // For WordPress images, don't add query parameters as they may not be supported
-  // Just return the clean HTTPS URL
-  // Twitter requires 2:1 ratio (1200x600) but will accept 1200x675 (16:9)
-  // The actual image sizing should be handled by WordPress or the CDN
+  // For non-CMS images (like fallback), ensure they point to production
+  if (!optimizedUrl.startsWith('http')) {
+    optimizedUrl = `https://iquitostech.com${optimizedUrl.startsWith('/') ? '' : '/'}${optimizedUrl}`;
+  }
   
   return optimizedUrl;
 }
