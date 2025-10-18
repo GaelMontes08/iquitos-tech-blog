@@ -15,6 +15,16 @@ const twitterImage = optimizeImageForSocialMedia(seoTags.ogImage, 'twitter');
 const linkedinImage = optimizeImageForSocialMedia(seoTags.ogImage, 'linkedin');
 const whatsappImage = optimizeImageForSocialMedia(seoTags.ogImage, 'whatsapp');
 ---
+<!-- CRITICAL: Twitter/X meta tags MUST be at the top for card validator -->
+{seoTags.twitterCard && <meta name="twitter:card" content={seoTags.twitterCard} />}
+{seoTags.twitterSite && <meta name="twitter:site" content={seoTags.twitterSite} />}
+{seoTags.twitterCreator && <meta name="twitter:creator" content={seoTags.twitterCreator} />}
+{seoTags.ogTitle && <meta name="twitter:title" content={seoTags.ogTitle} />}
+{seoTags.ogDescription && <meta name="twitter:description" content={seoTags.ogDescription} />}
+{twitterImage && <meta name="twitter:image" content={twitterImage} />}
+{twitterImage && <meta name="twitter:image:src" content={twitterImage} />}
+<meta name="twitter:domain" content="iquitostech.com" />
+
 {seoTags.title && <title>{seoTags.title}</title>}
 {seoTags.description && <meta name="description" content={seoTags.description} />}
 {seoTags.keywords && <meta name="keywords" content={seoTags.keywords} />}
@@ -87,10 +97,6 @@ const whatsappImage = optimizeImageForSocialMedia(seoTags.ogImage, 'whatsapp');
 <!-- LinkedIn specific tags -->
 <meta property="linkedin:owner" content="iquitos-tech" />
 
-<!-- Additional Twitter meta tags -->
-<meta name="twitter:widgets:theme" content="dark" />
-<meta name="twitter:widgets:border-color" content="#2847d7" />
-
 <!-- WhatsApp optimization -->
 <meta property="og:image:secure_url" content={whatsappImage || "https://iquitostech.com/fallback-banner.webp"} />
 <meta property="og:video:secure_url" content="" />
@@ -98,20 +104,9 @@ const whatsappImage = optimizeImageForSocialMedia(seoTags.ogImage, 'whatsapp');
 <!-- Telegram optimization -->
 <meta name="telegram:channel" content="@iquitostech" />
 
-<!-- Additional caching and crawling hints -->
-<meta http-equiv="cache-control" content="public, max-age=3600" />
-<meta name="referrer" content="origin-when-cross-origin" />
-
-{seoTags.twitterCard && <meta name="twitter:card" content={seoTags.twitterCard} />}
-{seoTags.twitterSite && <meta name="twitter:site" content={seoTags.twitterSite} />}
-{seoTags.twitterCreator && <meta name="twitter:creator" content={seoTags.twitterCreator} />}
-{seoTags.ogTitle && <meta name="twitter:title" content={seoTags.ogTitle} />}
-{seoTags.ogDescription && <meta name="twitter:description" content={seoTags.ogDescription} />}
-{twitterImage && <meta name="twitter:image" content={twitterImage} />}
-
-<!-- Enhanced Twitter optimization -->
-{twitterImage && <meta name="twitter:image:src" content={twitterImage} />}
-<meta name="twitter:domain" content="iquitostech.com" />
+<!-- Additional Twitter optimization -->
+<meta name="twitter:widgets:theme" content="dark" />
+<meta name="twitter:widgets:border-color" content="#2847d7" />
 <meta name="twitter:app:name:iphone" content="Iquitos Tech" />
 <meta name="twitter:app:name:ipad" content="Iquitos Tech" />
 <meta name="twitter:app:name:googleplay" content="Iquitos Tech" />
@@ -128,6 +123,10 @@ const whatsappImage = optimizeImageForSocialMedia(seoTags.ogImage, 'whatsapp');
     <meta name="twitter:data2" content={seoTags.twitterData2} />
   </>
 )}
+
+<!-- Additional caching and crawling hints -->
+<meta http-equiv="cache-control" content="public, max-age=3600" />
+<meta name="referrer" content="origin-when-cross-origin" />
 
 {schemaScript && (
   <script type="application/ld+json" set:html={schemaScript}></script>
