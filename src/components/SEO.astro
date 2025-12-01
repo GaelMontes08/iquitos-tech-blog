@@ -9,97 +9,46 @@ const seoTags = generateSEOTags({ ...defaultSEO, ...props });
 const robotsContent = generateRobotsContent(seoTags.robots);
 const schemaScript = generateSchemaScript(seoTags.schema);
 
-// Optimize images for different social media platforms
-// Always ensure we have a fallback image
-const facebookImage = optimizeImageForSocialMedia(seoTags.ogImage, 'facebook') || 'https://iquitostech.com/fallback-banner.webp';
-const twitterImage = optimizeImageForSocialMedia(seoTags.ogImage, 'twitter') || 'https://iquitostech.com/fallback-banner.webp';
-const linkedinImage = optimizeImageForSocialMedia(seoTags.ogImage, 'linkedin') || 'https://iquitostech.com/fallback-banner.webp';
-const whatsappImage = optimizeImageForSocialMedia(seoTags.ogImage, 'whatsapp') || 'https://iquitostech.com/fallback-banner.webp';
+const socialImage = optimizeImageForSocialMedia(seoTags.ogImage) || 'https://iquitostech.com/fallback-banner.webp';
 ---
-<!-- CRITICAL: Twitter/X meta tags MUST be at the top for card validator -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:site" content="@IquitosTech" />
-<meta name="twitter:creator" content="@IquitosTech" />
-<meta name="twitter:title" content={seoTags.ogTitle || seoTags.title || 'Iquitos Tech'} />
-<meta name="twitter:description" content={seoTags.ogDescription || seoTags.description || 'Noticias de tecnología, gaming y tendencias digitales'} />
-<meta name="twitter:image" content={twitterImage} />
-<meta name="twitter:image:alt" content={seoTags.ogTitle || 'Iquitos Tech'} />
-<meta name="twitter:domain" content="iquitostech.com" />
-<meta name="twitter:url" content={seoTags.canonical || 'https://iquitostech.com'} />
 
-{seoTags.title && <title>{seoTags.title}</title>}
-{seoTags.description && <meta name="description" content={seoTags.description} />}
+<title>{seoTags.title}</title>
+<meta name="title" content={seoTags.title} />
+<meta name="description" content={seoTags.description} />
 {seoTags.keywords && <meta name="keywords" content={seoTags.keywords} />}
-{seoTags.canonical && <link rel="canonical" href={seoTags.canonical} />}
+<meta name="author" content={seoTags.articleAuthor || 'Iquitos Tech'} />
+<meta name="language" content="es" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content={siteConfig.themeColor} />
+
+<link rel="canonical" href={seoTags.canonical} />
 
 <meta name="robots" content={robotsContent} />
-<meta name="googlebot" content="index,follow" />
-<meta name="bingbot" content="index,follow" />
 
-<link rel="sitemap" type="application/xml" href="/sitemap.xml" />
-
-<meta name="language" content="es" />
-<meta name="revisit-after" content="7 days" />
-<meta name="distribution" content="global" />
-<meta name="rating" content="general" />
-
-<meta name="theme-color" content={siteConfig.themeColor} />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-<meta property="og:title" content={seoTags.ogTitle || seoTags.title || 'Iquitos Tech'} />
-<meta property="og:description" content={seoTags.ogDescription || seoTags.description || 'Noticias de tecnología, gaming y tendencias digitales'} />
-<meta property="og:type" content={seoTags.ogType || 'website'} />
-<meta property="og:url" content={seoTags.ogUrl || seoTags.canonical || 'https://iquitostech.com'} />
-<meta property="og:site_name" content={seoTags.ogSiteName || 'Iquitos Tech'} />
-<meta property="og:locale" content={seoTags.ogLocale || 'es_ES'} />
-
-<!-- Open Graph Image - Always set with guaranteed fallback -->
-<meta property="og:image" content={facebookImage} />
-<meta property="og:image:secure_url" content={facebookImage} />
+<meta property="og:type" content={seoTags.ogType} />
+<meta property="og:url" content={seoTags.ogUrl || seoTags.canonical} />
+<meta property="og:title" content={seoTags.ogTitle || seoTags.title} />
+<meta property="og:description" content={seoTags.ogDescription || seoTags.description} />
+<meta property="og:image" content={socialImage} />
 <meta property="og:image:width" content={seoTags.ogImageWidth?.toString() || '1200'} />
 <meta property="og:image:height" content={seoTags.ogImageHeight?.toString() || '630'} />
-<meta property="og:image:type" content={seoTags.ogImageType || 'image/webp'} />
-<meta property="og:image:alt" content={seoTags.ogTitle || 'Iquitos Tech'} />
+<meta property="og:site_name" content={seoTags.ogSiteName} />
+<meta property="og:locale" content={seoTags.ogLocale} />
 
 {seoTags.ogType === 'article' && (
   <>
     {seoTags.articlePublishedTime && <meta property="article:published_time" content={seoTags.articlePublishedTime} />}
     {seoTags.articleModifiedTime && <meta property="article:modified_time" content={seoTags.articleModifiedTime} />}
     {seoTags.articleAuthor && <meta property="article:author" content={seoTags.articleAuthor} />}
-    <meta property="article:section" content="Tecnología" />
-    <meta property="article:tag" content="tecnología" />
-    <meta property="article:tag" content="gaming" />
   </>
 )}
 
-<meta property="fb:app_id" content="622554630894859" />
-
-<meta name="facebook-domain-verification" content="6quprs4p5kl4znnw4enaohuvdntjgv" />
-
-<meta name="p:domain_verify" content="5e3af78a2f00212446ef99663a96f07c" />
-
-<meta property="og:updated_time" content={seoTags.articleModifiedTime || new Date().toISOString()} />
-
-<!-- Additional social media optimization meta tags -->
-<meta property="og:see_also" content="https://iquitostech.com" />
-<meta property="og:rich_attachment" content="true" />
-
-<!-- LinkedIn specific tags -->
-<meta property="linkedin:owner" content="iquitos-tech" />
-
-<!-- WhatsApp optimization -->
-<meta property="og:image:secure_url" content={whatsappImage || "https://iquitostech.com/fallback-banner.webp"} />
-<meta property="og:video:secure_url" content="" />
-
-<!-- Telegram optimization -->
-<meta name="telegram:channel" content="@iquitostech" />
-
-<!-- Additional Twitter optimization -->
-<meta name="twitter:widgets:theme" content="dark" />
-<meta name="twitter:widgets:border-color" content="#2847d7" />
-<meta name="twitter:app:name:iphone" content="Iquitos Tech" />
-<meta name="twitter:app:name:ipad" content="Iquitos Tech" />
-<meta name="twitter:app:name:googleplay" content="Iquitos Tech" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@IquitosTech" />
+<meta name="twitter:creator" content="@IquitosTech" />
+<meta name="twitter:title" content={seoTags.ogTitle || seoTags.title} />
+<meta name="twitter:description" content={seoTags.ogDescription || seoTags.description} />
+<meta name="twitter:image" content={socialImage} />
 
 {seoTags.twitterLabel1 && seoTags.twitterData1 && (
   <>
@@ -114,19 +63,11 @@ const whatsappImage = optimizeImageForSocialMedia(seoTags.ogImage, 'whatsapp') |
   </>
 )}
 
-<!-- Additional caching and crawling hints -->
-<meta http-equiv="cache-control" content="public, max-age=3600" />
-<meta name="referrer" content="origin-when-cross-origin" />
-
 {schemaScript && (
   <script type="application/ld+json" set:html={schemaScript}></script>
 )}
 
-<meta name="author" content={seoTags.articleAuthor || 'Iquitos Tech'} />
-<meta name="generator" content={Astro.generator} />
-
-<link rel="icon" type="image/svg+xml" href="/logo.svg" media="(prefers-color-scheme: dark)" />
-<link rel="icon" type="image/svg+xml" href="/logo-blue.svg" media="(prefers-color-scheme: light)" />
 <link rel="icon" type="image/svg+xml" href="/logo.svg" />
 <link rel="apple-touch-icon" sizes="180x180" href="/logo.svg" />
-<link rel="shortcut icon" href="/logo.svg" />
+
+<meta name="generator" content={Astro.generator} />

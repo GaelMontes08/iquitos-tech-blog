@@ -19,7 +19,7 @@ export function replaceCMSDomain(url: string | undefined): string | undefined {
 }
 
 // Social media image optimization function
-export function optimizeImageForSocialMedia(imageUrl: string | undefined, platform: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp' = 'facebook'): string | undefined {
+export function optimizeImageForSocialMedia(imageUrl: string | undefined): string | undefined {
   if (!imageUrl) return 'https://iquitostech.com/fallback-banner.webp';
   
   // DON'T replace CMS domain for images - they're hosted on cms-iquitostech.com
