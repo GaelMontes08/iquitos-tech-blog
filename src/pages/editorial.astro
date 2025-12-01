@@ -1,22 +1,14 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import SEO from '@/components/SEO.astro';
-import Schema from '@/components/Schema.astro';
 
 const seoData = {
   title: 'Estándares Editoriales | Iquitos Tech',
   description: 'Conoce nuestros estándares editoriales, procesos de verificación y compromiso con la transparencia informativa en Iquitos Tech.',
-  canonical: 'https://iquitostech.com/editorial',
-  url: 'https://iquitostech.com/editorial'
+  canonical: 'https://iquitostech.com/editorial'
 };
 ---
 
-<Layout>
-  <head>
-    <SEO {...seoData} />
-    <Schema {...seoData} />
-  </head>
-
+<Layout {...seoData}>
   <main class="min-h-screen">
     <div class="container mx-auto px-4 py-16 max-w-4xl">
       

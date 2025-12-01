@@ -1,22 +1,14 @@
 ---
 import Layout from '@/layouts/Layout.astro';
-import SEO from '@/components/SEO.astro';
-import Schema from '@/components/Schema.astro';
 
 const seoData = {
   title: 'Política de Correcciones | Iquitos Tech',
   description: 'Nuestra política de transparencia para correcciones, actualizaciones y manejo de errores en el contenido de Iquitos Tech.',
-  canonical: 'https://iquitostech.com/corrections',
-  url: 'https://iquitostech.com/corrections'
+  canonical: 'https://iquitostech.com/corrections'
 };
 ---
 
-<Layout>
-  <head>
-    <SEO {...seoData} />
-    <Schema {...seoData} />
-  </head>
-
+<Layout {...seoData}>
   <main class="min-h-screen">
     <div class="container mx-auto px-4 py-16 max-w-4xl">
       
