@@ -10,6 +10,7 @@ const schemaScript = generateSchemaScript(seoTags.schema);
 const socialImage = optimizeImageForSocialMedia(seoTags.ogImage) || 'https://iquitostech.com/fallback-banner.webp';
 ---
 
+<!-- Primary Meta Tags -->
 <title>{seoTags.title}</title>
 <meta name="description" content={seoTags.description} />
 {seoTags.keywords && <meta name="keywords" content={seoTags.keywords} />}
@@ -17,6 +18,7 @@ const socialImage = optimizeImageForSocialMedia(seoTags.ogImage) || 'https://iqu
 <link rel="canonical" href={seoTags.canonical} />
 <meta name="robots" content="index, follow" />
 
+<!-- Open Graph / Facebook / LinkedIn -->
 <meta property="og:type" content={seoTags.ogType} />
 <meta property="og:url" content={seoTags.ogUrl || seoTags.canonical} />
 <meta property="og:title" content={seoTags.ogTitle || seoTags.title} />
@@ -25,10 +27,12 @@ const socialImage = optimizeImageForSocialMedia(seoTags.ogImage) || 'https://iqu
 <meta property="og:image:secure_url" content={socialImage} />
 <meta property="og:image:width" content={seoTags.ogImageWidth?.toString() || '1200'} />
 <meta property="og:image:height" content={seoTags.ogImageHeight?.toString() || '630'} />
+<meta property="og:image:type" content="image/webp" />
 <meta property="og:image:alt" content={seoTags.ogTitle || seoTags.title} />
 <meta property="og:site_name" content={seoTags.ogSiteName} />
 <meta property="og:locale" content={seoTags.ogLocale} />
 
+<!-- Article Meta Tags -->
 {seoTags.ogType === 'article' && (
   <>
     {seoTags.articlePublishedTime && <meta property="article:published_time" content={seoTags.articlePublishedTime} />}
@@ -37,13 +41,17 @@ const socialImage = optimizeImageForSocialMedia(seoTags.ogImage) || 'https://iqu
   </>
 )}
 
+<!-- Twitter / X Card -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@IquitosTech" />
 <meta name="twitter:creator" content="@IquitosTech" />
 <meta name="twitter:title" content={seoTags.ogTitle || seoTags.title} />
 <meta name="twitter:description" content={seoTags.ogDescription || seoTags.description} />
 <meta name="twitter:image" content={socialImage} />
+<meta name="twitter:image:src" content={socialImage} />
 <meta name="twitter:image:alt" content={seoTags.ogTitle || seoTags.title} />
+<meta name="twitter:domain" content="iquitostech.com" />
+<meta name="twitter:url" content={seoTags.ogUrl || seoTags.canonical} />
 
 {seoTags.twitterLabel1 && seoTags.twitterData1 && (
   <>
@@ -58,10 +66,10 @@ const socialImage = optimizeImageForSocialMedia(seoTags.ogImage) || 'https://iqu
   </>
 )}
 
+<!-- Additional Meta -->
 <meta name="theme-color" content={siteConfig.themeColor} />
 
+<!-- Structured Data (Schema.org) -->
 {schemaScript && (
-  <script type="application/ld+json" set:html={schemaScript}></script>
-)}
   <script type="application/ld+json" set:html={schemaScript}></script>
 )}
