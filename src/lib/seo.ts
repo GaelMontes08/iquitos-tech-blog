@@ -37,18 +37,15 @@ export function convertImageUrl(imageUrl: string | undefined): string | undefine
 export function optimizeImageForSocialMedia(imageUrl: string | undefined): string | undefined {
   if (!imageUrl) return 'https://iquitostech.com/fallback-banner.webp';
   
-  // If image is from CMS domain, proxy it through our domain
-  if (imageUrl.includes('cms-iquitostech.com')) {
-    // Extract the path after the domain
-    const match = imageUrl.match(/cms-iquitostech\.com\/(.*)/);
-    if (match && match[1]) {
-      // Return proxied image URL through our domain
-      return `https://iquitostech.com/api/image/${match[1]}`;
-    }
-  }
-  
-  // Ensure HTTPS protocol
+  // Keep CMS images direct (faster for social media crawlers)
+  // Just ensure HTTPS protocol
   let optimizedUrl = imageUrl.replace(/^http:\/\//, 'https://');
+  
+  // Make sure cms-iquitostech.com images stay on CMS domain
+  if (optimizedUrl.includes('cms-iquitostech.com')) {
+    // Keep the CMS domain for images (direct access is faster)
+    return optimizedUrl;
+  }
   
   // For non-CMS images (like fallback), ensure they point to production
   if (!optimizedUrl.startsWith('http')) {
