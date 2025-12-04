@@ -38,6 +38,10 @@ if (seoTags.ogType === 'article') {
   canonical={seoTags.canonical}
   noindex={false}
   nofollow={false}
+  robotsProps={{
+    noindex: false,
+    nofollow: false
+  }}
   openGraph={{
     basic: {
       title: seoTags.ogTitle || seoTags.title,

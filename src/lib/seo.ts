@@ -127,7 +127,7 @@ export function processSEOData(seo: YoastSEO | undefined, urlType: 'post' | 'cat
     
     robots: {
       ...seo.robots,
-      index: 'index',
+      index: 'index',  // Force index in production, override WordPress noindex
       follow: 'follow'
     },
     
