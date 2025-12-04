@@ -48,10 +48,6 @@ const socialImage = optimizeImageForSocialMedia(seoTags.ogImage) || 'https://iqu
 <meta name="twitter:title" content={seoTags.ogTitle || seoTags.title} />
 <meta name="twitter:description" content={seoTags.ogDescription || seoTags.description} />
 <meta name="twitter:image" content={socialImage} />
-<meta name="twitter:image:src" content={socialImage} />
-<meta name="twitter:image:alt" content={seoTags.ogTitle || seoTags.title} />
-<meta name="twitter:domain" content="iquitostech.com" />
-<meta name="twitter:url" content={seoTags.ogUrl || seoTags.canonical} />
 
 {seoTags.twitterLabel1 && seoTags.twitterData1 && (
   <>
