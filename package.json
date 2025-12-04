@@ -17,6 +17,7 @@
     "@tailwindcss/vite": "^4.1.11",
     "@vercel/analytics": "^1.5.0",
     "astro": "^5.11.2",
+    "astro-seo": "^0.8.4",
     "resend": "^6.0.1",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.9.2"
