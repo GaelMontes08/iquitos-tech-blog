@@ -18,19 +18,37 @@ export function replaceCMSDomain(url: string | undefined): string | undefined {
   return result;
 }
 
+// Convert CMS image URL to proxied production URL
+export function convertImageUrl(imageUrl: string | undefined): string | undefined {
+  if (!imageUrl) return undefined;
+  
+  // If image is from CMS domain, proxy it through our domain
+  if (imageUrl.includes('cms-iquitostech.com')) {
+    const match = imageUrl.match(/cms-iquitostech\.com\/(.*)/);
+    if (match && match[1]) {
+      return `https://iquitostech.com/api/image/${match[1]}`;
+    }
+  }
+  
+  return imageUrl;
+}
+
 // Social media image optimization function
 export function optimizeImageForSocialMedia(imageUrl: string | undefined): string | undefined {
   if (!imageUrl) return 'https://iquitostech.com/fallback-banner.webp';
   
-  // DON'T replace CMS domain for images - they're hosted on cms-iquitostech.com
-  // Only ensure HTTPS protocol
-  let optimizedUrl = imageUrl.replace(/^http:\/\//, 'https://');
-  
-  // Make sure cms-iquitostech.com images stay on cms domain
-  if (optimizedUrl.includes('cms-iquitostech.com')) {
-    // Keep the CMS domain, images are hosted there
-    return optimizedUrl;
+  // If image is from CMS domain, proxy it through our domain
+  if (imageUrl.includes('cms-iquitostech.com')) {
+    // Extract the path after the domain
+    const match = imageUrl.match(/cms-iquitostech\.com\/(.*)/);
+    if (match && match[1]) {
+      // Return proxied image URL through our domain
+      return `https://iquitostech.com/api/image/${match[1]}`;
+    }
   }
+  
+  // Ensure HTTPS protocol
+  let optimizedUrl = imageUrl.replace(/^http:\/\//, 'https://');
   
   // For non-CMS images (like fallback), ensure they point to production
   if (!optimizedUrl.startsWith('http')) {
