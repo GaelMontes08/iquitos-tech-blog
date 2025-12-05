@@ -11,6 +11,7 @@ const socialImage = optimizeImageForSocialMedia(seoTags.ogImage) || 'https://iqu
 ---
 
 <title>{seoTags.title}</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
 <meta name="description" content={seoTags.description} />
 {seoTags.keywords && <meta name="keywords" content={seoTags.keywords} />}
 <meta name="author" content={seoTags.articleAuthor || 'Iquitos Tech'} />
