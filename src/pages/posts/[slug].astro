@@ -10,7 +10,6 @@ import { getPostInfo, getRelatedPosts } from '../../lib/wordpress';
 const slug = Astro.params.slug;
 if (!slug) return Astro.redirect('/404');
 
-// Set aggressive caching headers for social media crawlers
 const userAgent = Astro.request.headers.get('user-agent') || '';
 const isSocialCrawler = /facebookexternalhit|twitterbot|twitter|linkedinbot|whatsapp|telegrambot|slackbot|pinterest|discordbot/i.test(userAgent);
 
@@ -19,43 +18,37 @@ if (isSocialCrawler) {
   console.log(`🤖 Social crawler detected: ${userAgent.substring(0, 50)} - serving with extended cache`);
 }
 
-// Debug: Log the slug to see if it contains duplicates
 console.log('🔍 Current slug from params:', slug);
 
 const domain = import.meta.env.WP_DOMAIN;
 const apiUrl = `https://${domain}/wp-json/wp/v2`;
 
-// Use faster timeout for social crawlers to avoid their strict timeouts
-let postInfo;
-try {
-  postInfo = await getPostInfo(slug, isSocialCrawler ? 4000 : undefined);
-} catch (error) {
-  console.error(`❌ Error fetching post info for ${slug}:`, error);
-  return Astro.redirect('/404');
-}
+const postInfo = await getPostInfo(slug);
 if (!postInfo) return Astro.redirect('/404');
 
 const { title, date, seo, puntosClave, content, faqPairs, featuredImage, author, authorAvatar, excerpt, categories, id } = postInfo;
 
-// Skip expensive operations for social crawlers (they only need meta tags)
-let relatedPosts = [];
-let trendingPosts = [];
+let relatedPosts: any[] = [];
+let trendingPosts: any[] = [];
 
 if (!isSocialCrawler) {
-  // Use the new advanced related posts algorithm
-  relatedPosts = await getRelatedPosts(postInfo, 4);
-  trendingPosts = await getMostViewedPosts();
+  try {
+    [relatedPosts, trendingPosts] = await Promise.all([
+      getRelatedPosts(postInfo, 4),
+      getMostViewedPosts()
+    ]);
+  } catch (error) {
+    console.error('Error fetching related/trending posts:', error);
+  }
 }
 
 const getTldr = (excerpt: string) => {
   if (!excerpt) return 'Resumen no disponible para este artículo.';
   
-  // Clean HTML tags and extra whitespace from excerpt
   const cleanExcerpt = excerpt.replace(/<[^>]*>/g, ' ')
                               .replace(/\s+/g, ' ')
                               .trim();
   
-  // Return the complete excerpt without truncation
   return cleanExcerpt || 'Resumen no disponible para este artículo.';
 };
 
@@ -131,25 +124,6 @@ export const prerender = false;
                       day: 'numeric' 
                     })}
                   </time>
-                </div>
-                
-                <span class="hidden sm:inline">•</span>
-                
-                <div class="flex items-center space-x-1">
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                  <span id="reading-time" class="text-gray-300">5 min de lectura</span>
-                </div>
-
-                <span class="hidden sm:inline">•</span>
-
-                <div class="flex items-center space-x-1">
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                  </svg>
-                  <span class="text-gray-300">Iquitos, Perú</span>
                 </div>
               </div>
             </div>
