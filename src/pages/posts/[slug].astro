@@ -25,15 +25,27 @@ console.log('🔍 Current slug from params:', slug);
 const domain = import.meta.env.WP_DOMAIN;
 const apiUrl = `https://${domain}/wp-json/wp/v2`;
 
-const postInfo = await getPostInfo(slug);
+// Use faster timeout for social crawlers to avoid their strict timeouts
+let postInfo;
+try {
+  postInfo = await getPostInfo(slug, isSocialCrawler ? 4000 : undefined);
+} catch (error) {
+  console.error(`❌ Error fetching post info for ${slug}:`, error);
+  return Astro.redirect('/404');
+}
 if (!postInfo) return Astro.redirect('/404');
 
 const { title, date, seo, puntosClave, content, faqPairs, featuredImage, author, authorAvatar, excerpt, categories, id } = postInfo;
 
-// Use the new advanced related posts algorithm
-const relatedPosts = await getRelatedPosts(postInfo, 4);
+// Skip expensive operations for social crawlers (they only need meta tags)
+let relatedPosts = [];
+let trendingPosts = [];
 
-const trendingPosts = await getMostViewedPosts();
+if (!isSocialCrawler) {
+  // Use the new advanced related posts algorithm
+  relatedPosts = await getRelatedPosts(postInfo, 4);
+  trendingPosts = await getMostViewedPosts();
+}
 
 const getTldr = (excerpt: string) => {
   if (!excerpt) return 'Resumen no disponible para este artículo.';

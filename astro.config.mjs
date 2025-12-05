@@ -11,7 +11,8 @@ export default defineConfig({
   adapter: vercel({
     webAnalytics: {
       enabled: true
-    }
+    },
+    maxDuration: 10
   }),
   redirects: {
     '/home': '/'

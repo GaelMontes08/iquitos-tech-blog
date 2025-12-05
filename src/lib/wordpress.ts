@@ -77,12 +77,12 @@ function parseWordPressContent(htmlContent: string) {
   };
 }
 
-export async function getPostInfo(slug: string): Promise<PostInfo | null> {
+export async function getPostInfo(slug: string, timeout?: number): Promise<PostInfo | null> {
   const domain = import.meta.env.WP_DOMAIN;
   const apiUrl = `https://${domain}/wp-json/wp/v2`;
 
   try {
-    const response = await fetchWithTimeout(`${apiUrl}/posts?slug=${slug}&_embed`);
+    const response = await fetchWithTimeout(`${apiUrl}/posts?slug=${slug}&_embed`, {}, timeout || 8000);
     if (!response.ok) throw new Error(`Error fetching post: ${response.status}`);
     
     const data = await response.json();
