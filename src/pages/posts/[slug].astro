@@ -10,6 +10,15 @@ import { getPostInfo, getRelatedPosts } from '../../lib/wordpress';
 const slug = Astro.params.slug;
 if (!slug) return Astro.redirect('/404');
 
+// Set aggressive caching headers for social media crawlers
+const userAgent = Astro.request.headers.get('user-agent') || '';
+const isSocialCrawler = /facebookexternalhit|twitterbot|twitter|linkedinbot|whatsapp|telegrambot|slackbot|pinterest|discordbot/i.test(userAgent);
+
+if (isSocialCrawler) {
+  Astro.response.headers.set('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
+  console.log(`🤖 Social crawler detected: ${userAgent.substring(0, 50)} - serving with extended cache`);
+}
+
 // Debug: Log the slug to see if it contains duplicates
 console.log('🔍 Current slug from params:', slug);
 

@@ -210,15 +210,20 @@ export function checkAdvancedRateLimit(
     /baiduspider/i,
     /yandexbot/i,
     /facebookexternalhit/i,
+    /facebot/i,
     /twitterbot/i,
+    /twitter/i,            // X/Twitter generic crawler
+    /x-bot/i,              // X (formerly Twitter) new bot
     /linkedinbot/i,
+    /linkedin/i,
     /whatsapp/i,
     /telegrambot/i,
     /slackbot/i,
     /discordbot/i,
     /pinterest/i,
     /applebot/i,
-    /petalbot/i           // Huawei search
+    /petalbot/i,           // Huawei search
+    /developers\.google/i  // Google dev tools
   ];
   
   const isLegitCrawler = legitimateCrawlers.some(pattern => pattern.test(userAgent));
