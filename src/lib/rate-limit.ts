@@ -31,8 +31,8 @@ const RATE_LIMITS: Record<string, RateLimitConfig> = {
   
   sitemap: {
     windowMs: 60 * 1000,
-    maxRequests: 5,
-    blockDurationMs: 15 * 60 * 1000
+    maxRequests: 30,  // Increased from 5 to 30 to allow legitimate crawlers
+    blockDurationMs: 5 * 60 * 1000  // Reduced from 15 to 5 minutes
   }
 };
 
@@ -201,17 +201,54 @@ export function checkAdvancedRateLimit(
   const userAgent = request.headers.get('user-agent') || '';
   const ip = getClientIP(request);
   
+  // Whitelist legitimate search engine crawlers
+  const legitimateCrawlers = [
+    /googlebot/i,
+    /bingbot/i,
+    /slurp/i,              // Yahoo
+    /duckduckbot/i,
+    /baiduspider/i,
+    /yandexbot/i,
+    /facebookexternalhit/i,
+    /twitterbot/i,
+    /linkedinbot/i,
+    /whatsapp/i,
+    /telegrambot/i,
+    /slackbot/i,
+    /discordbot/i,
+    /pinterest/i,
+    /applebot/i,
+    /petalbot/i           // Huawei search
+  ];
+  
+  const isLegitCrawler = legitimateCrawlers.some(pattern => pattern.test(userAgent));
+  
+  // Skip rate limiting for legitimate search engines and social media crawlers
+  if (isLegitCrawler) {
+    console.log(`✅ Legitimate crawler bypassing rate limit: ${userAgent.substring(0, 50)}`);
+    return { allowed: true, remaining: 999, resetTime: Date.now() + 60000 };
+  }
+  
+  // Suspicious bots that should be rate-limited more aggressively
   const suspiciousBots = [
-    /bot/i, /crawler/i, /spider/i, /scraper/i,
-    /python/i, /curl/i, /wget/i, /java/i,
-    /scanner/i, /validator/i, /monitor/i
+    /python-requests/i,
+    /curl\//i,
+    /wget\//i,
+    /java\//i,
+    /scrapy/i,
+    /selenium/i,
+    /headless/i,
+    /phantom/i,
+    /scanner/i,
+    /nikto/i
   ];
   
   const isSuspiciousBot = suspiciousBots.some(pattern => pattern.test(userAgent));
   
-  if (isSuspiciousBot && endpointType !== 'sitemap') {
-    console.warn(`🤖 Suspicious bot detected: ${userAgent} from IP ${ip}`);
+  if (isSuspiciousBot) {
+    console.warn(`🤖 Suspicious bot detected: ${userAgent.substring(0, 50)} from IP ${ip}`);
     
+    // Apply stricter limits to suspicious bots
     const botConfig = {
       ...RATE_LIMITS[endpointType],
       maxRequests: Math.floor(RATE_LIMITS[endpointType].maxRequests / 3),
@@ -223,7 +260,7 @@ export function checkAdvancedRateLimit(
     if (!result.allowed) {
       return {
         allowed: false,
-        reason: 'Bot rate limit exceeded',
+        reason: 'Suspicious bot rate limit exceeded',
         resetTime: result.resetTime
       };
     }
